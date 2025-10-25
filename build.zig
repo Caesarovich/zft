@@ -21,6 +21,13 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    // TESTS MODULE
+    const tests_module = b.createModule(.{
+        .root_source_file = b.path("lib/tests/main.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
     // LIBFT_MAKER
     const libft_maker = b.addExecutable(.{
         .name = "libft_maker",
@@ -50,10 +57,14 @@ pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
         .name = "zft",
         .root_module = b.createModule(.{
-            .root_source_file = b.path("src/main.zig"),
+            .root_source_file = b.path("src/test_runner/main.zig"),
             .target = target,
             .optimize = optimize,
             .link_libc = true,
+            .imports = &.{
+                .{ .name = "tests", .module = tests_module },
+                .{ .name = "ansi", .module = ansi_module },
+            },
         }),
     });
 
