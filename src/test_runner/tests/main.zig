@@ -12,6 +12,8 @@ const ft_strlen = @import("ft_strlen.zig").suite;
 const ft_strchr = @import("ft_strchr.zig").suite;
 const ft_strrchr = @import("ft_strrchr.zig").suite;
 const ft_strncmp = @import("ft_strncmp.zig").suite;
+const ft_strlcpy = @import("ft_strlcpy.zig").suite;
+const ft_strlcat = @import("ft_strlcat.zig").suite;
 
 pub const base_test_collection = TestCollection{
     .name = "ZFT Base Tests",
@@ -27,5 +29,7 @@ pub const base_test_collection = TestCollection{
         @constCast(&ft_strchr),
         @constCast(&ft_strrchr),
         @constCast(&ft_strncmp),
+        @constCast(&ft_strlcpy),
+        @constCast(&ft_strlcat),
     },
 };
