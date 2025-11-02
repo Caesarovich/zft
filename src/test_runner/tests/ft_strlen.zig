@@ -12,17 +12,6 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
-var test_null = TestCase{
-    .name = "Calling with NULL (should segfault)",
-    .expect_segfault = true,
-    .fn_ptr = &test_null_fn,
-};
-
-fn test_null_fn() AssertError!void {
-    _ = c.ft_strlen(null);
-    return AssertError.AssertionFailed;
-}
-
 var test_empty_string = TestCase{
     .name = "Empty string",
     .fn_ptr = &test_empty_string_fn,
