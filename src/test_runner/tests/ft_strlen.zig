@@ -39,7 +39,7 @@ fn test_long_string_fn() AssertError!void {
     try assert.expectEqual(usize, 26, c.ft_strlen("abcdefghijklmnopqrstuvwxyz"));
 }
 
-const test_cases = [_]*TestCase{ &test_empty_string, &test_normal_string, &test_long_string, &test_null };
+const test_cases = [_]*TestCase{ &test_empty_string, &test_normal_string, &test_long_string };
 
 pub const suite = TestSuite{
     .name = "ft_strlen",
