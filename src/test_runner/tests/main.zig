@@ -14,6 +14,12 @@ const ft_strrchr = @import("ft_strrchr.zig").suite;
 const ft_strncmp = @import("ft_strncmp.zig").suite;
 const ft_strlcpy = @import("ft_strlcpy.zig").suite;
 const ft_strlcat = @import("ft_strlcat.zig").suite;
+const ft_strnstr = @import("ft_strnstr.zig").suite;
+const ft_memset = @import("ft_memset.zig").suite;
+const ft_bzero = @import("ft_bzero.zig").suite;
+const ft_memcpy = @import("ft_memcpy.zig").suite;
+const ft_memmove = @import("ft_memmove.zig").suite;
+const ft_memcmp = @import("ft_memcmp.zig").suite;
 
 pub const base_test_collection = TestCollection{
     .name = "ZFT Base Tests",
@@ -31,5 +37,11 @@ pub const base_test_collection = TestCollection{
         @constCast(&ft_strncmp),
         @constCast(&ft_strlcpy),
         @constCast(&ft_strlcat),
+        @constCast(&ft_strnstr),
+        @constCast(&ft_memset),
+        @constCast(&ft_bzero),
+        @constCast(&ft_memcpy),
+        @constCast(&ft_memmove),
+        @constCast(&ft_memcmp),
     },
 };
