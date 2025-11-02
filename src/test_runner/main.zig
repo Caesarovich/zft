@@ -3,8 +3,7 @@ const ansi = @import("ansi");
 
 const tests = @import("tests");
 
-const ft_strlen_test = @import("tests/ft_strlen.zig");
-const ft_isalpha_test = @import("tests/ft_isalpha.zig");
+const test_collections = @import("tests/main.zig");
 
 fn print_test_suite_results(stdout: *std.io.Writer, suite: tests.tests.TestSuite) !void {
     try ansi.format.resetStyle(stdout);
@@ -77,13 +76,13 @@ pub fn main() !void {
     var stdout_write = std.fs.File.stdout().writer(write_buffer);
     const stdout = &stdout_write.interface;
 
-    var test_suite = ft_strlen_test.suite;
-    test_suite.run(allocator);
-    try print_test_suite_results(stdout, test_suite);
+    var base_collection = test_collections.base_test_collection;
 
-    test_suite = ft_isalpha_test.suite;
-    test_suite.run(allocator);
-    try print_test_suite_results(stdout, test_suite);
+    base_collection.run(allocator);
+
+    for (base_collection.suites) |suite| {
+        try print_test_suite_results(stdout, suite.*);
+    }
 
     try stdout.flush();
 }

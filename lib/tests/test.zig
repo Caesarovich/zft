@@ -104,3 +104,20 @@ pub const TestSuite = struct {
         }
     }
 };
+
+/// Represents a collection of test suites
+pub const TestCollection = struct {
+    /// Human-readable name for the test collection
+    name: []const u8,
+    /// Array of test suites in the collection
+    suites: []const *TestSuite,
+    /// Executes all test suites in the collection
+    /// Uses an arena allocator for temporary allocations during execution (Which is divided in sub-arenas by each suite)
+    pub fn run(self: *TestCollection, allocator: std.mem.Allocator) void {
+        var arena = std.heap.ArenaAllocator.init(allocator);
+        defer arena.deinit();
+        for (self.suites) |suite| {
+            suite.run(arena.allocator());
+        }
+    }
+};
