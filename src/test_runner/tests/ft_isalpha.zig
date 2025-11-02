@@ -38,17 +38,17 @@ var test_non_alpha_chars = TestCase{
 
 fn test_non_alpha_chars_fn() AssertError!void {
     // Test digits
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('0'));
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('9'));
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('5'));
+    try assert.expect(c.ft_isalpha('0') == 0, "Expected '0' to be non-alphabetic");
+    try assert.expect(c.ft_isalpha('9') == 0, "Expected '9' to be non-alphabetic");
+    try assert.expect(c.ft_isalpha('5') == 0, "Expected '5' to be non-alphabetic");
 
     // Test special characters
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('!'));
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('@'));
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('#'));
-    try assert.expectEqual(c_int, 0, c.ft_isalpha(' '));
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('\t'));
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('\n'));
+    try assert.expect(c.ft_isalpha('!') == 0, "Expected '!' to be non-alphabetic");
+    try assert.expect(c.ft_isalpha('@') == 0, "Expected '@' to be non-alphabetic");
+    try assert.expect(c.ft_isalpha('#') == 0, "Expected '#' to be non-alphabetic");
+    try assert.expect(c.ft_isalpha(' ') == 0, "Expected ' ' to be non-alphabetic");
+    try assert.expect(c.ft_isalpha('\t') == 0, "Expected '\\t' to be non-alphabetic");
+    try assert.expect(c.ft_isalpha('\n') == 0, "Expected '\\n' to be non-alphabetic");
 }
 
 /// Test edge cases around alphabetic ranges
@@ -59,20 +59,20 @@ var test_edge_cases = TestCase{
 
 fn test_edge_cases_fn() AssertError!void {
     // Characters just before 'A' (ASCII 65)
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('@')); // ASCII 64
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('?')); // ASCII 63
+    try assert.expect(c.ft_isalpha('@') == 0, "Expected '@' (ASCII 64, before 'A') to be non-alphabetic");
+    try assert.expect(c.ft_isalpha('?') == 0, "Expected '?' (ASCII 63, before 'A') to be non-alphabetic");
 
     // Characters just after 'Z' (ASCII 90)
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('[')); // ASCII 91
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('\\')); // ASCII 92
+    try assert.expect(c.ft_isalpha('[') == 0, "Expected '[' (ASCII 91, after 'Z') to be non-alphabetic");
+    try assert.expect(c.ft_isalpha('\\') == 0, "Expected '\\' (ASCII 92, after 'Z') to be non-alphabetic");
 
     // Characters just before 'a' (ASCII 97)
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('`')); // ASCII 96
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('_')); // ASCII 95
+    try assert.expect(c.ft_isalpha('`') == 0, "Expected '`' (ASCII 96, before 'a') to be non-alphabetic");
+    try assert.expect(c.ft_isalpha('_') == 0, "Expected '_' (ASCII 95, before 'a') to be non-alphabetic");
 
     // Characters just after 'z' (ASCII 122)
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('{')); // ASCII 123
-    try assert.expectEqual(c_int, 0, c.ft_isalpha('|')); // ASCII 124
+    try assert.expect(c.ft_isalpha('{') == 0, "Expected '{' (ASCII 123, after 'z') to be non-alphabetic");
+    try assert.expect(c.ft_isalpha('|') == 0, "Expected '|' (ASCII 124, after 'z') to be non-alphabetic");
 }
 
 /// Test with negative values and extended ASCII
@@ -83,12 +83,12 @@ var test_extended_range = TestCase{
 
 fn test_extended_range_fn() AssertError!void {
     // Test negative values
-    try assert.expectEqual(c_int, 0, c.ft_isalpha(-1));
-    try assert.expectEqual(c_int, 0, c.ft_isalpha(-42));
+    try assert.expect(c.ft_isalpha(-1) == 0, "Expected -1 to be non-alphabetic");
+    try assert.expect(c.ft_isalpha(-42) == 0, "Expected -42 to be non-alphabetic");
 
     // Test values beyond ASCII range
-    try assert.expectEqual(c_int, 0, c.ft_isalpha(128));
-    try assert.expectEqual(c_int, 0, c.ft_isalpha(255));
+    try assert.expect(c.ft_isalpha(128) == 0, "Expected 128 (beyond ASCII) to be non-alphabetic");
+    try assert.expect(c.ft_isalpha(255) == 0, "Expected 255 (beyond ASCII) to be non-alphabetic");
 }
 
 /// Comprehensive test comparing ft_isalpha with standard library isalpha for all ASCII characters
@@ -124,11 +124,11 @@ var test_boundary_values = TestCase{
 
 fn test_boundary_values_fn() AssertError!void {
     // Test zero
-    try assert.expectEqual(c_int, 0, c.ft_isalpha(0));
+    try assert.expect(c.ft_isalpha(0) == 0, "Expected 0 (null character) to be non-alphabetic");
 
     // Test maximum and minimum int values (implementation dependent)
-    try assert.expectEqual(c_int, 0, c.ft_isalpha(2147483647)); // INT_MAX
-    try assert.expectEqual(c_int, 0, c.ft_isalpha(-2147483648)); // INT_MIN
+    try assert.expect(c.ft_isalpha(2147483647) == 0, "Expected INT_MAX to be non-alphabetic");
+    try assert.expect(c.ft_isalpha(-2147483648) == 0, "Expected INT_MIN to be non-alphabetic");
 }
 
 const test_cases = [_]*TestCase{ &test_alpha_chars, &test_non_alpha_chars, &test_edge_cases, &test_extended_range, &test_ascii_comparison, &test_boundary_values };

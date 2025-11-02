@@ -28,15 +28,15 @@ var test_long_string = TestCase{
 };
 
 fn test_empty_string_fn() AssertError!void {
-    try assert.expectEqual(usize, 0, c.ft_strlen(""));
+    try assert.expect(c.ft_strlen("") == 0, "Expected empty string to have length 0");
 }
 
 fn test_normal_string_fn() AssertError!void {
-    try assert.expectEqual(usize, 5, c.ft_strlen("Hello"));
+    try assert.expect(c.ft_strlen("Hello") == 5, "Expected \"Hello\" to have length 5");
 }
 
 fn test_long_string_fn() AssertError!void {
-    try assert.expectEqual(usize, 26, c.ft_strlen("abcdefghijklmnopqrstuvwxyz"));
+    try assert.expect(c.ft_strlen("abcdefghijklmnopqrstuvwxyz") == 26, "Expected alphabet string to have length 26");
 }
 
 const test_cases = [_]*TestCase{ &test_empty_string, &test_normal_string, &test_long_string };
