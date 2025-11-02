@@ -5,6 +5,8 @@ const tests = @import("tests");
 
 const test_collections = @import("tests/main.zig");
 
+const config = @import("config");
+
 fn print_test_suite_results(stdout: *std.io.Writer, suite: tests.tests.TestSuite) !void {
     try ansi.format.resetStyle(stdout);
 

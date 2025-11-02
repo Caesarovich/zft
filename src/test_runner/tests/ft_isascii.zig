@@ -7,6 +7,8 @@ const TestSuite = tests.tests.TestSuite;
 const assert = tests.assert;
 const AssertError = assert.AssertError;
 
+const function_list = @import("function_list");
+
 const c = @cImport({
     @cInclude("libft.h");
     @cInclude("ctype.h");
@@ -56,7 +58,10 @@ const test_cases = [_]*TestCase{
     &test_ascii_comparison,
 };
 
+const is_function_defined = function_list.hasFunction("ft_isascii");
+
 pub const suite = TestSuite{
     .name = "ft_isascii",
-    .cases = test_cases[0..],
+    .cases = if (is_function_defined) &test_cases else &.{},
+    .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

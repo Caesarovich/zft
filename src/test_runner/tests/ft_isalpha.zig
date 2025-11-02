@@ -7,6 +7,8 @@ const TestSuite = tests.tests.TestSuite;
 const assert = tests.assert;
 const AssertError = assert.AssertError;
 
+const function_list = @import("function_list");
+
 const c = @cImport({
     @cInclude("libft.h");
     @cInclude("ctype.h");
@@ -133,7 +135,10 @@ fn test_boundary_values_fn() AssertError!void {
 
 const test_cases = [_]*TestCase{ &test_alpha_chars, &test_non_alpha_chars, &test_edge_cases, &test_extended_range, &test_ascii_comparison, &test_boundary_values };
 
+const is_function_defined = function_list.hasFunction("ft_isalpha");
+
 pub const suite = TestSuite{
     .name = "ft_isalpha",
-    .cases = test_cases[0..],
+    .cases = if (is_function_defined) &test_cases else &.{},
+    .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

@@ -7,6 +7,8 @@ const TestSuite = tests.tests.TestSuite;
 const assert = tests.assert;
 const AssertError = assert.AssertError;
 
+const function_list = @import("function_list");
+
 const c = @cImport({
     @cInclude("libft.h");
     @cInclude("ctype.h");
@@ -41,7 +43,10 @@ fn test_long_string_fn() AssertError!void {
 
 const test_cases = [_]*TestCase{ &test_empty_string, &test_normal_string, &test_long_string };
 
+const is_function_defined = function_list.hasFunction("ft_strlen");
+
 pub const suite = TestSuite{
     .name = "ft_strlen",
-    .cases = test_cases[0..],
+    .cases = if (is_function_defined) &test_cases else &.{},
+    .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };
