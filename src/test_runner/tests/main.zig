@@ -20,6 +20,9 @@ const ft_bzero = @import("ft_bzero.zig").suite;
 const ft_memcpy = @import("ft_memcpy.zig").suite;
 const ft_memmove = @import("ft_memmove.zig").suite;
 const ft_memcmp = @import("ft_memcmp.zig").suite;
+const ft_atoi = @import("ft_atoi.zig").suite;
+const ft_calloc = @import("ft_calloc.zig").suite;
+const ft_strdup = @import("ft_strdup.zig").suite;
 
 pub const base_test_collection = TestCollection{
     .name = "ZFT Base Tests",
@@ -43,5 +46,8 @@ pub const base_test_collection = TestCollection{
         @constCast(&ft_memcpy),
         @constCast(&ft_memmove),
         @constCast(&ft_memcmp),
+        @constCast(&ft_atoi),
+        @constCast(&ft_calloc),
+        @constCast(&ft_strdup),
     },
 };
