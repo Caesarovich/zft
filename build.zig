@@ -56,6 +56,7 @@ pub fn build(b: *std.Build) void {
     // MAIN EXECUTABLE
     const exe = b.addExecutable(.{
         .name = "zft",
+        .use_llvm = true,
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/test_runner/main.zig"),
             .target = target,
