@@ -1,0 +1,154 @@
+const std = @import("std");
+const tests = @import("tests");
+
+const TestCase = tests.tests.TestCase;
+const TestSuite = tests.tests.TestSuite;
+
+const assert = tests.assert;
+const AssertError = assert.AssertError;
+
+const function_list = @import("function_list");
+
+const c = @cImport({
+    @cInclude("libft.h");
+    @cInclude("string.h");
+});
+
+// Test normal string trim
+var test_strtrim_normal = TestCase{
+    .name = "Normal string trim",
+    .fn_ptr = &test_strtrim_normal_fn,
+};
+
+fn test_strtrim_normal_fn() AssertError!void {
+    const result = c.ft_strtrim("   Hello World   ", " ");
+    try assert.expect(result != null, "ft_strtrim should return a valid pointer");
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "Hello World") == 0, "Expected trimmed string 'Hello World'");
+        c.free(str);
+    }
+}
+
+// Test trim with multiple characters
+var test_strtrim_multiple_chars = TestCase{
+    .name = "Trim multiple characters",
+    .fn_ptr = &test_strtrim_multiple_chars_fn,
+};
+
+fn test_strtrim_multiple_chars_fn() AssertError!void {
+    const result = c.ft_strtrim(".,!Hello World!,.", ".,!");
+    try assert.expect(result != null, "ft_strtrim should return a valid pointer");
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "Hello World") == 0, "Expected trimmed string 'Hello World'");
+        c.free(str);
+    }
+}
+
+// Test trim with nothing to trim
+var test_strtrim_nothing = TestCase{
+    .name = "Nothing to trim",
+    .fn_ptr = &test_strtrim_nothing_fn,
+};
+
+fn test_strtrim_nothing_fn() AssertError!void {
+    const result = c.ft_strtrim("Hello World", " ");
+    try assert.expect(result != null, "ft_strtrim should return a valid pointer");
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "Hello World") == 0, "Expected unchanged string 'Hello World'");
+        c.free(str);
+    }
+}
+
+// Test trim entire string
+var test_strtrim_entire = TestCase{
+    .name = "Trim entire string",
+    .fn_ptr = &test_strtrim_entire_fn,
+};
+
+fn test_strtrim_entire_fn() AssertError!void {
+    const result = c.ft_strtrim("   ", " ");
+    try assert.expect(result != null, "ft_strtrim should return a valid pointer");
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "") == 0, "Expected empty string when entire string is trimmed");
+        c.free(str);
+    }
+}
+
+// Test trim with empty set
+var test_strtrim_empty_set = TestCase{
+    .name = "Trim with empty set",
+    .fn_ptr = &test_strtrim_empty_set_fn,
+};
+
+fn test_strtrim_empty_set_fn() AssertError!void {
+    const result = c.ft_strtrim("  Hello World  ", "");
+    try assert.expect(result != null, "ft_strtrim should return a valid pointer");
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "  Hello World  ") == 0, "Expected unchanged string with empty set");
+        c.free(str);
+    }
+}
+
+// Test trim with empty string
+var test_strtrim_empty_string = TestCase{
+    .name = "Trim empty string",
+    .fn_ptr = &test_strtrim_empty_string_fn,
+};
+
+fn test_strtrim_empty_string_fn() AssertError!void {
+    const result = c.ft_strtrim("", " ");
+    try assert.expect(result != null, "ft_strtrim should return a valid pointer");
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "") == 0, "Expected empty string");
+        c.free(str);
+    }
+}
+
+// Test trim from beginning only
+var test_strtrim_beginning_only = TestCase{
+    .name = "Trim from beginning only",
+    .fn_ptr = &test_strtrim_beginning_only_fn,
+};
+
+fn test_strtrim_beginning_only_fn() AssertError!void {
+    const result = c.ft_strtrim("   Hello World", " ");
+    try assert.expect(result != null, "ft_strtrim should return a valid pointer");
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "Hello World") == 0, "Expected string trimmed from beginning");
+        c.free(str);
+    }
+}
+
+// Test trim from end only
+var test_strtrim_end_only = TestCase{
+    .name = "Trim from end only",
+    .fn_ptr = &test_strtrim_end_only_fn,
+};
+
+fn test_strtrim_end_only_fn() AssertError!void {
+    const result = c.ft_strtrim("Hello World   ", " ");
+    try assert.expect(result != null, "ft_strtrim should return a valid pointer");
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "Hello World") == 0, "Expected string trimmed from end");
+        c.free(str);
+    }
+}
+
+const test_cases = [_]*TestCase{
+    &test_strtrim_normal,
+    &test_strtrim_multiple_chars,
+    &test_strtrim_nothing,
+    &test_strtrim_entire,
+    &test_strtrim_empty_set,
+    &test_strtrim_empty_string,
+    &test_strtrim_beginning_only,
+    &test_strtrim_end_only,
+};
+
+const is_function_defined = function_list.hasFunction("ft_strtrim");
+
+pub const suite = TestSuite{
+    .name = "ft_strtrim",
+    .cases = if (is_function_defined) &test_cases else &.{},
+    .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
+};
