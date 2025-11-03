@@ -115,7 +115,7 @@ fn test_strjoin_long_strings_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_strjoin_normal,
     &test_strjoin_empty_first,
     &test_strjoin_empty_second,
@@ -127,7 +127,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_strjoin");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_strjoin",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

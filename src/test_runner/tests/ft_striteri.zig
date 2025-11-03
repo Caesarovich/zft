@@ -182,7 +182,7 @@ fn test_striteri_special_chars_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(g_call_count == 9, "Expected function to be called 9 times");
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_striteri_uppercase,
     &test_striteri_add_index,
     &test_striteri_replace_all,
@@ -194,7 +194,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_striteri");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_striteri",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

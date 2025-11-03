@@ -62,14 +62,14 @@ fn test_strdup_empty_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_strdup_basic,
     &test_strdup_empty,
 };
 
 const is_function_defined = function_list.hasFunction("ft_strdup");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_strdup",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

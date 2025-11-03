@@ -79,7 +79,7 @@ fn test_comparison_with_standard_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_digit_chars,
     &test_non_digit_chars,
     &test_edge_cases,
@@ -88,4 +88,4 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_isdigit");
 
-pub const suite = TestSuite{ .name = "ft_isdigit", .cases = if (is_function_defined) &test_cases else &.{}, .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped };
+pub var suite = TestSuite{ .name = "ft_isdigit", .cases = if (is_function_defined) &test_cases else &.{}, .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped };

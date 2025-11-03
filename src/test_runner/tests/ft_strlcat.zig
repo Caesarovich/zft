@@ -116,7 +116,7 @@ fn test_append_with_garbage_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(dest[5] == 0xFF, "Expected garbage values to remain after null-termination");
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_append_to_empty_dest,
     &test_append_with_small_buffer,
     &test_append_empty_source,
@@ -127,7 +127,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_strlcat");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_strlcat",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

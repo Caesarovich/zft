@@ -88,7 +88,7 @@ fn test_comparison_with_standard_fn(_: std.mem.Allocator) AssertError!void {
         try assert.expect(custom_result == standard_result, "ft_isalnum and isalnum differ on a character");
     }
 }
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_alnum_chars,
     &test_non_alnum_chars,
     &test_edge_cases,
@@ -97,7 +97,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_isalnum");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_isalnum",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

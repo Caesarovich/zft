@@ -88,7 +88,7 @@ fn test_zero_n_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strncmp("Anything", "Different", 0) == 0, "Expected comparison with n=0 to return 0");
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_equal_strings,
     &test_first_less,
     &test_first_greater,
@@ -100,7 +100,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_strncmp");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_strncmp",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

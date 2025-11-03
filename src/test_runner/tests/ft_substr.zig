@@ -115,7 +115,7 @@ fn test_substr_null_src_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result == null, "ft_substr should return null for null source");
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_substr_normal,
     &test_substr_from_start,
     &test_substr_start_beyond,
@@ -127,7 +127,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_substr");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_substr",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

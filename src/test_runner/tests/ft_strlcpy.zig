@@ -56,11 +56,11 @@ fn test_empty_string_copy_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(dest[0] == 0, "Expected destination to be null-terminated");
 }
 
-const test_cases = [_]*TestCase{ &test_normal_copy, &test_truncated_copy, &test_empty_string_copy };
+var test_cases = [_]*TestCase{ &test_normal_copy, &test_truncated_copy, &test_empty_string_copy };
 
 const is_function_defined = function_list.hasFunction("ft_strlcpy");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_strlcpy",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

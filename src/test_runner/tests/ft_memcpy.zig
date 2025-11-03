@@ -95,7 +95,7 @@ fn test_memcpy_partial_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result == &dest, "ft_memcpy should return the original destination pointer");
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_memcpy_basic,
     &test_memcpy_zero,
     &test_memcpy_large,
@@ -104,7 +104,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_memcpy");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_memcpy",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

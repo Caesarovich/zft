@@ -109,7 +109,7 @@ fn test_multiple_occurrences_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result != null, "Expected to find character 'a' in the string");
     try assert.expect(@intFromPtr(result) == @intFromPtr(&str[1]), "Expected pointer to point to first 'a' in the string");
 }
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_char_present,
     &test_char_not_present,
     &test_null_terminator,
@@ -121,7 +121,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_strchr");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_strchr",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

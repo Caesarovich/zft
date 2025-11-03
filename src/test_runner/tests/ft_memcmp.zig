@@ -108,7 +108,7 @@ fn test_memcmp_partial_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result_diff != 0, "ft_memcmp should return non-zero when differing byte is included");
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_memcmp_equal,
     &test_memcmp_different,
     &test_memcmp_first_less,
@@ -119,7 +119,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_memcmp");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_memcmp",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

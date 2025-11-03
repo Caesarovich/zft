@@ -141,7 +141,7 @@ fn test_strmapi_special_chars_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_strmapi_uppercase,
     &test_strmapi_add_index,
     &test_strmapi_replace_all,
@@ -153,7 +153,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_strmapi");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_strmapi",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

@@ -77,7 +77,7 @@ fn test_n_zero_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result == null, "Expected not to find any substring when n is zero");
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_substring_found,
     &test_substring_not_found,
     &test_empty_needle,
@@ -86,7 +86,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_strnstr");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_strnstr",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

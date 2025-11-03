@@ -83,7 +83,7 @@ fn test_standard_comparison_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_lowercase_chars,
     &test_uppercase_chars,
     &test_non_alpha_chars,
@@ -93,7 +93,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_toupper");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_toupper",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

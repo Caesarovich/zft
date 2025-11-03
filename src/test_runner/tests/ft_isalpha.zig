@@ -133,11 +133,11 @@ fn test_boundary_values_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_isalpha(-2147483648) == 0, "Expected INT_MIN to be non-alphabetic");
 }
 
-const test_cases = [_]*TestCase{ &test_alpha_chars, &test_non_alpha_chars, &test_edge_cases, &test_extended_range, &test_ascii_comparison, &test_boundary_values };
+var test_cases = [_]*TestCase{ &test_alpha_chars, &test_non_alpha_chars, &test_edge_cases, &test_extended_range, &test_ascii_comparison, &test_boundary_values };
 
 const is_function_defined = function_list.hasFunction("ft_isalpha");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_isalpha",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

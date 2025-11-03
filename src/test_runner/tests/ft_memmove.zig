@@ -103,7 +103,7 @@ fn test_memmove_large_fn(allocator: std.mem.Allocator) TestCaseError!void {
     try assert.expect(result == &dest[0], "ft_memmove should return the original destination pointer");
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_memmove_basic,
     &test_memmove_overlap_src_before_dest,
     &test_memmove_overlap_dest_before_src,
@@ -113,7 +113,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_memmove");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_memmove",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

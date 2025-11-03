@@ -41,11 +41,11 @@ fn test_long_string_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strlen("abcdefghijklmnopqrstuvwxyz") == 26, "Expected alphabet string to have length 26");
 }
 
-const test_cases = [_]*TestCase{ &test_empty_string, &test_normal_string, &test_long_string };
+var test_cases = [_]*TestCase{ &test_empty_string, &test_normal_string, &test_long_string };
 
 const is_function_defined = function_list.hasFunction("ft_strlen");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_strlen",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

@@ -52,7 +52,7 @@ fn test_ascii_comparison_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_ascii_chars,
     &test_non_ascii_chars,
     &test_ascii_comparison,
@@ -60,7 +60,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_isascii");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_isascii",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

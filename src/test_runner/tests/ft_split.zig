@@ -173,7 +173,7 @@ fn test_split_single_char_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_split_normal,
     &test_split_consecutive_delims,
     &test_split_leading_trailing,
@@ -186,7 +186,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_split");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_split",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

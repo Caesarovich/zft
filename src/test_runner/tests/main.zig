@@ -1,53 +1,45 @@
 const TestSuite = @import("tests").tests.TestSuite;
 const TestCollection = @import("tests").tests.TestCollection;
 
-const ft_isalpha = @import("ft_isalpha.zig").suite;
-const ft_isdigit = @import("ft_isdigit.zig").suite;
-const ft_ialsnum = @import("ft_isalnum.zig").suite;
-const ft_isascii = @import("ft_isascii.zig").suite;
-const ft_isprint = @import("ft_isprint.zig").suite;
-const ft_toupper = @import("ft_toupper.zig").suite;
-const ft_tolower = @import("ft_tolower.zig").suite;
-const ft_strlen = @import("ft_strlen.zig").suite;
-const ft_strchr = @import("ft_strchr.zig").suite;
-const ft_strrchr = @import("ft_strrchr.zig").suite;
-const ft_strncmp = @import("ft_strncmp.zig").suite;
-const ft_strlcpy = @import("ft_strlcpy.zig").suite;
-const ft_strlcat = @import("ft_strlcat.zig").suite;
-const ft_strnstr = @import("ft_strnstr.zig").suite;
-const ft_memset = @import("ft_memset.zig").suite;
-const ft_bzero = @import("ft_bzero.zig").suite;
-const ft_memcpy = @import("ft_memcpy.zig").suite;
-const ft_memmove = @import("ft_memmove.zig").suite;
-const ft_memcmp = @import("ft_memcmp.zig").suite;
-const ft_atoi = @import("ft_atoi.zig").suite;
-const ft_calloc = @import("ft_calloc.zig").suite;
-const ft_strdup = @import("ft_strdup.zig").suite;
-
-pub const base_test_collection = TestCollection{
+pub var base_test_collection = TestCollection{
     .name = "ZFT Base Tests",
-    .suites = &[_]*TestSuite{
-        @constCast(&ft_isalpha),
-        @constCast(&ft_isdigit),
-        @constCast(&ft_ialsnum),
-        @constCast(&ft_isascii),
-        @constCast(&ft_isprint),
-        @constCast(&ft_toupper),
-        @constCast(&ft_tolower),
-        @constCast(&ft_strlen),
-        @constCast(&ft_strchr),
-        @constCast(&ft_strrchr),
-        @constCast(&ft_strncmp),
-        @constCast(&ft_strlcpy),
-        @constCast(&ft_strlcat),
-        @constCast(&ft_strnstr),
-        @constCast(&ft_memset),
-        @constCast(&ft_bzero),
-        @constCast(&ft_memcpy),
-        @constCast(&ft_memmove),
-        @constCast(&ft_memcmp),
-        @constCast(&ft_atoi),
-        @constCast(&ft_calloc),
-        @constCast(&ft_strdup),
-    },
+    .suites = @constCast(&[_]*TestSuite{
+        @constCast(&@import("ft_isalpha.zig").suite),
+        @constCast(&@import("ft_isdigit.zig").suite),
+        @constCast(&@import("ft_isalnum.zig").suite),
+        @constCast(&@import("ft_isascii.zig").suite),
+        @constCast(&@import("ft_isprint.zig").suite),
+        @constCast(&@import("ft_toupper.zig").suite),
+        @constCast(&@import("ft_tolower.zig").suite),
+        @constCast(&@import("ft_strlen.zig").suite),
+        @constCast(&@import("ft_strchr.zig").suite),
+        @constCast(&@import("ft_strrchr.zig").suite),
+        @constCast(&@import("ft_strncmp.zig").suite),
+        @constCast(&@import("ft_strlcpy.zig").suite),
+        @constCast(&@import("ft_strlcat.zig").suite),
+        @constCast(&@import("ft_strnstr.zig").suite),
+        @constCast(&@import("ft_memset.zig").suite),
+        @constCast(&@import("ft_bzero.zig").suite),
+        @constCast(&@import("ft_memcpy.zig").suite),
+        @constCast(&@import("ft_memmove.zig").suite),
+        @constCast(&@import("ft_memcmp.zig").suite),
+        @constCast(&@import("ft_atoi.zig").suite),
+        @constCast(&@import("ft_calloc.zig").suite),
+        @constCast(&@import("ft_strdup.zig").suite),
+        @constCast(&@import("ft_substr.zig").suite),
+        @constCast(&@import("ft_strjoin.zig").suite),
+        @constCast(&@import("ft_strtrim.zig").suite),
+        @constCast(&@import("ft_split.zig").suite),
+        @constCast(&@import("ft_itoa.zig").suite),
+        @constCast(&@import("ft_strmapi.zig").suite),
+        @constCast(&@import("ft_striteri.zig").suite),
+        // @constCast(&@import("ft_putchar_fd.zig").suite),
+        // @constCast(&@import("ft_putstr_fd.zig").suite),
+        // @constCast(&@import("ft_putendl_fd.zig").suite),
+        // @constCast(&@import("ft_putnbr_fd.zig").suite),
+        @constCast(&@import("ft_lstnew.zig").suite),
+        @constCast(&@import("ft_lstadd_front.zig").suite),
+        @constCast(&@import("ft_lstsize.zig").suite),
+        // @constCast(&@import("ft_lstdelone.zig").suite),
+    }),
 };

@@ -86,7 +86,7 @@ fn test_calloc_different_sizes_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_calloc_basic,
     &test_calloc_large,
     &test_calloc_different_sizes,
@@ -94,7 +94,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_calloc");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_calloc",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

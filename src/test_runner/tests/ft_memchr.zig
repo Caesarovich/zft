@@ -123,7 +123,7 @@ fn test_memchr_empty_buffer_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result == null, "ft_memchr should not find any character in an empty buffer");
 }
 
-const test_cases = [_]TestCase{
+var test_cases = [_]TestCase{
     &test_memchr_found,
     &test_memchr_not_found,
     &test_memchr_n_zero,
@@ -135,7 +135,7 @@ const test_cases = [_]TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_memchr");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_memchr",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,

@@ -230,7 +230,7 @@ fn test_atoi_limits_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result == -2147483648, "ft_atoi should convert '-2147483648' to INT_MIN");
 }
 
-const test_cases = [_]*TestCase{
+var test_cases = [_]*TestCase{
     &test_atoi_positive,
     &test_atoi_negative,
     &test_atoi_zero,
@@ -246,7 +246,7 @@ const test_cases = [_]*TestCase{
 
 const is_function_defined = function_list.hasFunction("ft_atoi");
 
-pub const suite = TestSuite{
+pub var suite = TestSuite{
     .name = "ft_atoi",
     .cases = if (is_function_defined) &test_cases else &.{},
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
