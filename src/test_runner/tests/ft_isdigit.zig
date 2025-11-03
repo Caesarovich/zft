@@ -20,7 +20,7 @@ var test_digit_chars = TestCase{
     .fn_ptr = &test_digit_chars_fn,
 };
 
-fn test_digit_chars_fn() AssertError!void {
+fn test_digit_chars_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_isdigit('0') != 0, "Expected '0' to be numeric");
     try assert.expect(c.ft_isdigit('1') != 0, "Expected '1' to be numeric");
     try assert.expect(c.ft_isdigit('2') != 0, "Expected '2' to be numeric");
@@ -39,7 +39,7 @@ var test_non_digit_chars = TestCase{
     .fn_ptr = &test_non_digit_chars_fn,
 };
 
-fn test_non_digit_chars_fn() AssertError!void {
+fn test_non_digit_chars_fn(_: std.mem.Allocator) AssertError!void {
     // Test alphabetic characters
     try assert.expect(c.ft_isdigit('a') == 0, "Expected 'a' to be non-numeric");
     try assert.expect(c.ft_isdigit('Z') == 0, "Expected 'Z' to be non-numeric");
@@ -60,7 +60,7 @@ var test_edge_cases = TestCase{
     .fn_ptr = &test_edge_cases_fn,
 };
 
-fn test_edge_cases_fn() AssertError!void {
+fn test_edge_cases_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_isdigit('/') == 0, "Expected '/' (char before '0') to be non-numeric");
     try assert.expect(c.ft_isdigit(':') == 0, "Expected ':' (char after '9') to be non-numeric");
 }
@@ -71,7 +71,7 @@ var test_comparison_with_standard = TestCase{
     .fn_ptr = &test_comparison_with_standard_fn,
 };
 
-fn test_comparison_with_standard_fn() AssertError!void {
+fn test_comparison_with_standard_fn(_: std.mem.Allocator) AssertError!void {
     for (0..127) |ch| {
         const custom_result = c.ft_isdigit(@intCast(ch)) != 0;
         const standard_result = c.isdigit(@intCast(ch)) != 0;

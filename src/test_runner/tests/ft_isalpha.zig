@@ -20,7 +20,7 @@ var test_alpha_chars = TestCase{
     .fn_ptr = &test_alpha_chars_fn,
 };
 
-fn test_alpha_chars_fn() AssertError!void {
+fn test_alpha_chars_fn(_: std.mem.Allocator) AssertError!void {
     // Test lowercase letters
     try assert.expect(c.ft_isalpha('a') != 0, "Expected 'a' to be alphabetic");
     try assert.expect(c.ft_isalpha('z') != 0, "Expected 'z' to be alphabetic");
@@ -38,7 +38,7 @@ var test_non_alpha_chars = TestCase{
     .fn_ptr = &test_non_alpha_chars_fn,
 };
 
-fn test_non_alpha_chars_fn() AssertError!void {
+fn test_non_alpha_chars_fn(_: std.mem.Allocator) AssertError!void {
     // Test digits
     try assert.expect(c.ft_isalpha('0') == 0, "Expected '0' to be non-alphabetic");
     try assert.expect(c.ft_isalpha('9') == 0, "Expected '9' to be non-alphabetic");
@@ -59,7 +59,7 @@ var test_edge_cases = TestCase{
     .fn_ptr = &test_edge_cases_fn,
 };
 
-fn test_edge_cases_fn() AssertError!void {
+fn test_edge_cases_fn(_: std.mem.Allocator) AssertError!void {
     // Characters just before 'A' (ASCII 65)
     try assert.expect(c.ft_isalpha('@') == 0, "Expected '@' (ASCII 64, before 'A') to be non-alphabetic");
     try assert.expect(c.ft_isalpha('?') == 0, "Expected '?' (ASCII 63, before 'A') to be non-alphabetic");
@@ -83,7 +83,7 @@ var test_extended_range = TestCase{
     .fn_ptr = &test_extended_range_fn,
 };
 
-fn test_extended_range_fn() AssertError!void {
+fn test_extended_range_fn(_: std.mem.Allocator) AssertError!void {
     // Test negative values
     try assert.expect(c.ft_isalpha(-1) == 0, "Expected -1 to be non-alphabetic");
     try assert.expect(c.ft_isalpha(-42) == 0, "Expected -42 to be non-alphabetic");
@@ -99,7 +99,7 @@ var test_ascii_comparison = TestCase{
     .fn_ptr = &test_ascii_comparison_fn,
 };
 
-fn test_ascii_comparison_fn() AssertError!void {
+fn test_ascii_comparison_fn(_: std.mem.Allocator) AssertError!void {
     // Test all ASCII characters (0-127)
     var i: c_int = 0;
     while (i < 128) : (i += 1) {
@@ -124,7 +124,7 @@ var test_boundary_values = TestCase{
     .fn_ptr = &test_boundary_values_fn,
 };
 
-fn test_boundary_values_fn() AssertError!void {
+fn test_boundary_values_fn(_: std.mem.Allocator) AssertError!void {
     // Test zero
     try assert.expect(c.ft_isalpha(0) == 0, "Expected 0 (null character) to be non-alphabetic");
 

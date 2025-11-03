@@ -24,7 +24,7 @@ pub fn make_libft(allocator: std.mem.Allocator) LibftMakerError!void {
     const makefile_file = libft_dir.openFile("Makefile", .{}) catch return LibftMakerError.MakefileNotFound;
     defer makefile_file.close();
 
-    const make_argv = &[_][]const u8{"make"};
+    const make_argv = &[_][]const u8{ "make", "bonus" };
     var make_process = process.Child.init(make_argv, allocator);
     make_process.cwd_dir = libft_dir;
     make_process.stdout_behavior = .Ignore;

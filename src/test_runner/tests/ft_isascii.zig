@@ -20,7 +20,7 @@ var test_ascii_chars = TestCase{
     .fn_ptr = &test_ascii_chars_fn,
 };
 
-fn test_ascii_chars_fn() AssertError!void {
+fn test_ascii_chars_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_isascii(0) != 0, "Expected 0 to be ASCII");
     try assert.expect(c.ft_isascii(65) != 0, "Expected 65 ('A') to be ASCII");
     try assert.expect(c.ft_isascii(127) != 0, "Expected 127 to be ASCII");
@@ -32,7 +32,7 @@ var test_non_ascii_chars = TestCase{
     .fn_ptr = &test_non_ascii_chars_fn,
 };
 
-fn test_non_ascii_chars_fn() AssertError!void {
+fn test_non_ascii_chars_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_isascii(128) == 0, "Expected 128 to be non-ASCII");
     try assert.expect(c.ft_isascii(255) == 0, "Expected 255 to be non-ASCII");
     try assert.expect(c.ft_isascii(-1) == 0, "Expected -1 to be non-ASCII");
@@ -44,7 +44,7 @@ var test_ascii_comparison = TestCase{
     .fn_ptr = &test_ascii_comparison_fn,
 };
 
-fn test_ascii_comparison_fn() AssertError!void {
+fn test_ascii_comparison_fn(_: std.mem.Allocator) AssertError!void {
     for (0..255) |i| {
         const custom_result = c.ft_isascii(@intCast(i));
         const std_result = c.isascii(@intCast(i));

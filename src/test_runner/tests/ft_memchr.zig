@@ -21,7 +21,7 @@ var test_memchr_found = TestCase{
     .fn_ptr = &test_memchr_found_fn,
 };
 
-fn test_memchr_found_fn() AssertError!void {
+fn test_memchr_found_fn(_: std.mem.Allocator) AssertError!void {
     const buffer: [10]u8 = [_]u8{ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j' };
     const target: u8 = 'e';
     const n: usize = buffer.len;
@@ -37,7 +37,7 @@ var test_memchr_not_found = TestCase{
     .fn_ptr = &test_memchr_not_found_fn,
 };
 
-fn test_memchr_not_found_fn() AssertError!void {
+fn test_memchr_not_found_fn(_: std.mem.Allocator) AssertError!void {
     const buffer: [10]u8 = [_]u8{ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j' };
     const target: u8 = 'z';
     const n: usize = buffer.len;
@@ -52,7 +52,7 @@ var test_memchr_n_zero = TestCase{
     .fn_ptr = &test_memchr_n_zero_fn,
 };
 
-fn test_memchr_n_zero_fn() AssertError!void {
+fn test_memchr_n_zero_fn(_: std.mem.Allocator) AssertError!void {
     const buffer: [10]u8 = [_]u8{ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j' };
     const target: u8 = 'a';
     const n: usize = 0;
@@ -66,7 +66,7 @@ var test_memchr_multiple_occurrences = TestCase{
     .fn_ptr = &test_memchr_multiple_occurrences_fn,
 };
 
-fn test_memchr_multiple_occurrences_fn() AssertError!void {
+fn test_memchr_multiple_occurrences_fn(_: std.mem.Allocator) AssertError!void {
     const buffer: [10]u8 = [_]u8{ 'a', 'b', 'c', 'a', 'e', 'f', 'a', 'h', 'i', 'j' };
     const target: u8 = 'a';
     const n: usize = buffer.len;
@@ -82,7 +82,7 @@ var test_memchr_beyond_string = TestCase{
     .fn_ptr = &test_memchr_beyond_string_fn,
 };
 
-fn test_memchr_beyond_string_fn() AssertError!void {
+fn test_memchr_beyond_string_fn(_: std.mem.Allocator) AssertError!void {
     const buffer: [15]u8 = [_]u8{ 'H', 'e', 'l', 'l', 'o', 0, 'W', 'o', 'r', 'l', 'd', '!', 0, 0, 0 };
     const target: u8 = 'W';
     const n: usize = 15;
@@ -98,7 +98,7 @@ var test_memchr_null_character = TestCase{
     .fn_ptr = &test_memchr_null_character_fn,
 };
 
-fn test_memchr_null_character_fn() AssertError!void {
+fn test_memchr_null_character_fn(_: std.mem.Allocator) AssertError!void {
     const buffer: [10]u8 = [_]u8{ 'a', 'b', 'c', 0, 'e', 'f', 'g', 'h', 'i', 'j' };
     const target: u8 = 0;
     const n: usize = buffer.len;
@@ -114,7 +114,7 @@ var test_memchr_empty_buffer = TestCase{
     .fn_ptr = &test_memchr_empty_buffer_fn,
 };
 
-fn test_memchr_empty_buffer_fn() AssertError!void {
+fn test_memchr_empty_buffer_fn(_: std.mem.Allocator) AssertError!void {
     const buffer: [0]u8 = [_]u8{};
     const target: u8 = 'a';
     const n: usize = 0;

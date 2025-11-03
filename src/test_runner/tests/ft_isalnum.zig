@@ -20,7 +20,7 @@ var test_alnum_chars = TestCase{
     .fn_ptr = &test_alnum_chars_fn,
 };
 
-fn test_alnum_chars_fn() AssertError!void {
+fn test_alnum_chars_fn(_: std.mem.Allocator) AssertError!void {
     // Test alphabetic characters
     try assert.expect(c.ft_isalnum('a') != 0, "Expected 'a' to be alphanumeric");
     try assert.expect(c.ft_isalnum('Z') != 0, "Expected 'Z' to be alphanumeric");
@@ -38,7 +38,7 @@ var test_non_alnum_chars = TestCase{
     .fn_ptr = &test_non_alnum_chars_fn,
 };
 
-fn test_non_alnum_chars_fn() AssertError!void {
+fn test_non_alnum_chars_fn(_: std.mem.Allocator) AssertError!void {
     // Test special characters
     try assert.expect(c.ft_isalnum('!') == 0, "Expected '!' to be non-alphanumeric");
     try assert.expect(c.ft_isalnum('@') == 0, "Expected '@' to be non-alphanumeric");
@@ -55,7 +55,7 @@ var test_edge_cases = TestCase{
     .fn_ptr = &test_edge_cases_fn,
 };
 
-fn test_edge_cases_fn() AssertError!void {
+fn test_edge_cases_fn(_: std.mem.Allocator) AssertError!void {
     // Characters just before '0'
     try assert.expect(c.ft_isalnum('/') == 0, "Expected '/' (char before '0') to be non-alphanumeric");
 
@@ -81,7 +81,7 @@ var test_comparison_with_standard = TestCase{
     .fn_ptr = &test_comparison_with_standard_fn,
 };
 
-fn test_comparison_with_standard_fn() AssertError!void {
+fn test_comparison_with_standard_fn(_: std.mem.Allocator) AssertError!void {
     for (0..127) |ch| {
         const custom_result = c.ft_isalnum(@intCast(ch)) != 0;
         const standard_result = c.isalnum(@intCast(ch)) != 0;

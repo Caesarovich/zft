@@ -64,7 +64,7 @@ var test_striteri_uppercase = TestCase{
     .fn_ptr = &test_striteri_uppercase_fn,
 };
 
-fn test_striteri_uppercase_fn() AssertError!void {
+fn test_striteri_uppercase_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'h', 'e', 'l', 'l', 'o', 0 };
 
@@ -87,7 +87,7 @@ var test_striteri_add_index = TestCase{
     .fn_ptr = &test_striteri_add_index_fn,
 };
 
-fn test_striteri_add_index_fn() AssertError!void {
+fn test_striteri_add_index_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'a', 'a', 'a', 'a', 0 };
 
@@ -107,7 +107,7 @@ var test_striteri_replace_all = TestCase{
     .fn_ptr = &test_striteri_replace_all_fn,
 };
 
-fn test_striteri_replace_all_fn() AssertError!void {
+fn test_striteri_replace_all_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'H', 'e', 'l', 'l', 'o', 0 };
 
@@ -123,7 +123,7 @@ var test_striteri_empty_string = TestCase{
     .fn_ptr = &test_striteri_empty_string_fn,
 };
 
-fn test_striteri_empty_string_fn() AssertError!void {
+fn test_striteri_empty_string_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{0};
 
@@ -139,7 +139,7 @@ var test_striteri_single_char = TestCase{
     .fn_ptr = &test_striteri_single_char_fn,
 };
 
-fn test_striteri_single_char_fn() AssertError!void {
+fn test_striteri_single_char_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'a', 0 };
 
@@ -156,7 +156,7 @@ var test_striteri_mixed_case = TestCase{
     .fn_ptr = &test_striteri_mixed_case_fn,
 };
 
-fn test_striteri_mixed_case_fn() AssertError!void {
+fn test_striteri_mixed_case_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'H', 'e', 'L', 'L', 'o', 0 };
 
@@ -172,7 +172,7 @@ var test_striteri_special_chars = TestCase{
     .fn_ptr = &test_striteri_special_chars_fn,
 };
 
-fn test_striteri_special_chars_fn() AssertError!void {
+fn test_striteri_special_chars_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'h', 'e', 'l', 'l', 'o', '1', '2', '3', '!', 0 };
 

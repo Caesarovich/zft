@@ -3,6 +3,8 @@ const assert = @import("assert.zig");
 const AssertFailureInfo = assert.AssertFailureInfo;
 const AssertError = assert.AssertError;
 
+pub const TestCaseError = AssertError || std.mem.Allocator.Error;
+
 const c = @cImport({
     @cInclude("setjmp.h");
     @cInclude("stddef.h");
@@ -31,7 +33,7 @@ pub const TestCase = struct {
     /// Whether this test is expected to segfault (used for testing error conditions)
     expect_segfault: bool = false,
     /// Function pointer to the actual test implementation
-    fn_ptr: *const fn () AssertError!void,
+    fn_ptr: *const fn (std.mem.Allocator) TestCaseError!void,
 
     /// Signal handler for catching segmentation faults during test execution
     /// Performs a longjmp to return control to the test runner
@@ -43,7 +45,7 @@ pub const TestCase = struct {
     /// Executes the test case and returns the result
     /// Handles segfaults by installing a temporary signal handler
     /// Returns TestResult indicating success, failure, or segfault
-    pub fn run(self: *TestCase) TestResult {
+    pub fn run(self: *TestCase, allocator: std.mem.Allocator) TestResult {
         assert.clearFailure();
 
         // Install signal handler for segfaults
@@ -59,7 +61,7 @@ pub const TestCase = struct {
             return self.result;
         }
 
-        self.fn_ptr() catch {
+        self.fn_ptr(allocator) catch {
             self.result = .fail;
             self.fail_info = assert.getLastFailure();
             return self.result;
@@ -89,11 +91,8 @@ pub const TestSuite = struct {
     /// Sets the suite result based on individual test outcomes
     /// Uses an arena allocator for temporary allocations during execution
     pub fn run(self: *TestSuite, allocator: std.mem.Allocator) void {
-        var arena = std.heap.ArenaAllocator.init(allocator);
-        defer arena.deinit();
-
         for (self.cases) |case| {
-            const result = case.run();
+            const result = case.run(allocator);
 
             switch (result) {
                 TestResult.fail, TestResult.segfault => {
@@ -112,7 +111,7 @@ pub const TestCollection = struct {
     /// Array of test suites in the collection
     suites: []const *TestSuite,
     /// Executes all test suites in the collection
-    /// Uses an arena allocator for temporary allocations during execution (Which is divided in sub-arenas by each suite)
+    /// Uses an arena allocator for temporary allocations during execution
     pub fn run(self: *TestCollection, allocator: std.mem.Allocator) void {
         var arena = std.heap.ArenaAllocator.init(allocator);
         defer arena.deinit();

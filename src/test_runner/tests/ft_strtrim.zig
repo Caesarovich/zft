@@ -20,7 +20,7 @@ var test_strtrim_normal = TestCase{
     .fn_ptr = &test_strtrim_normal_fn,
 };
 
-fn test_strtrim_normal_fn() AssertError!void {
+fn test_strtrim_normal_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strtrim("   Hello World   ", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
@@ -35,7 +35,7 @@ var test_strtrim_multiple_chars = TestCase{
     .fn_ptr = &test_strtrim_multiple_chars_fn,
 };
 
-fn test_strtrim_multiple_chars_fn() AssertError!void {
+fn test_strtrim_multiple_chars_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strtrim(".,!Hello World!,.", ".,!");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
@@ -50,7 +50,7 @@ var test_strtrim_nothing = TestCase{
     .fn_ptr = &test_strtrim_nothing_fn,
 };
 
-fn test_strtrim_nothing_fn() AssertError!void {
+fn test_strtrim_nothing_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strtrim("Hello World", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
@@ -65,7 +65,7 @@ var test_strtrim_entire = TestCase{
     .fn_ptr = &test_strtrim_entire_fn,
 };
 
-fn test_strtrim_entire_fn() AssertError!void {
+fn test_strtrim_entire_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strtrim("   ", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
@@ -80,7 +80,7 @@ var test_strtrim_empty_set = TestCase{
     .fn_ptr = &test_strtrim_empty_set_fn,
 };
 
-fn test_strtrim_empty_set_fn() AssertError!void {
+fn test_strtrim_empty_set_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strtrim("  Hello World  ", "");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
@@ -95,7 +95,7 @@ var test_strtrim_empty_string = TestCase{
     .fn_ptr = &test_strtrim_empty_string_fn,
 };
 
-fn test_strtrim_empty_string_fn() AssertError!void {
+fn test_strtrim_empty_string_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strtrim("", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
@@ -110,7 +110,7 @@ var test_strtrim_beginning_only = TestCase{
     .fn_ptr = &test_strtrim_beginning_only_fn,
 };
 
-fn test_strtrim_beginning_only_fn() AssertError!void {
+fn test_strtrim_beginning_only_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strtrim("   Hello World", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
@@ -125,7 +125,7 @@ var test_strtrim_end_only = TestCase{
     .fn_ptr = &test_strtrim_end_only_fn,
 };
 
-fn test_strtrim_end_only_fn() AssertError!void {
+fn test_strtrim_end_only_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strtrim("Hello World   ", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {

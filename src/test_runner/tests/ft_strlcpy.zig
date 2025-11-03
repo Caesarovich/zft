@@ -20,7 +20,7 @@ var test_normal_copy = TestCase{
     .fn_ptr = &test_normal_copy_fn,
 };
 
-fn test_normal_copy_fn() AssertError!void {
+fn test_normal_copy_fn(_: std.mem.Allocator) AssertError!void {
     var dest: [20]u8 = undefined;
     const src = "Hello, World!";
     const result = c.ft_strlcpy(&dest[0], src, dest.len);
@@ -34,7 +34,7 @@ var test_truncated_copy = TestCase{
     .fn_ptr = &test_truncated_copy_fn,
 };
 
-fn test_truncated_copy_fn() AssertError!void {
+fn test_truncated_copy_fn(_: std.mem.Allocator) AssertError!void {
     var dest: [10]u8 = undefined;
     const src = "Hello, World!";
     const result = c.ft_strlcpy(&dest[0], src, dest.len);
@@ -48,7 +48,7 @@ var test_empty_string_copy = TestCase{
     .fn_ptr = &test_empty_string_copy_fn,
 };
 
-fn test_empty_string_copy_fn() AssertError!void {
+fn test_empty_string_copy_fn(_: std.mem.Allocator) AssertError!void {
     var dest: [10]u8 = undefined;
     const src = "";
     const result = c.ft_strlcpy(&dest[0], src, dest.len);

@@ -7,6 +7,8 @@ const TestSuite = tests.tests.TestSuite;
 const assert = tests.assert;
 const AssertError = assert.AssertError;
 
+const TestCaseError = tests.tests.TestCaseError;
+
 const function_list = @import("function_list");
 
 const c = @cImport({
@@ -22,7 +24,7 @@ var test_bzero_basic = TestCase{
     .fn_ptr = &test_bzero_basic_fn,
 };
 
-fn test_bzero_basic_fn() AssertError!void {
+fn test_bzero_basic_fn(_: std.mem.Allocator) AssertError!void {
     var buffer: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     const n: usize = buffer.len;
 
@@ -39,7 +41,7 @@ var test_bzero_zero = TestCase{
     .fn_ptr = &test_bzero_zero_fn,
 };
 
-fn test_bzero_zero_fn() AssertError!void {
+fn test_bzero_zero_fn(_: std.mem.Allocator) AssertError!void {
     var buffer: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     const original_buffer = buffer;
     const n: usize = 0;
@@ -57,16 +59,16 @@ var test_bzero_large = TestCase{
     .fn_ptr = &test_bzero_large_fn,
 };
 
-fn test_bzero_large_fn() AssertError!void {
+fn test_bzero_large_fn(allocator: std.mem.Allocator) TestCaseError!void {
     const size: usize = 1024 * 1024; // 1 MB
-    var buffer: [size]u8 = undefined;
+    const buffer = try allocator.alloc(u8, size);
 
     // Initialize buffer with non-zero values
-    for (&buffer) |*byte| {
+    for (buffer) |*byte| {
         byte.* = 0xFF;
     }
 
-    c.ft_bzero(&buffer, size);
+    c.ft_bzero(buffer.ptr, size);
 
     for (buffer) |byte| {
         try assert.expect(byte == 0, "Each byte in large buffer should be zeroed out");
@@ -79,7 +81,7 @@ var test_bzero_already_zeroed = TestCase{
     .fn_ptr = &test_bzero_already_zeroed_fn,
 };
 
-fn test_bzero_already_zeroed_fn() AssertError!void {
+fn test_bzero_already_zeroed_fn(_: std.mem.Allocator) AssertError!void {
     var buffer: [10]u8 = [_]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     const n: usize = buffer.len;
 
@@ -96,7 +98,7 @@ var test_bzero_partial = TestCase{
     .fn_ptr = &test_bzero_partial_fn,
 };
 
-fn test_bzero_partial_fn() AssertError!void {
+fn test_bzero_partial_fn(_: std.mem.Allocator) AssertError!void {
     var buffer: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     const original_buffer = buffer;
     const n: usize = 5;

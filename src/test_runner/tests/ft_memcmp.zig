@@ -22,7 +22,7 @@ var test_memcmp_equal = TestCase{
     .fn_ptr = &test_memcmp_equal_fn,
 };
 
-fn test_memcmp_equal_fn() AssertError!void {
+fn test_memcmp_equal_fn(_: std.mem.Allocator) AssertError!void {
     const buffer1: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     const buffer2: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     const n: usize = buffer1.len;
@@ -37,7 +37,7 @@ var test_memcmp_different = TestCase{
     .fn_ptr = &test_memcmp_different_fn,
 };
 
-fn test_memcmp_different_fn() AssertError!void {
+fn test_memcmp_different_fn(_: std.mem.Allocator) AssertError!void {
     const buffer1: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     const buffer2: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 0, 7, 8, 9, 10 };
     const n: usize = buffer1.len;
@@ -52,7 +52,7 @@ var test_memcmp_first_less = TestCase{
     .fn_ptr = &test_memcmp_first_less_fn,
 };
 
-fn test_memcmp_first_less_fn() AssertError!void {
+fn test_memcmp_first_less_fn(_: std.mem.Allocator) AssertError!void {
     const buffer1: [5]u8 = [_]u8{ 1, 2, 3, 4, 5 };
     const buffer2: [5]u8 = [_]u8{ 1, 2, 3, 4, 6 };
     const n: usize = buffer1.len;
@@ -67,7 +67,7 @@ var test_memcmp_first_greater = TestCase{
     .fn_ptr = &test_memcmp_first_greater_fn,
 };
 
-fn test_memcmp_first_greater_fn() AssertError!void {
+fn test_memcmp_first_greater_fn(_: std.mem.Allocator) AssertError!void {
     const buffer1: [5]u8 = [_]u8{ 1, 2, 3, 4, 7 };
     const buffer2: [5]u8 = [_]u8{ 1, 2, 3, 4, 6 };
     const n: usize = buffer1.len;
@@ -82,7 +82,7 @@ var test_memcmp_n_zero = TestCase{
     .fn_ptr = &test_memcmp_n_zero_fn,
 };
 
-fn test_memcmp_n_zero_fn() AssertError!void {
+fn test_memcmp_n_zero_fn(_: std.mem.Allocator) AssertError!void {
     const buffer1: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     const buffer2: [10]u8 = [_]u8{ 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
     const n: usize = 0;
@@ -97,7 +97,7 @@ var test_memcmp_partial = TestCase{
     .fn_ptr = &test_memcmp_partial_fn,
 };
 
-fn test_memcmp_partial_fn() AssertError!void {
+fn test_memcmp_partial_fn(_: std.mem.Allocator) AssertError!void {
     const buffer1: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     const buffer2: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 0, 7, 8, 9, 10 };
     const n: usize = 5;

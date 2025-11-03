@@ -22,7 +22,7 @@ var test_append_to_empty_dest = TestCase{
     .fn_ptr = &test_append_to_empty_dest_fn,
 };
 
-fn test_append_to_empty_dest_fn() AssertError!void {
+fn test_append_to_empty_dest_fn(_: std.mem.Allocator) AssertError!void {
     var dest: [20]u8 = undefined;
     dest[0] = 0; // Null-terminate the empty string
     const src = "Hello";
@@ -37,7 +37,7 @@ var test_append_with_small_buffer = TestCase{
     .fn_ptr = &test_append_with_small_buffer_fn,
 };
 
-fn test_append_with_small_buffer_fn() AssertError!void {
+fn test_append_with_small_buffer_fn(_: std.mem.Allocator) AssertError!void {
     var dest: [10]u8 = undefined;
     @memcpy(dest[0..7], "Hello, ");
     dest[7] = 0; // Null-terminate
@@ -53,7 +53,7 @@ var test_append_empty_source = TestCase{
     .fn_ptr = &test_append_empty_source_fn,
 };
 
-fn test_append_empty_source_fn() AssertError!void {
+fn test_append_empty_source_fn(_: std.mem.Allocator) AssertError!void {
     var dest: [20]u8 = undefined;
     @memcpy(dest[0..5], "Hello");
     dest[5] = 0; // Null-terminate
@@ -69,7 +69,7 @@ var test_append_no_space = TestCase{
     .fn_ptr = &test_append_no_space_fn,
 };
 
-fn test_append_no_space_fn() AssertError!void {
+fn test_append_no_space_fn(_: std.mem.Allocator) AssertError!void {
     var dest: [6]u8 = undefined;
     @memcpy(dest[0..5], "Hello");
     dest[5] = 0; // Null-terminate
@@ -85,7 +85,7 @@ var test_append_exact_fit = TestCase{
     .fn_ptr = &test_append_exact_fit_fn,
 };
 
-fn test_append_exact_fit_fn() AssertError!void {
+fn test_append_exact_fit_fn(_: std.mem.Allocator) AssertError!void {
     var dest: [13]u8 = undefined;
     @memcpy(dest[0..7], "Hello, ");
     dest[7] = 0; // Null-terminate
@@ -101,7 +101,7 @@ var test_append_with_garbage = TestCase{
     .fn_ptr = &test_append_with_garbage_fn,
 };
 
-fn test_append_with_garbage_fn() AssertError!void {
+fn test_append_with_garbage_fn(_: std.mem.Allocator) AssertError!void {
     var dest: [20]u8 = undefined;
     // Fill destination with garbage values
     for (&dest) |*byte| {

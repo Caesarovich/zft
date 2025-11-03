@@ -71,7 +71,7 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: tests.tests.TestSuite
 }
 
 pub fn main() !void {
-    const allocator = std.heap.page_allocator;
+    const allocator = std.heap.c_allocator;
 
     const write_buffer = allocator.alloc(u8, 1024) catch unreachable;
     defer allocator.free(write_buffer);

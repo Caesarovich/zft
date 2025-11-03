@@ -22,7 +22,7 @@ var test_substring_found = TestCase{
     .fn_ptr = &test_substring_found_fn,
 };
 
-fn test_substring_found_fn() AssertError!void {
+fn test_substring_found_fn(_: std.mem.Allocator) AssertError!void {
     const haystack = "Hello, world!";
     const needle = "world";
     const n: usize = 13;
@@ -38,7 +38,7 @@ var test_substring_not_found = TestCase{
     .fn_ptr = &test_substring_not_found_fn,
 };
 
-fn test_substring_not_found_fn() AssertError!void {
+fn test_substring_not_found_fn(_: std.mem.Allocator) AssertError!void {
     const haystack = "Hello, world!";
     const needle = "world";
     const n: usize = 5;
@@ -53,7 +53,7 @@ var test_empty_needle = TestCase{
     .fn_ptr = &test_empty_needle_fn,
 };
 
-fn test_empty_needle_fn() AssertError!void {
+fn test_empty_needle_fn(_: std.mem.Allocator) AssertError!void {
     const haystack: [*c]const u8 = "Hello, world!";
     const needle = "";
     const n: usize = 13;
@@ -68,7 +68,7 @@ var test_n_zero = TestCase{
     .fn_ptr = &test_n_zero_fn,
 };
 
-fn test_n_zero_fn() AssertError!void {
+fn test_n_zero_fn(_: std.mem.Allocator) AssertError!void {
     const haystack = "Hello, world!";
     const needle = "Hello";
     const n: usize = 0;

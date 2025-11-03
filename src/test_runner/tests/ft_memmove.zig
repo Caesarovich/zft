@@ -7,6 +7,8 @@ const TestSuite = tests.tests.TestSuite;
 const assert = tests.assert;
 const AssertError = assert.AssertError;
 
+const TestCaseError = tests.tests.TestCaseError;
+
 const function_list = @import("function_list");
 
 const c = @cImport({
@@ -22,7 +24,7 @@ var test_memmove_basic = TestCase{
     .fn_ptr = &test_memmove_basic_fn,
 };
 
-fn test_memmove_basic_fn() AssertError!void {
+fn test_memmove_basic_fn(_: std.mem.Allocator) AssertError!void {
     var buffer: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     var dest: [10]u8 = undefined;
     const n: usize = 10;
@@ -38,7 +40,7 @@ var test_memmove_overlap_src_before_dest = TestCase{
     .fn_ptr = &test_memmove_overlap_src_before_dest_fn,
 };
 
-fn test_memmove_overlap_src_before_dest_fn() AssertError!void {
+fn test_memmove_overlap_src_before_dest_fn(_: std.mem.Allocator) AssertError!void {
     var buffer: [15]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
     const n: usize = 10;
 
@@ -54,7 +56,7 @@ var test_memmove_overlap_dest_before_src = TestCase{
     .fn_ptr = &test_memmove_overlap_dest_before_src_fn,
 };
 
-fn test_memmove_overlap_dest_before_src_fn() AssertError!void {
+fn test_memmove_overlap_dest_before_src_fn(_: std.mem.Allocator) AssertError!void {
     var buffer: [15]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
     const n: usize = 10;
 
@@ -69,7 +71,7 @@ var test_memmove_zero = TestCase{
     .fn_ptr = &test_memmove_zero_fn,
 };
 
-fn test_memmove_zero_fn() AssertError!void {
+fn test_memmove_zero_fn(_: std.mem.Allocator) AssertError!void {
     var buffer: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     var dest: [10]u8 = [_]u8{ 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
     const original_dest = dest;
@@ -86,18 +88,18 @@ var test_memmove_large = TestCase{
     .fn_ptr = &test_memmove_large_fn,
 };
 
-fn test_memmove_large_fn() AssertError!void {
+fn test_memmove_large_fn(allocator: std.mem.Allocator) TestCaseError!void {
     const size: usize = 1024 * 1024; // 1 MB
-    var buffer: [size]u8 = undefined;
-    var dest: [size]u8 = undefined;
+    var buffer = try allocator.alloc(u8, size);
+    var dest = try allocator.alloc(u8, size);
 
     // Initialize source with some data
     for (0..size) |i| {
         buffer[i] = @truncate(i);
     }
 
-    const result: *u8 = @ptrCast(c.ft_memmove(&dest, &buffer, size));
-    try assert.expect(std.mem.eql(u8, dest[0..size], buffer[0..size]), "Destination should match source after large memmove");
+    const result: *u8 = @ptrCast(c.ft_memmove(dest.ptr, buffer.ptr, size));
+    try assert.expect(std.mem.eql(u8, dest, buffer), "Destination should match source after large memmove");
     try assert.expect(result == &dest[0], "ft_memmove should return the original destination pointer");
 }
 

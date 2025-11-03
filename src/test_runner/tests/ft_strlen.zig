@@ -29,15 +29,15 @@ var test_long_string = TestCase{
     .fn_ptr = &test_long_string_fn,
 };
 
-fn test_empty_string_fn() AssertError!void {
+fn test_empty_string_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strlen("") == 0, "Expected empty string to have length 0");
 }
 
-fn test_normal_string_fn() AssertError!void {
+fn test_normal_string_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strlen("Hello") == 5, "Expected \"Hello\" to have length 5");
 }
 
-fn test_long_string_fn() AssertError!void {
+fn test_long_string_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strlen("abcdefghijklmnopqrstuvwxyz") == 26, "Expected alphabet string to have length 26");
 }
 

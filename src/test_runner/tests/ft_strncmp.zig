@@ -20,7 +20,7 @@ var test_equal_strings = TestCase{
     .fn_ptr = &test_equal_strings_fn,
 };
 
-fn test_equal_strings_fn() AssertError!void {
+fn test_equal_strings_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strncmp("Hello", "Hello", 5) == 0, "Expected equal strings to return 0");
 }
 
@@ -30,7 +30,7 @@ var test_first_less = TestCase{
     .fn_ptr = &test_first_less_fn,
 };
 
-fn test_first_less_fn() AssertError!void {
+fn test_first_less_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strncmp("Apple", "Banana", 5) < 0, "Expected 'Apple' to be less than 'Banana'");
 }
 
@@ -40,7 +40,7 @@ var test_first_greater = TestCase{
     .fn_ptr = &test_first_greater_fn,
 };
 
-fn test_first_greater_fn() AssertError!void {
+fn test_first_greater_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strncmp("Orange", "Grape", 5) > 0, "Expected 'Orange' to be greater than 'Grape'");
 }
 
@@ -50,7 +50,7 @@ var test_n_less_than_length = TestCase{
     .fn_ptr = &test_n_less_than_length_fn,
 };
 
-fn test_n_less_than_length_fn() AssertError!void {
+fn test_n_less_than_length_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strncmp("HelloWorld", "HelloZebra", 5) == 0, "Expected first 5 characters to be equal");
     try assert.expect(c.ft_strncmp("HelloWorld", "HelloZebra", 7) < 0, "Expected 'HelloWo' to be less than 'HelloZe'");
 }
@@ -61,7 +61,7 @@ var test_n_greater_than_length = TestCase{
     .fn_ptr = &test_n_greater_than_length_fn,
 };
 
-fn test_n_greater_than_length_fn() AssertError!void {
+fn test_n_greater_than_length_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strncmp("Short", "Shorter", 10) < 0, "Expected 'Short' to be less than 'Shorter'");
     try assert.expect(c.ft_strncmp("Longer", "Long", 10) > 0, "Expected 'Longer' to be greater than 'Long'");
 }
@@ -72,7 +72,7 @@ var test_empty_strings = TestCase{
     .fn_ptr = &test_empty_strings_fn,
 };
 
-fn test_empty_strings_fn() AssertError!void {
+fn test_empty_strings_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strncmp("", "", 5) == 0, "Expected two empty strings to be equal");
     try assert.expect(c.ft_strncmp("", "NonEmpty", 5) < 0, "Expected empty string to be less than non-empty string");
     try assert.expect(c.ft_strncmp("NonEmpty", "", 5) > 0, "Expected non-empty string to be greater than empty string");
@@ -84,7 +84,7 @@ var test_zero_n = TestCase{
     .fn_ptr = &test_zero_n_fn,
 };
 
-fn test_zero_n_fn() AssertError!void {
+fn test_zero_n_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strncmp("Anything", "Different", 0) == 0, "Expected comparison with n=0 to return 0");
 }
 

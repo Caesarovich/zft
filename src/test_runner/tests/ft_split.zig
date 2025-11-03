@@ -39,7 +39,7 @@ var test_split_normal = TestCase{
     .fn_ptr = &test_split_normal_fn,
 };
 
-fn test_split_normal_fn() AssertError!void {
+fn test_split_normal_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_split("Hello,World,Test", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
@@ -58,7 +58,7 @@ var test_split_consecutive_delims = TestCase{
     .fn_ptr = &test_split_consecutive_delims_fn,
 };
 
-fn test_split_consecutive_delims_fn() AssertError!void {
+fn test_split_consecutive_delims_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_split("Hello,,World", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
@@ -76,7 +76,7 @@ var test_split_leading_trailing = TestCase{
     .fn_ptr = &test_split_leading_trailing_fn,
 };
 
-fn test_split_leading_trailing_fn() AssertError!void {
+fn test_split_leading_trailing_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_split(",Hello,World,", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
@@ -94,7 +94,7 @@ var test_split_no_delims = TestCase{
     .fn_ptr = &test_split_no_delims_fn,
 };
 
-fn test_split_no_delims_fn() AssertError!void {
+fn test_split_no_delims_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_split("HelloWorld", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
@@ -111,7 +111,7 @@ var test_split_empty_string = TestCase{
     .fn_ptr = &test_split_empty_string_fn,
 };
 
-fn test_split_empty_string_fn() AssertError!void {
+fn test_split_empty_string_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_split("", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
@@ -127,7 +127,7 @@ var test_split_only_delims = TestCase{
     .fn_ptr = &test_split_only_delims_fn,
 };
 
-fn test_split_only_delims_fn() AssertError!void {
+fn test_split_only_delims_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_split(",,,", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
@@ -142,7 +142,7 @@ var test_split_space = TestCase{
     .fn_ptr = &test_split_space_fn,
 };
 
-fn test_split_space_fn() AssertError!void {
+fn test_split_space_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_split("The quick brown fox", ' ');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
@@ -162,7 +162,7 @@ var test_split_single_char = TestCase{
     .fn_ptr = &test_split_single_char_fn,
 };
 
-fn test_split_single_char_fn() AssertError!void {
+fn test_split_single_char_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_split("a", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {

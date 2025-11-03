@@ -20,7 +20,7 @@ var test_substr_normal = TestCase{
     .fn_ptr = &test_substr_normal_fn,
 };
 
-fn test_substr_normal_fn() AssertError!void {
+fn test_substr_normal_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_substr("Hello World", 6, 5);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
@@ -35,7 +35,7 @@ var test_substr_from_start = TestCase{
     .fn_ptr = &test_substr_from_start_fn,
 };
 
-fn test_substr_from_start_fn() AssertError!void {
+fn test_substr_from_start_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_substr("Hello", 0, 3);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
@@ -50,7 +50,7 @@ var test_substr_start_beyond = TestCase{
     .fn_ptr = &test_substr_start_beyond_fn,
 };
 
-fn test_substr_start_beyond_fn() AssertError!void {
+fn test_substr_start_beyond_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_substr("Hello", 10, 5);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
@@ -65,7 +65,7 @@ var test_substr_len_beyond = TestCase{
     .fn_ptr = &test_substr_len_beyond_fn,
 };
 
-fn test_substr_len_beyond_fn() AssertError!void {
+fn test_substr_len_beyond_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_substr("Hello", 2, 10);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
@@ -80,7 +80,7 @@ var test_substr_zero_len = TestCase{
     .fn_ptr = &test_substr_zero_len_fn,
 };
 
-fn test_substr_zero_len_fn() AssertError!void {
+fn test_substr_zero_len_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_substr("Hello", 2, 0);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
@@ -95,7 +95,7 @@ var test_substr_empty_src = TestCase{
     .fn_ptr = &test_substr_empty_src_fn,
 };
 
-fn test_substr_empty_src_fn() AssertError!void {
+fn test_substr_empty_src_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_substr("", 0, 5);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
@@ -110,7 +110,7 @@ var test_substr_null_src = TestCase{
     .fn_ptr = &test_substr_null_src_fn,
 };
 
-fn test_substr_null_src_fn() AssertError!void {
+fn test_substr_null_src_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_substr(null, 0, 5);
     try assert.expect(result == null, "ft_substr should return null for null source");
 }

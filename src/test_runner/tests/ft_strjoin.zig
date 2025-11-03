@@ -20,7 +20,7 @@ var test_strjoin_normal = TestCase{
     .fn_ptr = &test_strjoin_normal_fn,
 };
 
-fn test_strjoin_normal_fn() AssertError!void {
+fn test_strjoin_normal_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strjoin("Hello", " World");
     try assert.expect(result != null, "ft_strjoin should return a valid pointer");
     if (result) |str| {
@@ -35,7 +35,7 @@ var test_strjoin_empty_first = TestCase{
     .fn_ptr = &test_strjoin_empty_first_fn,
 };
 
-fn test_strjoin_empty_first_fn() AssertError!void {
+fn test_strjoin_empty_first_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strjoin("", "World");
     try assert.expect(result != null, "ft_strjoin should return a valid pointer");
     if (result) |str| {
@@ -50,7 +50,7 @@ var test_strjoin_empty_second = TestCase{
     .fn_ptr = &test_strjoin_empty_second_fn,
 };
 
-fn test_strjoin_empty_second_fn() AssertError!void {
+fn test_strjoin_empty_second_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strjoin("Hello", "");
     try assert.expect(result != null, "ft_strjoin should return a valid pointer");
     if (result) |str| {
@@ -65,7 +65,7 @@ var test_strjoin_both_empty = TestCase{
     .fn_ptr = &test_strjoin_both_empty_fn,
 };
 
-fn test_strjoin_both_empty_fn() AssertError!void {
+fn test_strjoin_both_empty_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strjoin("", "");
     try assert.expect(result != null, "ft_strjoin should return a valid pointer");
     if (result) |str| {
@@ -80,7 +80,7 @@ var test_strjoin_null_first = TestCase{
     .fn_ptr = &test_strjoin_null_first_fn,
 };
 
-fn test_strjoin_null_first_fn() AssertError!void {
+fn test_strjoin_null_first_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strjoin(null, "World");
     try assert.expect(result == null, "ft_strjoin should return null for null first string");
 }
@@ -91,7 +91,7 @@ var test_strjoin_null_second = TestCase{
     .fn_ptr = &test_strjoin_null_second_fn,
 };
 
-fn test_strjoin_null_second_fn() AssertError!void {
+fn test_strjoin_null_second_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strjoin("Hello", null);
     try assert.expect(result == null, "ft_strjoin should return null for null second string");
 }
@@ -102,7 +102,7 @@ var test_strjoin_long_strings = TestCase{
     .fn_ptr = &test_strjoin_long_strings_fn,
 };
 
-fn test_strjoin_long_strings_fn() AssertError!void {
+fn test_strjoin_long_strings_fn(_: std.mem.Allocator) AssertError!void {
     const s1 = "The quick brown fox jumps over";
     const s2 = " the lazy dog";
     const expected = "The quick brown fox jumps over the lazy dog";

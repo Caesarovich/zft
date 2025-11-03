@@ -22,7 +22,7 @@ var test_strdup_basic = TestCase{
     .fn_ptr = &test_strdup_basic_fn,
 };
 
-fn test_strdup_basic_fn() AssertError!void {
+fn test_strdup_basic_fn(_: std.mem.Allocator) AssertError!void {
     var original: [*c]const u8 = "Hello, World!";
     var duplicated: ?[*c]const u8 = c.ft_strdup(original);
 
@@ -50,7 +50,7 @@ var test_strdup_empty = TestCase{
     .fn_ptr = &test_strdup_empty_fn,
 };
 
-fn test_strdup_empty_fn() AssertError!void {
+fn test_strdup_empty_fn(_: std.mem.Allocator) AssertError!void {
     const original: [*c]const u8 = "";
     const duplicated: ?[*c]const u8 = c.ft_strdup(original);
 

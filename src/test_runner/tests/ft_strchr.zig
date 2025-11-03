@@ -20,7 +20,7 @@ var test_char_present = TestCase{
     .fn_ptr = &test_char_present_fn,
 };
 
-fn test_char_present_fn() AssertError!void {
+fn test_char_present_fn(_: std.mem.Allocator) AssertError!void {
     const str = "Hello, World!";
     const ch: u8 = 'W';
     const result = c.ft_strchr(str, ch);
@@ -34,7 +34,7 @@ var test_char_not_present = TestCase{
     .fn_ptr = &test_char_not_present_fn,
 };
 
-fn test_char_not_present_fn() AssertError!void {
+fn test_char_not_present_fn(_: std.mem.Allocator) AssertError!void {
     const str = "Hello, World!";
     const ch: u8 = 'x';
     const result = c.ft_strchr(str, ch);
@@ -47,7 +47,7 @@ var test_null_terminator = TestCase{
     .fn_ptr = &test_null_terminator_fn,
 };
 
-fn test_null_terminator_fn() AssertError!void {
+fn test_null_terminator_fn(_: std.mem.Allocator) AssertError!void {
     const str = "Hello, World!";
     const ch: u8 = 0; // Null terminator
     const result = c.ft_strchr(str, ch);
@@ -61,7 +61,7 @@ var test_empty_string = TestCase{
     .fn_ptr = &test_empty_string_fn,
 };
 
-fn test_empty_string_fn() AssertError!void {
+fn test_empty_string_fn(_: std.mem.Allocator) AssertError!void {
     const str = "";
     const ch: u8 = 'a';
     const result = c.ft_strchr(str, ch);
@@ -74,7 +74,7 @@ var test_char_at_beginning = TestCase{
     .fn_ptr = &test_char_at_beginning_fn,
 };
 
-fn test_char_at_beginning_fn() AssertError!void {
+fn test_char_at_beginning_fn(_: std.mem.Allocator) AssertError!void {
     const str = "Hello, World!";
     const ch: u8 = 'H';
     const result = c.ft_strchr(str, ch);
@@ -88,7 +88,7 @@ var test_char_at_end = TestCase{
     .fn_ptr = &test_char_at_end_fn,
 };
 
-fn test_char_at_end_fn() AssertError!void {
+fn test_char_at_end_fn(_: std.mem.Allocator) AssertError!void {
     const str = "Hello, World!";
     const ch: u8 = '!';
     const result = c.ft_strchr(str, ch);
@@ -102,7 +102,7 @@ var test_multiple_occurrences = TestCase{
     .fn_ptr = &test_multiple_occurrences_fn,
 };
 
-fn test_multiple_occurrences_fn() AssertError!void {
+fn test_multiple_occurrences_fn(_: std.mem.Allocator) AssertError!void {
     const str = "banana";
     const ch: u8 = 'a';
     const result = c.ft_strchr(str, ch);

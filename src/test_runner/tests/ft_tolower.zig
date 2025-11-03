@@ -20,7 +20,7 @@ var test_uppercase_chars = TestCase{
     .fn_ptr = &test_uppercase_chars_fn,
 };
 
-fn test_uppercase_chars_fn() AssertError!void {
+fn test_uppercase_chars_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_tolower('A') == 'a', "Expected 'A' to convert to 'a'");
     try assert.expect(c.ft_tolower('M') == 'm', "Expected 'M' to convert to 'm'");
     try assert.expect(c.ft_tolower('Z') == 'z', "Expected 'Z' to convert to 'z'");
@@ -32,7 +32,7 @@ var test_lowercase_chars = TestCase{
     .fn_ptr = &test_lowercase_chars_fn,
 };
 
-fn test_lowercase_chars_fn() AssertError!void {
+fn test_lowercase_chars_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_tolower('a') == 'a', "Expected 'a' to remain 'a'");
     try assert.expect(c.ft_tolower('m') == 'm', "Expected 'm' to remain 'm'");
     try assert.expect(c.ft_tolower('z') == 'z', "Expected 'z' to remain 'z'");
@@ -44,7 +44,7 @@ var test_non_alpha_chars = TestCase{
     .fn_ptr = &test_non_alpha_chars_fn,
 };
 
-fn test_non_alpha_chars_fn() AssertError!void {
+fn test_non_alpha_chars_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_tolower('0') == '0', "Expected '0' to remain '0'");
     try assert.expect(c.ft_tolower('9') == '9', "Expected '9' to remain '9'");
     try assert.expect(c.ft_tolower('!') == '!', "Expected '!' to remain '!'");
@@ -58,7 +58,7 @@ var test_edge_cases = TestCase{
     .fn_ptr = &test_edge_cases_fn,
 };
 
-fn test_edge_cases_fn() AssertError!void {
+fn test_edge_cases_fn(_: std.mem.Allocator) AssertError!void {
     // Characters just before 'A'
     try assert.expect(c.ft_tolower('@') == '@', "Expected '@' (char before 'A') to remain unchanged");
     try assert.expect(c.ft_tolower('`') == '`', "Expected '`' (char before 'a') to remain unchanged");
@@ -74,7 +74,7 @@ var test_standard_comparison = TestCase{
     .fn_ptr = &test_standard_comparison_fn,
 };
 
-fn test_standard_comparison_fn() AssertError!void {
+fn test_standard_comparison_fn(_: std.mem.Allocator) AssertError!void {
     for (0..255) |i| {
         const custom_result = c.ft_tolower(@intCast(i));
         const std_result = c.tolower(@intCast(i));

@@ -38,7 +38,7 @@ var test_strmapi_uppercase = TestCase{
     .fn_ptr = &test_strmapi_uppercase_fn,
 };
 
-fn test_strmapi_uppercase_fn() AssertError!void {
+fn test_strmapi_uppercase_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strmapi("hello", to_upper);
     try assert.expect(result != null, "ft_strmapi should return a valid pointer");
     if (result) |str| {
@@ -53,7 +53,7 @@ var test_strmapi_add_index = TestCase{
     .fn_ptr = &test_strmapi_add_index_fn,
 };
 
-fn test_strmapi_add_index_fn() AssertError!void {
+fn test_strmapi_add_index_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strmapi("aaaa", add_index);
     try assert.expect(result != null, "ft_strmapi should return a valid pointer");
     if (result) |str| {
@@ -72,7 +72,7 @@ var test_strmapi_replace_all = TestCase{
     .fn_ptr = &test_strmapi_replace_all_fn,
 };
 
-fn test_strmapi_replace_all_fn() AssertError!void {
+fn test_strmapi_replace_all_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strmapi("Hello", replace_with_x);
     try assert.expect(result != null, "ft_strmapi should return a valid pointer");
     if (result) |str| {
@@ -87,7 +87,7 @@ var test_strmapi_empty_string = TestCase{
     .fn_ptr = &test_strmapi_empty_string_fn,
 };
 
-fn test_strmapi_empty_string_fn() AssertError!void {
+fn test_strmapi_empty_string_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strmapi("", to_upper);
     try assert.expect(result != null, "ft_strmapi should return a valid pointer");
     if (result) |str| {
@@ -102,7 +102,7 @@ var test_strmapi_single_char = TestCase{
     .fn_ptr = &test_strmapi_single_char_fn,
 };
 
-fn test_strmapi_single_char_fn() AssertError!void {
+fn test_strmapi_single_char_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strmapi("a", to_upper);
     try assert.expect(result != null, "ft_strmapi should return a valid pointer");
     if (result) |str| {
@@ -117,7 +117,7 @@ var test_strmapi_mixed_case = TestCase{
     .fn_ptr = &test_strmapi_mixed_case_fn,
 };
 
-fn test_strmapi_mixed_case_fn() AssertError!void {
+fn test_strmapi_mixed_case_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strmapi("HeLLo", to_upper);
     try assert.expect(result != null, "ft_strmapi should return a valid pointer");
     if (result) |str| {
@@ -132,7 +132,7 @@ var test_strmapi_special_chars = TestCase{
     .fn_ptr = &test_strmapi_special_chars_fn,
 };
 
-fn test_strmapi_special_chars_fn() AssertError!void {
+fn test_strmapi_special_chars_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_strmapi("hello123!", to_upper);
     try assert.expect(result != null, "ft_strmapi should return a valid pointer");
     if (result) |str| {

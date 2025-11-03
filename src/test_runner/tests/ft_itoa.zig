@@ -21,7 +21,7 @@ var test_itoa_zero = TestCase{
     .fn_ptr = &test_itoa_zero_fn,
 };
 
-fn test_itoa_zero_fn() AssertError!void {
+fn test_itoa_zero_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_itoa(0);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
@@ -36,7 +36,7 @@ var test_itoa_positive = TestCase{
     .fn_ptr = &test_itoa_positive_fn,
 };
 
-fn test_itoa_positive_fn() AssertError!void {
+fn test_itoa_positive_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_itoa(42);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
@@ -51,7 +51,7 @@ var test_itoa_negative = TestCase{
     .fn_ptr = &test_itoa_negative_fn,
 };
 
-fn test_itoa_negative_fn() AssertError!void {
+fn test_itoa_negative_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_itoa(-42);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
@@ -66,7 +66,7 @@ var test_itoa_int_max = TestCase{
     .fn_ptr = &test_itoa_int_max_fn,
 };
 
-fn test_itoa_int_max_fn() AssertError!void {
+fn test_itoa_int_max_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_itoa(c.INT_MAX);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
@@ -81,7 +81,7 @@ var test_itoa_int_min = TestCase{
     .fn_ptr = &test_itoa_int_min_fn,
 };
 
-fn test_itoa_int_min_fn() AssertError!void {
+fn test_itoa_int_min_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_itoa(c.INT_MIN);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
@@ -96,7 +96,7 @@ var test_itoa_single_digit_pos = TestCase{
     .fn_ptr = &test_itoa_single_digit_pos_fn,
 };
 
-fn test_itoa_single_digit_pos_fn() AssertError!void {
+fn test_itoa_single_digit_pos_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_itoa(7);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
@@ -111,7 +111,7 @@ var test_itoa_single_digit_neg = TestCase{
     .fn_ptr = &test_itoa_single_digit_neg_fn,
 };
 
-fn test_itoa_single_digit_neg_fn() AssertError!void {
+fn test_itoa_single_digit_neg_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_itoa(-3);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
@@ -126,7 +126,7 @@ var test_itoa_large_positive = TestCase{
     .fn_ptr = &test_itoa_large_positive_fn,
 };
 
-fn test_itoa_large_positive_fn() AssertError!void {
+fn test_itoa_large_positive_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_itoa(123456789);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
@@ -141,7 +141,7 @@ var test_itoa_large_negative = TestCase{
     .fn_ptr = &test_itoa_large_negative_fn,
 };
 
-fn test_itoa_large_negative_fn() AssertError!void {
+fn test_itoa_large_negative_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_itoa(-987654321);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
@@ -156,7 +156,7 @@ var test_itoa_multiples_of_ten = TestCase{
     .fn_ptr = &test_itoa_multiples_of_ten_fn,
 };
 
-fn test_itoa_multiples_of_ten_fn() AssertError!void {
+fn test_itoa_multiples_of_ten_fn(_: std.mem.Allocator) AssertError!void {
     const result = c.ft_itoa(1000);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {

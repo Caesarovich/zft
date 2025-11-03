@@ -7,6 +7,8 @@ const TestSuite = tests.tests.TestSuite;
 const assert = tests.assert;
 const AssertError = assert.AssertError;
 
+const TestCaseError = tests.tests.TestCaseError;
+
 const function_list = @import("function_list");
 
 const c = @cImport({
@@ -22,7 +24,7 @@ var test_memcpy_basic = TestCase{
     .fn_ptr = &test_memcpy_basic_fn,
 };
 
-fn test_memcpy_basic_fn() AssertError!void {
+fn test_memcpy_basic_fn(_: std.mem.Allocator) AssertError!void {
     var src: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     var dest: [10]u8 = undefined;
     const n: usize = src.len;
@@ -40,7 +42,7 @@ var test_memcpy_zero = TestCase{
     .fn_ptr = &test_memcpy_zero_fn,
 };
 
-fn test_memcpy_zero_fn() AssertError!void {
+fn test_memcpy_zero_fn(_: std.mem.Allocator) AssertError!void {
     var src: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     var dest: [10]u8 = [_]u8{ 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
     const original_dest = dest;
@@ -59,19 +61,19 @@ var test_memcpy_large = TestCase{
     .fn_ptr = &test_memcpy_large_fn,
 };
 
-fn test_memcpy_large_fn() AssertError!void {
+fn test_memcpy_large_fn(allocator: std.mem.Allocator) TestCaseError!void {
     const size: usize = 1024 * 1024; // 1 MB
-    var src: [size]u8 = undefined;
-    var dest: [size]u8 = undefined;
+    var src = try allocator.alloc(u8, size);
+    var dest = try allocator.alloc(u8, size);
 
     // Initialize source with some data
     for (0..size) |i| {
         src[i] = @truncate(i);
     }
 
-    const result: *u8 = @ptrCast(c.ft_memcpy(&dest, &src, size));
+    const result: *u8 = @ptrCast(c.ft_memcpy(dest.ptr, src.ptr, size));
 
-    try assert.expect(std.mem.eql(u8, dest[0..size], src[0..size]), "Destination should match source after large memcpy");
+    try assert.expect(std.mem.eql(u8, dest, src), "Destination should match source after large memcpy");
     try assert.expect(result == &dest[0], "ft_memcpy should return the original destination pointer");
 }
 
@@ -81,7 +83,7 @@ var test_memcpy_partial = TestCase{
     .fn_ptr = &test_memcpy_partial_fn,
 };
 
-fn test_memcpy_partial_fn() AssertError!void {
+fn test_memcpy_partial_fn(_: std.mem.Allocator) AssertError!void {
     var src: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     var dest: [10]u8 = [_]u8{ 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
     const n: usize = 5;

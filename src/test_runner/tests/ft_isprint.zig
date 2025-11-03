@@ -20,7 +20,7 @@ var test_printable_chars = TestCase{
     .fn_ptr = &test_printable_chars_fn,
 };
 
-fn test_printable_chars_fn() AssertError!void {
+fn test_printable_chars_fn(_: std.mem.Allocator) AssertError!void {
     // Test alphabetic characters
     try assert.expect(c.ft_isprint('a') != 0, "Expected 'a' to be printable");
     try assert.expect(c.ft_isprint('Z') != 0, "Expected 'Z' to be printable");
@@ -42,7 +42,7 @@ var test_space_printable = TestCase{
     .fn_ptr = &test_space_printable_fn,
 };
 
-fn test_space_printable_fn() AssertError!void {
+fn test_space_printable_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_isprint(' ') != 0, "Expected space character to be printable");
 }
 
@@ -52,7 +52,7 @@ var test_non_printable_chars = TestCase{
     .fn_ptr = &test_non_printable_chars_fn,
 };
 
-fn test_non_printable_chars_fn() AssertError!void {
+fn test_non_printable_chars_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_isprint('\n') == 0, "Expected '\\n' to be non-printable");
     try assert.expect(c.ft_isprint('\t') == 0, "Expected '\\t' to be non-printable");
     try assert.expect(c.ft_isprint('\r') == 0, "Expected '\\r' to be non-printable");
@@ -65,7 +65,7 @@ var test_printable_comparison = TestCase{
     .fn_ptr = &test_printable_comparison_fn,
 };
 
-fn test_printable_comparison_fn() AssertError!void {
+fn test_printable_comparison_fn(_: std.mem.Allocator) AssertError!void {
     for (0..255) |i| {
         const custom_result = c.ft_isprint(@intCast(i)) != 0;
         const std_result = c.isprint(@intCast(i)) != 0;

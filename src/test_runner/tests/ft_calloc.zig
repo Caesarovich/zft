@@ -22,7 +22,7 @@ var test_calloc_basic = TestCase{
     .fn_ptr = &test_calloc_basic_fn,
 };
 
-fn test_calloc_basic_fn() AssertError!void {
+fn test_calloc_basic_fn(_: std.mem.Allocator) AssertError!void {
     const num_elements: usize = 5;
     const element_size: usize = @sizeOf(u8);
 
@@ -45,7 +45,7 @@ var test_calloc_large = TestCase{
     .fn_ptr = &test_calloc_large_fn,
 };
 
-fn test_calloc_large_fn() AssertError!void {
+fn test_calloc_large_fn(_: std.mem.Allocator) AssertError!void {
     const num_elements: usize = 1_000_000;
     const element_size: usize = @sizeOf(u8);
 
@@ -68,7 +68,7 @@ var test_calloc_different_sizes = TestCase{
     .fn_ptr = &test_calloc_different_sizes_fn,
 };
 
-fn test_calloc_different_sizes_fn() AssertError!void {
+fn test_calloc_different_sizes_fn(_: std.mem.Allocator) AssertError!void {
     const num_elements: usize = 100_000;
     const element_size: usize = @sizeOf(u32);
 

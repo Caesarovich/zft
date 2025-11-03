@@ -22,7 +22,7 @@ var test_atoi_positive = TestCase{
     .fn_ptr = &test_atoi_positive_fn,
 };
 
-fn test_atoi_positive_fn() AssertError!void {
+fn test_atoi_positive_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "1";
     var result = c.ft_atoi(str);
     try assert.expect(result == 1, "ft_atoi should convert '1' to 1");
@@ -46,7 +46,7 @@ var test_atoi_negative = TestCase{
     .fn_ptr = &test_atoi_negative_fn,
 };
 
-fn test_atoi_negative_fn() AssertError!void {
+fn test_atoi_negative_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "-1";
     var result = c.ft_atoi(str);
     try assert.expect(result == -1, "ft_atoi should convert '-1' to -1");
@@ -70,7 +70,7 @@ var test_atoi_zero = TestCase{
     .fn_ptr = &test_atoi_zero_fn,
 };
 
-fn test_atoi_zero_fn() AssertError!void {
+fn test_atoi_zero_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "0";
     var result = c.ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should convert '0' to 0");
@@ -86,7 +86,7 @@ var test_atoi_leading_whitespace = TestCase{
     .fn_ptr = &test_atoi_leading_whitespace_fn,
 };
 
-fn test_atoi_leading_whitespace_fn() AssertError!void {
+fn test_atoi_leading_whitespace_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "   42";
     var result = c.ft_atoi(str);
     try assert.expect(result == 42, "ft_atoi should ignore leading whitespace and convert '   42' to 42");
@@ -102,7 +102,7 @@ var test_atoi_multiple_signs = TestCase{
     .fn_ptr = &test_atoi_multiple_signs_fn,
 };
 
-fn test_atoi_multiple_signs_fn() AssertError!void {
+fn test_atoi_multiple_signs_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "--42";
     var result = c.ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '--42'");
@@ -126,7 +126,7 @@ var test_atoi_multiple_signs_whitespace = TestCase{
     .fn_ptr = &test_atoi_multiple_signs_whitespace_fn,
 };
 
-fn test_atoi_multiple_signs_whitespace_fn() AssertError!void {
+fn test_atoi_multiple_signs_whitespace_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "   --42";
     var result = c.ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '   --42'");
@@ -151,7 +151,7 @@ var test_atoi_invalid_leading = TestCase{
     .fn_ptr = &test_atoi_invalid_leading_fn,
 };
 
-fn test_atoi_invalid_leading_fn() AssertError!void {
+fn test_atoi_invalid_leading_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "abc42";
     var result = c.ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for 'abc42'");
@@ -171,7 +171,7 @@ var test_atoi_invalid_trailing = TestCase{
     .fn_ptr = &test_atoi_invalid_trailing_fn,
 };
 
-fn test_atoi_invalid_trailing_fn() AssertError!void {
+fn test_atoi_invalid_trailing_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "42abc";
     var result = c.ft_atoi(str);
     try assert.expect(result == 42, "ft_atoi should convert '42abc' to 42");
@@ -191,7 +191,7 @@ var test_atoi_empty_string = TestCase{
     .fn_ptr = &test_atoi_empty_string_fn,
 };
 
-fn test_atoi_empty_string_fn() AssertError!void {
+fn test_atoi_empty_string_fn(_: std.mem.Allocator) AssertError!void {
     const str: [*c]const u8 = "";
     const result = c.ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for empty string");
@@ -203,7 +203,7 @@ var test_atoi_only_invalid = TestCase{
     .fn_ptr = &test_atoi_only_invalid_fn,
 };
 
-fn test_atoi_only_invalid_fn() AssertError!void {
+fn test_atoi_only_invalid_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "!!!";
     var result = c.ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '!!!'");
@@ -220,7 +220,7 @@ var test_atoi_limits = TestCase{
     .fn_ptr = &test_atoi_limits_fn,
 };
 
-fn test_atoi_limits_fn() AssertError!void {
+fn test_atoi_limits_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "2147483647"; // INT_MAX
     var result = c.ft_atoi(str);
     try assert.expect(result == 2147483647, "ft_atoi should convert '2147483647' to INT_MAX");
