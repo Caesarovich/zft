@@ -26,13 +26,14 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: tests.tests.TestSuite
     }
 
     if (suite.result == .skipped) {
-        try stdout.writeAll(" - Skipped\n");
+        try stdout.writeAll(" - Skipped");
+        try ansi.format.resetStyle(stdout);
+        try stdout.writeAll("\n");
         return;
     }
 
-    try stdout.writeAll("\n");
-
     try ansi.format.resetStyle(stdout);
+    try stdout.writeAll("\n");
 
     for (suite.cases) |test_case| {
         switch (test_case.result) {
