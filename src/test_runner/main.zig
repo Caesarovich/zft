@@ -6,6 +6,7 @@ const tests = @import("tests");
 const test_collections = @import("tests/main.zig");
 
 const config = @import("config");
+const bonus_enabled = config.bonus;
 
 fn print_test_suite_results(stdout: *std.io.Writer, suite: tests.tests.TestSuite) !void {
     try ansi.format.resetStyle(stdout);
@@ -84,6 +85,15 @@ pub fn main() !void {
 
     for (base_collection.suites) |suite| {
         try print_test_suite_results(stdout, suite.*);
+    }
+
+    if (bonus_enabled) {
+        var bonus_collection = test_collections.bonus_test_collection;
+
+        bonus_collection.run(allocator);
+        for (bonus_collection.suites) |suite| {
+            try print_test_suite_results(stdout, suite.*);
+        }
     }
 
     try stdout.flush();
