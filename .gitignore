@@ -12,6 +12,7 @@ devenv.local.yaml
 # Zig
 zig-out/
 .zig-cache/
+zig-*
 
 # Test LIBFT
 test_libft
