@@ -11,8 +11,13 @@ pub fn build(b: *std.Build) void {
         "Path to the libft directory",
     ) orelse "libft";
 
-    const libft_path = libft_path_option;
-    const libft_archive_path = b.pathJoin(&.{ libft_path, "libft.a" });
+    const bonus_option = b.option(
+        bool,
+        "bonus",
+        "Include bonus tests",
+    ) orelse false;
+
+    const libft_archive_path = b.pathJoin(&.{ libft_path_option, "libft.a" });
 
     // ANSI MODULE (https://github.com/ziglibs/ansi_term)
     const ansi_module = b.createModule(.{
@@ -42,7 +47,8 @@ pub fn build(b: *std.Build) void {
     });
 
     const options = b.addOptions();
-    options.addOption([]const u8, "libft-path", libft_path);
+    options.addOption([]const u8, "libft-path", libft_path_option);
+    options.addOption(bool, "bonus", bonus_option);
     libft_maker.root_module.addOptions("config", options);
 
     const run_libft_maker = b.addRunArtifact(libft_maker);
@@ -101,6 +107,8 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("function_list", function_list_module);
 
     const exe_options = b.addOptions();
+    exe_options.addOption([]const u8, "libft-path", libft_path_option);
+    exe_options.addOption(bool, "bonus", bonus_option);
     exe.root_module.addOptions("config", exe_options);
 
     // ACTIONS
