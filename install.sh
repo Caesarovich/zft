@@ -20,7 +20,10 @@ fi
 if [ -d "$INSTALL_DIR" ]; then
 	echo "Directory $INSTALL_DIR already exists. Skipping clone."
 else
-	read -p "This will clone the repository to $INSTALL_DIR. Do you want to continue? (y/n): " choice
+	exec 8<&1
+	read -u 8 -p "This will clone the repository to $INSTALL_DIR. Do you want to continue? (y/n): " choice
+	exec 8<&-
+
 	if [ "$REINSTALL_FLAG" = false ] && [ "$choice" != "y" ] && [ "$choice" != "Y" ]; then
 		echo "Installation aborted."
 		exit 1
