@@ -6,7 +6,7 @@ ZIG_ARCH=$(uname -m)
 ZIG_PLATFORM=$(uname | tr '[:upper:]' '[:lower:]')
 ZIG_BIN="$ZFT_PATH/zig-$ZIG_ARCH-$ZIG_PLATFORM-$ZIG_VERSION/zig"
 
-WORK_DIR=$(dirname "$0")
+WORK_DIR="$PWD"
 VALGRIND_FLAG=false
 BONUS_FLAG=false
 
