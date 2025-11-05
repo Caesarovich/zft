@@ -26,6 +26,13 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    // TERMSIZE MODULE (https://github.com/softprops/zig-termsize)
+    const termsize_module = b.createModule(.{
+        .root_source_file = b.path("lib/termsize/main.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
     // TESTS MODULE
     const tests_module = b.createModule(.{
         .root_source_file = b.path("lib/tests/main.zig"),
@@ -71,6 +78,7 @@ pub fn build(b: *std.Build) void {
             .imports = &.{
                 .{ .name = "tests", .module = tests_module },
                 .{ .name = "ansi", .module = ansi_module },
+                .{ .name = "termsize", .module = termsize_module },
             },
         }),
     });
