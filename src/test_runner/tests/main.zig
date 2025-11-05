@@ -22,6 +22,7 @@ pub var base_test_collection = TestCollection{
         @constCast(&@import("ft_bzero.zig").suite),
         @constCast(&@import("ft_memcpy.zig").suite),
         @constCast(&@import("ft_memmove.zig").suite),
+        @constCast(&@import("ft_memchr.zig").suite),
         @constCast(&@import("ft_memcmp.zig").suite),
         @constCast(&@import("ft_atoi.zig").suite),
         @constCast(&@import("ft_calloc.zig").suite),

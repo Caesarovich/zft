@@ -28,7 +28,9 @@ fn test_memchr_found_fn(_: std.mem.Allocator) AssertError!void {
 
     const result = c.ft_memchr(&buffer, target, n);
     try assert.expect(result != null, "ft_memchr should find the character 'e'");
-    try assert.expect(result == &buffer[4], "ft_memchr should return pointer to the first occurrence of 'e'");
+    if (result) |ptr| {
+        try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[4], "ft_memchr should return pointer to the first occurrence of 'e'");
+    }
 }
 
 // Test with a character not present in the memory block
@@ -73,7 +75,10 @@ fn test_memchr_multiple_occurrences_fn(_: std.mem.Allocator) AssertError!void {
 
     const result = c.ft_memchr(&buffer, target, n);
     try assert.expect(result != null, "ft_memchr should find the character 'a'");
-    try assert.expect(result == &buffer[0], "ft_memchr should return pointer to the first occurrence of 'a'");
+
+    if (result) |ptr| {
+        try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[0], "ft_memchr should return pointer to the first occurrence of 'a'");
+    }
 }
 
 // Test with searching after string end
@@ -89,7 +94,9 @@ fn test_memchr_beyond_string_fn(_: std.mem.Allocator) AssertError!void {
 
     const result = c.ft_memchr(&buffer, target, n);
     try assert.expect(result != null, "ft_memchr should find the character 'W'");
-    try assert.expect(result == &buffer[6], "ft_memchr should return pointer to the first occurrence of 'W'");
+    if (result) |ptr| {
+        try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[6], "ft_memchr should return pointer to the first occurrence of 'W'");
+    }
 }
 
 // Test with null character search
@@ -105,7 +112,10 @@ fn test_memchr_null_character_fn(_: std.mem.Allocator) AssertError!void {
 
     const result = c.ft_memchr(&buffer, target, n);
     try assert.expect(result != null, "ft_memchr should find the null character");
-    try assert.expect(result == &buffer[3], "ft_memchr should return pointer to the first occurrence of null character");
+
+    if (result) |ptr| {
+        try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[3], "ft_memchr should return pointer to the first occurrence of null character");
+    }
 }
 
 // Test with empty buffer
@@ -123,7 +133,7 @@ fn test_memchr_empty_buffer_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result == null, "ft_memchr should not find any character in an empty buffer");
 }
 
-var test_cases = [_]TestCase{
+var test_cases = [_]*TestCase{
     &test_memchr_found,
     &test_memchr_not_found,
     &test_memchr_n_zero,
