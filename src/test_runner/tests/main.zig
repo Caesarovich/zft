@@ -44,12 +44,14 @@ pub var base_test_collection = TestCollection{
 pub var bonus_test_collection = TestCollection{
     .name = "ZFT Bonus Tests",
     .suites = @constCast(&[_]*TestSuite{
-        // @constCast(&@import("ft_lstnew.zig").suite),
-        // @constCast(&@import("ft_lstadd_front.zig").suite),
-        // @constCast(&@import("ft_lstlast.zig").suite),
-        // @constCast(&@import("ft_lstadd_back.zig").suite),
-        // @constCast(&@import("ft_lstclear.zig").suite),
-        // @constCast(&@import("ft_lstiter.zig").suite),
-        // @constCast(&@import("ft_lstmap.zig").suite),
+        @constCast(&@import("ft_lstnew.zig").suite),
+        @constCast(&@import("ft_lstadd_front.zig").suite),
+        @constCast(&@import("ft_lstsize.zig").suite),
+        @constCast(&@import("ft_lstlast.zig").suite),
+        @constCast(&@import("ft_lstadd_back.zig").suite),
+        @constCast(&@import("ft_lstdelone.zig").suite),
+        @constCast(&@import("ft_lstclear.zig").suite),
+        @constCast(&@import("ft_lstiter.zig").suite),
+        @constCast(&@import("ft_lstmap.zig").suite),
     }),
 };
