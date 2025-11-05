@@ -88,6 +88,7 @@ fn test_comparison_with_standard_fn(_: std.mem.Allocator) AssertError!void {
         try assert.expect(custom_result == standard_result, "ft_isalnum and isalnum differ on a character");
     }
 }
+
 var test_cases = [_]*TestCase{
     &test_alnum_chars,
     &test_non_alnum_chars,

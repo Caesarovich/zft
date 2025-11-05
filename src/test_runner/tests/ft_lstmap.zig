@@ -22,17 +22,12 @@ fn double_map_function(content: ?*anyopaque) callconv(.c) ?*anyopaque {
 
     const input_value = @as(*u8, @ptrCast(@alignCast(content)));
 
-    std.debug.print("content: {any}\n", .{content});
-
-    std.debug.print("Doubling value: {}\n", .{input_value.*});
-
     const new_value = c.malloc(@sizeOf(u8));
     if (new_value == null) return null;
 
     const output_value = @as(*u8, @ptrCast(@alignCast(new_value)));
     output_value.* = input_value.* * 2;
 
-    std.debug.print("Doubled value: {}\n", .{output_value.*});
     return new_value;
 }
 
