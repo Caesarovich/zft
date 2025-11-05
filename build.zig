@@ -17,6 +17,12 @@ pub fn build(b: *std.Build) void {
         "Include bonus tests",
     ) orelse false;
 
+    const llvm_option = b.option(
+        bool,
+        "use-llvm",
+        "Use LLVM backend for compilation",
+    ) orelse false;
+
     const libft_archive_path = b.pathJoin(&.{ libft_path_option, "libft.a" });
 
     // ANSI MODULE (https://github.com/ziglibs/ansi_term)
@@ -69,7 +75,7 @@ pub fn build(b: *std.Build) void {
     // MAIN EXECUTABLE
     const exe = b.addExecutable(.{
         .name = "zft",
-        .use_llvm = true,
+        .use_llvm = llvm_option,
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/test_runner/main.zig"),
             .target = target,

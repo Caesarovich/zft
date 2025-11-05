@@ -30,7 +30,13 @@ done
 cd "$ZFT_PATH" || { echo "Failed to change directory to $ZFT_PATH"; exit 1; }
 RELATIVE_WORK_DIR=$(realpath --relative-to="$ZFT_PATH" "$WORK_DIR")
 
-$ZIG_BIN build -Dlibft-path="$RELATIVE_WORK_DIR" -Dbonus="$BONUS_FLAG"
+BUILD_FLAGS="-Dlibft-path=$RELATIVE_WORK_DIR -Dbonus=$BONUS_FLAG"
+
+if [ "$VALGRIND_FLAG" = true ]; then
+	BUILD_FLAGS="$BUILD_FLAGS -Duse-llvm=true"
+fi
+
+$ZIG_BIN build $BUILD_FLAGS
 
 # If build failed, exit
 if [ $? -ne 0 ]; then
