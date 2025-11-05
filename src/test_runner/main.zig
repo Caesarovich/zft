@@ -80,6 +80,7 @@ fn print_test_collection_title(allocator: std.mem.Allocator, stdout: *std.io.Wri
     const delimiter_width = (width - collection.name.len - 2) / 2;
 
     var delimiter = try std.ArrayList(u8).initCapacity(allocator, width);
+    defer delimiter.deinit(allocator);
 
     for (0..delimiter_width) |_| {
         _ = try delimiter.append(allocator, '=');
