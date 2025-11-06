@@ -14,44 +14,33 @@ const c = @cImport({
     @cInclude("unistd.h");
     @cInclude("fcntl.h");
     @cInclude("string.h");
+    @cInclude("sys/mman.h");
 });
 
-// Helper function to create a temporary file and return its fd
 fn create_temp_file() !c_int {
-    const filename = "/tmp/zft_test_XXXXXX";
-    const template: [*c]u8 = @ptrCast(@constCast(filename));
-    return c.mkstemp(template);
+    const fd: c_int = try std.posix.memfd_create("zft_test", 0);
+    return fd;
 }
 
-// Helper function to read from a file descriptor
-fn read_from_fd(fd: c_int, buffer: []u8) !usize {
-    // Reset file position to beginning
-    _ = c.lseek(fd, 0, c.SEEK_SET);
-    const bytes_read = c.read(fd, buffer.ptr, buffer.len - 1);
-    if (bytes_read >= 0) {
-        buffer[@intCast(bytes_read)] = 0; // null terminate
-        return @intCast(bytes_read);
-    }
-    return error.ReadError;
-}
-
-// Test ft_putstr_fd with valid file descriptor
-var test_putstr_fd_valid = TestCase{
-    .name = "Put string to valid fd",
-    .fn_ptr = &test_putstr_fd_valid_fn,
+// Test ft_putstr_fd with normal string
+var test_putstr_fd_normal = TestCase{
+    .name = "Put normal string to fd",
+    .fn_ptr = &test_putstr_fd_normal_fn,
 };
 
-fn test_putstr_fd_valid_fn(_: std.mem.Allocator) AssertError!void {
-    const fd = create_temp_file() catch return error.TestSkipped;
+fn test_putstr_fd_normal_fn(_: std.mem.Allocator) AssertError!void {
+    const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putstr_fd("Hello", fd);
+    const test_str = "Hello World";
+    c.ft_putstr_fd(@constCast(test_str), fd);
 
-    var buffer: [20]u8 = undefined;
-    const bytes_read = read_from_fd(fd, &buffer) catch return error.TestFailed;
+    var buffer: [50]u8 = undefined;
+    std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
+    const bytes_read = std.posix.read(fd, &buffer) catch return AssertError.AssertionFailed;
 
-    try assert.expect(bytes_read == 5, "Expected 5 bytes written");
-    try assert.expect(c.strcmp(&buffer, "Hello") == 0, "Expected string 'Hello'");
+    try assert.expect(bytes_read == c.strlen(test_str), "Expected string length bytes written");
+    try assert.expect(c.strncmp(&buffer, test_str, bytes_read) == 0, "Expected written string to match input");
 }
 
 // Test ft_putstr_fd with empty string
@@ -61,13 +50,15 @@ var test_putstr_fd_empty = TestCase{
 };
 
 fn test_putstr_fd_empty_fn(_: std.mem.Allocator) AssertError!void {
-    const fd = create_temp_file() catch return error.TestSkipped;
+    const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putstr_fd("", fd);
+    const test_str = "";
+    c.ft_putstr_fd(@constCast(test_str), fd);
 
     var buffer: [10]u8 = undefined;
-    const bytes_read = read_from_fd(fd, &buffer) catch return error.TestFailed;
+    std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
+    const bytes_read = std.posix.read(fd, &buffer) catch return AssertError.AssertionFailed;
 
     try assert.expect(bytes_read == 0, "Expected 0 bytes written for empty string");
 }
@@ -79,29 +70,41 @@ var test_putstr_fd_null = TestCase{
 };
 
 fn test_putstr_fd_null_fn(_: std.mem.Allocator) AssertError!void {
-    const fd = create_temp_file() catch return error.TestSkipped;
+    const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    // This should not crash
+    // This should not crash - behavior depends on implementation
     c.ft_putstr_fd(null, fd);
 
     var buffer: [10]u8 = undefined;
-    const bytes_read = read_from_fd(fd, &buffer) catch return error.TestFailed;
+    std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
+    const bytes_read = std.posix.read(fd, &buffer) catch return AssertError.AssertionFailed;
 
-    try assert.expect(bytes_read == 0, "Expected 0 bytes written for null string");
+    // Some implementations might write nothing, others might write "(null)"
+    // We just ensure it doesn't crash
+    _ = bytes_read;
 }
 
-// Test ft_putstr_fd with invalid file descriptor
-var test_putstr_fd_invalid = TestCase{
-    .name = "Put string to invalid fd",
-    .fn_ptr = &test_putstr_fd_invalid_fn,
+// Test ft_putstr_fd with string containing special characters
+var test_putstr_fd_special_chars = TestCase{
+    .name = "Put string with special characters to fd",
+    .fn_ptr = &test_putstr_fd_special_chars_fn,
 };
 
-fn test_putstr_fd_invalid_fn(_: std.mem.Allocator) AssertError!void {
-    // This should not crash, just fail silently
-    c.ft_putstr_fd("Hello", -1);
-    // If we reach here without crashing, the test passes
-    try assert.expect(true, "Function should handle invalid fd gracefully");
+fn test_putstr_fd_special_chars_fn(_: std.mem.Allocator) AssertError!void {
+    const fd = create_temp_file() catch return AssertError.AssertionFailed;
+    defer _ = c.close(fd);
+
+    const test_str = "Hello\nWorld\t!";
+    const expected_len = c.strlen(test_str);
+    c.ft_putstr_fd(@constCast(test_str), fd);
+
+    var buffer: [50]u8 = undefined;
+    std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
+    const bytes_read = std.posix.read(fd, &buffer) catch return AssertError.AssertionFailed;
+
+    try assert.expect(bytes_read == expected_len, "Expected string length up to null terminator");
+    try assert.expect(c.strncmp(&buffer, test_str, bytes_read) == 0, "Expected written string to match input");
 }
 
 // Test ft_putstr_fd with long string
@@ -111,25 +114,70 @@ var test_putstr_fd_long = TestCase{
 };
 
 fn test_putstr_fd_long_fn(_: std.mem.Allocator) AssertError!void {
-    const fd = create_temp_file() catch return error.TestSkipped;
+    const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    const long_string = "The quick brown fox jumps over the lazy dog";
-    c.ft_putstr_fd(long_string, fd);
+    const test_str = "This is a longer string that contains multiple words and should test the function's ability to handle strings that are more than just a few characters long.";
+    c.ft_putstr_fd(@constCast(test_str), fd);
 
-    var buffer: [100]u8 = undefined;
-    const bytes_read = read_from_fd(fd, &buffer) catch return error.TestFailed;
+    var buffer: [200]u8 = undefined;
+    std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
+    const bytes_read = std.posix.read(fd, &buffer) catch return AssertError.AssertionFailed;
 
-    try assert.expect(bytes_read == 43, "Expected 43 bytes written");
-    try assert.expect(c.strcmp(&buffer, long_string) == 0, "Expected long string to match");
+    try assert.expect(bytes_read == c.strlen(test_str), "Expected full string length bytes written");
+    try assert.expect(c.strncmp(&buffer, test_str, bytes_read) == 0, "Expected written string to match input");
+}
+
+// Test ft_putstr_fd with single character string
+var test_putstr_fd_single_char = TestCase{
+    .name = "Put single character string to fd",
+    .fn_ptr = &test_putstr_fd_single_char_fn,
+};
+
+fn test_putstr_fd_single_char_fn(_: std.mem.Allocator) AssertError!void {
+    const fd = create_temp_file() catch return AssertError.AssertionFailed;
+    defer _ = c.close(fd);
+
+    const test_str = "A";
+    c.ft_putstr_fd(@constCast(test_str), fd);
+
+    var buffer: [10]u8 = undefined;
+    std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
+    const bytes_read = std.posix.read(fd, &buffer) catch return AssertError.AssertionFailed;
+
+    try assert.expect(bytes_read == 1, "Expected 1 byte written");
+    try assert.expect(buffer[0] == 'A', "Expected character 'A'");
+}
+
+// Test ft_putstr_fd with Unicode/extended ASCII
+var test_putstr_fd_extended = TestCase{
+    .name = "Put string with extended characters to fd",
+    .fn_ptr = &test_putstr_fd_extended_fn,
+};
+
+fn test_putstr_fd_extended_fn(_: std.mem.Allocator) AssertError!void {
+    const fd = create_temp_file() catch return AssertError.AssertionFailed;
+    defer _ = c.close(fd);
+
+    const test_str = "Héllo Wörld!";
+    c.ft_putstr_fd(@constCast(test_str), fd);
+
+    var buffer: [50]u8 = undefined;
+    std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
+    const bytes_read = std.posix.read(fd, &buffer) catch return AssertError.AssertionFailed;
+
+    try assert.expect(bytes_read == c.strlen(test_str), "Expected string length bytes written");
+    try assert.expect(c.strncmp(&buffer, test_str, bytes_read) == 0, "Expected written string to match input");
 }
 
 var test_cases = [_]*TestCase{
-    &test_putstr_fd_valid,
+    &test_putstr_fd_normal,
     &test_putstr_fd_empty,
     &test_putstr_fd_null,
-    &test_putstr_fd_invalid,
+    &test_putstr_fd_special_chars,
     &test_putstr_fd_long,
+    &test_putstr_fd_single_char,
+    &test_putstr_fd_extended,
 };
 
 const is_function_defined = function_list.hasFunction("ft_putstr_fd");

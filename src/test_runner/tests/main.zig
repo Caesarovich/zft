@@ -34,11 +34,10 @@ pub var base_test_collection = TestCollection{
         @constCast(&@import("ft_itoa.zig").suite),
         @constCast(&@import("ft_strmapi.zig").suite),
         @constCast(&@import("ft_striteri.zig").suite),
-        // @constCast(&@import("ft_putchar_fd.zig").suite),
-        // @constCast(&@import("ft_putstr_fd.zig").suite),
-        // @constCast(&@import("ft_putendl_fd.zig").suite),
-        // @constCast(&@import("ft_putnbr_fd.zig").suite),
-        // @constCast(&@import("ft_lstdelone.zig").suite),
+        @constCast(&@import("ft_putchar_fd.zig").suite),
+        @constCast(&@import("ft_putstr_fd.zig").suite),
+        @constCast(&@import("ft_putendl_fd.zig").suite),
+        @constCast(&@import("ft_putnbr_fd.zig").suite),
     }),
 };
 
