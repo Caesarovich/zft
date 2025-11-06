@@ -6,6 +6,7 @@ const TestSuite = tests.tests.TestSuite;
 
 const assert = tests.assert;
 const AssertError = assert.AssertError;
+const TestCaseError = tests.tests.TestCaseError;
 
 const function_list = @import("function_list");
 
@@ -62,6 +63,37 @@ fn test_calloc_large_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
+// Test with garbage values (ensuring zero-initialization)
+// This test might return a false positive depending on malloc's behavior
+var test_calloc_garbage = TestCase{
+    .name = "Calloc with garbage values",
+    .fn_ptr = &test_calloc_garbage_fn,
+};
+
+fn test_calloc_garbage_fn(_: std.mem.Allocator) TestCaseError!void {
+    // Fill heap with garbage values
+    const garbage_size: usize = 1024 * 1024; // 1 MB
+    const garbage_ptr = try std.heap.c_allocator.alloc(u8, garbage_size);
+
+    for (0..garbage_size) |i| {
+        garbage_ptr[i] = 0xFF; // Fill with non-zero garbage
+    }
+    // Release memory, expecting it to be reused by ft_calloc
+    std.heap.c_allocator.free(garbage_ptr);
+
+    const num_elements: usize = 100_000; // 100 KB
+    const element_size: usize = @sizeOf(u8);
+    const ptr: ?*[num_elements]u8 = @ptrCast(c.ft_calloc(num_elements, element_size));
+    if (ptr) |p| {
+        for (0..num_elements) |i| {
+            try assert.expect(p[i] == 0, "Allocated memory should be zero-initialized");
+        }
+        std.heap.c_allocator.free(p);
+    } else {
+        try assert.expect(false, "ft_calloc returned null pointer");
+    }
+}
+
 // Test with different element sizes
 var test_calloc_different_sizes = TestCase{
     .name = "Calloc with different element sizes",
@@ -86,10 +118,35 @@ fn test_calloc_different_sizes_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
+// Test with multiplication overflow
+var test_calloc_overflow = TestCase{
+    .name = "Calloc with multiplication overflow",
+    .fn_ptr = &test_calloc_overflow_fn,
+};
+
+fn test_calloc_overflow_fn(_: std.mem.Allocator) AssertError!void {
+    // Exact overflow case (overflows to zero)
+    var num_elements: usize = std.math.maxInt(usize) / 2 + 1;
+    const element_size: usize = 2;
+
+    var ptr: ?*u8 = @ptrCast(c.ft_calloc(num_elements, element_size));
+
+    try assert.expect(ptr == null, "ft_calloc should return null pointer on overflow");
+
+    // Non-exact overflow case (overflows to 2)
+    num_elements = std.math.maxInt(usize) / 2 + 2;
+
+    ptr = @ptrCast(c.ft_calloc(num_elements, element_size));
+
+    try assert.expect(ptr == null, "ft_calloc should return null pointer on overflow");
+}
+
 var test_cases = [_]*TestCase{
     &test_calloc_basic,
     &test_calloc_large,
     &test_calloc_different_sizes,
+    &test_calloc_garbage,
+    &test_calloc_overflow,
 };
 
 const is_function_defined = function_list.hasFunction("ft_calloc");
