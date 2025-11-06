@@ -95,6 +95,22 @@ fn test_append_exact_fit_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(std.mem.eql(u8, dest[0..12], "Hello, World"), "Expected destination to match source exactly");
 }
 
+// Test when there is dest size is smaller than dest length
+var test_append_with_dest_size_smaller = TestCase{
+    .name = "Append with dest size smaller than dest length",
+    .fn_ptr = &test_append_with_dest_size_smaller_fn,
+};
+
+fn test_append_with_dest_size_smaller_fn(_: std.mem.Allocator) AssertError!void {
+    var dest: [10]u8 = undefined;
+    @memcpy(dest[0..9], "ABCDEFGHI");
+    dest[9] = 0; // Null-terminate
+    const src = "12345";
+    const result = c.ft_strlcat(&dest[0], src, 5); // dest size smaller than current dest length
+    try assert.expect(result == 10, "Expected length to be 10"); // 9 + 5 = 14, but size is 5, so return 5 + 5 = 10
+    try assert.expect(std.mem.eql(u8, dest[0..9], "ABCDEFGHI"), "Expected destination to remain unchanged");
+}
+
 // Test with garbage values in destination buffer
 var test_append_with_garbage = TestCase{
     .name = "Append with garbage in destination",
@@ -122,6 +138,7 @@ var test_cases = [_]*TestCase{
     &test_append_empty_source,
     &test_append_no_space,
     &test_append_exact_fit,
+    &test_append_with_dest_size_smaller,
     &test_append_with_garbage,
 };
 

@@ -108,6 +108,62 @@ fn test_memcmp_partial_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result_diff != 0, "ft_memcmp should return non-zero when differing byte is included");
 }
 
+// Test with positive values bigger than 127 (wrap modulo 256)
+var test_memcmp_positive_wrapped = TestCase{
+    .name = "Memcmp with positive values (wrapped)",
+    .fn_ptr = &test_memcmp_positive_wrapped_fn,
+};
+
+fn test_memcmp_positive_wrapped_fn(_: std.mem.Allocator) AssertError!void {
+    // 128 -> -128
+    const buffer1: [5]u8 = [_]u8{ 128, 1, 2, 3, 4 };
+    const buffer2: [5]i8 = [_]i8{ -128, 1, 2, 3, 4 };
+    const n: usize = buffer1.len;
+
+    const result = c.ft_memcmp(&buffer1, &buffer2, n);
+    try assert.expect(result == 0, "ft_memcmp should treat 128 as -128 when cast to i8");
+
+    // 192 -> -64
+    const buffer3: [5]u8 = [_]u8{ 192, 1, 2, 3, 4 };
+    const buffer4: [5]i8 = [_]i8{ -64, 1, 2, 3, 4 };
+    const result2 = c.ft_memcmp(&buffer3, &buffer4, n);
+    try assert.expect(result2 == 0, "ft_memcmp should treat 192 as -64 when cast to i8");
+
+    // 255 -> -1
+    const buffer5: [5]u8 = [_]u8{ 255, 0, 0, 0, 0 };
+    const buffer6: [5]i8 = [_]i8{ -1, 0, 0, 0, 0 };
+    const result3 = c.ft_memcmp(&buffer5, &buffer6, n);
+    try assert.expect(result3 == 0, "ft_memcmp should treat 255 as -1 when cast to i8");
+}
+
+// Test with negative values (wrap modulo 256)
+var test_memcmp_negative_wrapped = TestCase{
+    .name = "Memcmp with negative values (wrapped)",
+    .fn_ptr = &test_memcmp_negative_wrapped_fn,
+};
+
+fn test_memcmp_negative_wrapped_fn(_: std.mem.Allocator) AssertError!void {
+    // -128  -> 128
+    const buffer1: [5]i8 = [_]i8{ -128, 1, 2, 3, 4 };
+    const buffer2: [5]u8 = [_]u8{ 128, 1, 2, 3, 4 };
+    const n: usize = buffer1.len;
+
+    const result = c.ft_memcmp(&buffer1, &buffer2, n);
+    try assert.expect(result == 0, "ft_memcmp should treat -128 as 128 when cast to u8");
+
+    // -64 -> 192
+    const buffer3: [5]i8 = [_]i8{ -64, 1, 2, 3, 4 };
+    const buffer4: [5]u8 = [_]u8{ 192, 1, 2, 3, 4 };
+    const result2 = c.ft_memcmp(&buffer3, &buffer4, n);
+    try assert.expect(result2 == 0, "ft_memcmp should treat -64 as 192 when cast to u8");
+
+    // -1 -> 255
+    const buffer5: [5]i8 = [_]i8{ -1, 0, 0, 0, 0 };
+    const buffer6: [5]u8 = [_]u8{ 255, 0, 0, 0, 0 };
+    const result3 = c.ft_memcmp(&buffer5, &buffer6, n);
+    try assert.expect(result3 == 0, "ft_memcmp should treat -1 as 255 when cast to u8");
+}
+
 var test_cases = [_]*TestCase{
     &test_memcmp_equal,
     &test_memcmp_different,
@@ -115,6 +171,8 @@ var test_cases = [_]*TestCase{
     &test_memcmp_first_greater,
     &test_memcmp_n_zero,
     &test_memcmp_partial,
+    &test_memcmp_positive_wrapped,
+    &test_memcmp_negative_wrapped,
 };
 
 const is_function_defined = function_list.hasFunction("ft_memcmp");

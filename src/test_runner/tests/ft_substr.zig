@@ -51,8 +51,16 @@ var test_substr_start_beyond = TestCase{
 };
 
 fn test_substr_start_beyond_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_substr("Hello", 10, 5);
+    var result = c.ft_substr("Hello", 10, 5);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "") == 0, "Expected empty string when start is beyond length");
+        c.free(str);
+    }
+
+    // With really large start index
+    result = c.ft_substr("Hello", 42_000_000, 5);
+    try assert.expect(result != null, "ft_substr should return a valid pointer for large start index");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "") == 0, "Expected empty string when start is beyond length");
         c.free(str);

@@ -88,6 +88,22 @@ fn test_zero_n_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(c.ft_strncmp("Anything", "Different", 0) == 0, "Expected comparison with n=0 to return 0");
 }
 
+// Test with characters beyond ASCII
+var test_non_ascii = TestCase{
+    .name = "Non-ASCII characters",
+    .fn_ptr = &test_non_ascii_fn,
+};
+
+fn test_non_ascii_fn(_: std.mem.Allocator) AssertError!void {
+    const str1 = "test\x00";
+    const str2 = "test\x80"; // 0x80 is 128 in unsigned and -128 in signed
+    try assert.expect(c.ft_strncmp(str1, str2, 5) < 0, "Expected '-128' to be less than '0'");
+
+    const str3 = "test\x80";
+    const str4 = "test\x00";
+    try assert.expect(c.ft_strncmp(str3, str4, 5) > 0, "Expected '-128' to be less than '0'");
+}
+
 var test_cases = [_]*TestCase{
     &test_equal_strings,
     &test_first_less,
@@ -96,6 +112,7 @@ var test_cases = [_]*TestCase{
     &test_n_greater_than_length,
     &test_empty_strings,
     &test_zero_n,
+    &test_non_ascii,
 };
 
 const is_function_defined = function_list.hasFunction("ft_strncmp");

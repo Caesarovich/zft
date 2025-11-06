@@ -134,6 +134,32 @@ fn test_strtrim_end_only_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
+// Test string is null
+var test_strtrim_null_string = TestCase{
+    .name = "Null string input",
+    .fn_ptr = &test_strtrim_null_string_fn,
+};
+
+fn test_strtrim_null_string_fn(_: std.mem.Allocator) AssertError!void {
+    const result = c.ft_strtrim(null, " ");
+    try assert.expect(result == null, "ft_strtrim should return null for null string input");
+}
+
+// Test set is null
+var test_strtrim_null_set = TestCase{
+    .name = "Null set input",
+    .fn_ptr = &test_strtrim_null_set_fn,
+};
+
+fn test_strtrim_null_set_fn(_: std.mem.Allocator) AssertError!void {
+    const result = c.ft_strtrim("   Hello World   ", null);
+    try assert.expect(result != null, "ft_strtrim should return a valid pointer when set is null");
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "   Hello World   ") == 0, "Expected unchanged string when set is null");
+        c.free(str);
+    }
+}
+
 var test_cases = [_]*TestCase{
     &test_strtrim_normal,
     &test_strtrim_multiple_chars,
@@ -143,6 +169,8 @@ var test_cases = [_]*TestCase{
     &test_strtrim_empty_string,
     &test_strtrim_beginning_only,
     &test_strtrim_end_only,
+    &test_strtrim_null_string,
+    &test_strtrim_null_set,
 };
 
 const is_function_defined = function_list.hasFunction("ft_strtrim");

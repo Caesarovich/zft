@@ -109,6 +109,53 @@ fn test_multiple_occurrences_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result != null, "Expected to find character 'a' in the string");
     try assert.expect(@intFromPtr(result) == @intFromPtr(&str[1]), "Expected pointer to point to first 'a' in the string");
 }
+
+// Test with positive values larger than 127 (wrapped)
+var test_strchr_positive_wrapped = TestCase{
+    .name = "Strchr with positive values (wrapped)",
+    .fn_ptr = &test_strchr_positive_wrapped_fn,
+};
+
+fn test_strchr_positive_wrapped_fn(_: std.mem.Allocator) AssertError!void {
+    const str1 = "Hello";
+    const result1 = c.ft_strchr(str1, 'e' + 256); // 'e' is 101, 101 + 256 = 357
+    try assert.expect(result1 != null, "ft_strchr should find character 'e' when searching with 'e' + 256");
+    try assert.expect(@intFromPtr(result1) == @intFromPtr(&str1[1]), "Expected pointer to 'e' in the string");
+
+    const str2 = "World";
+    const result2 = c.ft_strchr(str2, 'o' + 256); // 'o' is 111, 111 + 256 = 367
+    try assert.expect(result2 != null, "ft_strchr should find character 'o' when searching with 'o' + 256");
+    try assert.expect(@intFromPtr(result2) == @intFromPtr(&str2[1]), "Expected pointer to 'o' in the string");
+
+    const str3 = "ZigLang";
+    const result3 = c.ft_strchr(str3, 'L' + 256); // 'L' is 76, 76 + 256 = 332
+    try assert.expect(result3 != null, "ft_strchr should find character 'L' when searching with 'L' + 256");
+    try assert.expect(@intFromPtr(result3) == @intFromPtr(&str3[3]), "Expected pointer to 'L' in the string");
+}
+
+// Test with negative values (wrapped)
+var test_strchr_negative_wrapped = TestCase{
+    .name = "Strchr with negative values (wrapped)",
+    .fn_ptr = &test_strchr_negative_wrapped_fn,
+};
+
+fn test_strchr_negative_wrapped_fn(_: std.mem.Allocator) AssertError!void {
+    const buffer1 = "Hello";
+    const result1 = c.ft_strchr(buffer1, 'e' - 256); // 'e' is 101, 101 - 256 = -155
+    try assert.expect(result1 != null, "ft_strchr should find character 'e' when searching with 'e' - 256");
+    try assert.expect(@intFromPtr(result1) == @intFromPtr(&buffer1[1]), "Expected pointer to 'e' in the string");
+
+    const buffer2 = "World";
+    const result2 = c.ft_strchr(buffer2, 'o' - 256); // 'o' is 111, 111 - 256 = -145
+    try assert.expect(result2 != null, "ft_strchr should find character 'o' when searching with 'o' - 256");
+    try assert.expect(@intFromPtr(result2) == @intFromPtr(&buffer2[1]), "Expected pointer to 'o' in the string");
+
+    const buffer3 = "ZigLang";
+    const result3 = c.ft_strchr(buffer3, 'L' - 256); // 'L' is 76, 76 - 256 = -180
+    try assert.expect(result3 != null, "ft_strchr should find character 'L' when searching with 'L' - 256");
+    try assert.expect(@intFromPtr(result3) == @intFromPtr(&buffer3[3]), "Expected pointer to 'L' in the string");
+}
+
 var test_cases = [_]*TestCase{
     &test_char_present,
     &test_char_not_present,
@@ -117,6 +164,8 @@ var test_cases = [_]*TestCase{
     &test_char_at_beginning,
     &test_char_at_end,
     &test_multiple_occurrences,
+    &test_strchr_positive_wrapped,
+    &test_strchr_negative_wrapped,
 };
 
 const is_function_defined = function_list.hasFunction("ft_strchr");

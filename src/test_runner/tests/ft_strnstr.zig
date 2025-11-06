@@ -77,11 +77,60 @@ fn test_n_zero_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result == null, "Expected not to find any substring when n is zero");
 }
 
+// Test when needle is longer than haystack
+var test_needle_longer_than_haystack = TestCase{
+    .name = "Needle longer than haystack",
+    .fn_ptr = &test_needle_longer_than_haystack_fn,
+};
+
+fn test_needle_longer_than_haystack_fn(_: std.mem.Allocator) AssertError!void {
+    const haystack = "Hello";
+    const needle = "Hello, world!";
+    const n: usize = 5;
+
+    const result = c.ft_strnstr(haystack, needle, n);
+    try assert.expect(result == null, "Expected not to find needle longer than haystack");
+}
+
+// Test when needle is at the very end of haystack within n characters
+var test_needle_at_end_within_n = TestCase{
+    .name = "Needle at end within n characters",
+    .fn_ptr = &test_needle_at_end_within_n_fn,
+};
+
+fn test_needle_at_end_within_n_fn(_: std.mem.Allocator) AssertError!void {
+    const haystack = "Hello, world!";
+    const needle = "world!";
+    const n: usize = 13;
+
+    const result = c.ft_strnstr(haystack, needle, n);
+    try assert.expect(result != null, "Expected to find needle at the end of haystack within n characters");
+    try assert.expect(result == &haystack[7], "Expected result to point to 'world!'");
+}
+
+// Test when needle is at the very end of haystack but exceeds n characters
+var test_needle_at_end_exceeds_n = TestCase{
+    .name = "Needle at end exceeds n characters",
+    .fn_ptr = &test_needle_at_end_exceeds_n_fn,
+};
+
+fn test_needle_at_end_exceeds_n_fn(_: std.mem.Allocator) AssertError!void {
+    const haystack = "Hello, world!";
+    const needle = "world!";
+    const n: usize = 10;
+
+    const result = c.ft_strnstr(haystack, needle, n);
+    try assert.expect(result == null, "Expected not to find needle at the end of haystack when it exceeds n characters");
+}
+
 var test_cases = [_]*TestCase{
     &test_substring_found,
     &test_substring_not_found,
     &test_empty_needle,
     &test_n_zero,
+    &test_needle_longer_than_haystack,
+    &test_needle_at_end_within_n,
+    &test_needle_at_end_exceeds_n,
 };
 
 const is_function_defined = function_list.hasFunction("ft_strnstr");

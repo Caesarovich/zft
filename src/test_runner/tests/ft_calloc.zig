@@ -34,7 +34,7 @@ fn test_calloc_basic_fn(_: std.mem.Allocator) AssertError!void {
             try assert.expect(p[i] == 0, "Allocated memory should be zero-initialized");
         }
 
-        std.heap.c_allocator.free(p);
+        c.free(p);
     } else {
         try assert.expect(false, "ft_calloc returned null pointer");
     }
@@ -57,7 +57,7 @@ fn test_calloc_large_fn(_: std.mem.Allocator) AssertError!void {
             try assert.expect(p[i] == 0, "Allocated memory should be zero-initialized");
         }
 
-        std.heap.c_allocator.free(p);
+        c.free(p);
     } else {
         try assert.expect(false, "ft_calloc returned null pointer");
     }
@@ -88,7 +88,7 @@ fn test_calloc_garbage_fn(_: std.mem.Allocator) TestCaseError!void {
         for (0..num_elements) |i| {
             try assert.expect(p[i] == 0, "Allocated memory should be zero-initialized");
         }
-        std.heap.c_allocator.free(p);
+        c.free(p);
     } else {
         try assert.expect(false, "ft_calloc returned null pointer");
     }
@@ -111,7 +111,7 @@ fn test_calloc_different_sizes_fn(_: std.mem.Allocator) AssertError!void {
             try assert.expect(p[i] == 0, "Allocated memory should be zero-initialized");
         }
 
-        std.heap.c_allocator.free(p);
+        c.free(p);
         return;
     } else {
         try assert.expect(false, "ft_calloc returned null pointer");
@@ -141,12 +141,48 @@ fn test_calloc_overflow_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(ptr == null, "ft_calloc should return null pointer on overflow");
 }
 
+// Test with zero elements
+var test_calloc_zero_elements = TestCase{
+    .name = "Calloc with zero elements",
+    .fn_ptr = &test_calloc_zero_elements_fn,
+};
+
+fn test_calloc_zero_elements_fn(_: std.mem.Allocator) AssertError!void {
+    const num_elements: usize = 0;
+    const element_size: usize = @sizeOf(u8);
+
+    const ptr: ?*[num_elements * element_size]u8 = @ptrCast(c.ft_calloc(num_elements, element_size));
+
+    try assert.expect(ptr != null, "ft_calloc should return a non-null pointer when allocating zero elements");
+
+    c.free(ptr);
+}
+
+// Test with zero size
+var test_calloc_zero_size = TestCase{
+    .name = "Calloc with zero size",
+    .fn_ptr = &test_calloc_zero_size_fn,
+};
+
+fn test_calloc_zero_size_fn(_: std.mem.Allocator) AssertError!void {
+    const num_elements: usize = 5;
+    const element_size: usize = 0;
+
+    const ptr: ?*[num_elements * element_size]u8 = @ptrCast(c.ft_calloc(num_elements, element_size));
+
+    try assert.expect(ptr != null, "ft_calloc should return a non-null pointer when allocating with zero size");
+
+    c.free(ptr);
+}
+
 var test_cases = [_]*TestCase{
     &test_calloc_basic,
     &test_calloc_large,
     &test_calloc_different_sizes,
     &test_calloc_garbage,
     &test_calloc_overflow,
+    &test_calloc_zero_elements,
+    &test_calloc_zero_size,
 };
 
 const is_function_defined = function_list.hasFunction("ft_calloc");

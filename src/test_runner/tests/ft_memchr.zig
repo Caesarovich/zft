@@ -133,6 +133,57 @@ fn test_memchr_empty_buffer_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(result == null, "ft_memchr should not find any character in an empty buffer");
 }
 
+// Test with character larger than 255
+var test_memchr_large_character = TestCase{
+    .name = "Memchr with character > 255",
+    .fn_ptr = &test_memchr_large_character_fn,
+};
+
+fn test_memchr_large_character_fn(_: std.mem.Allocator) AssertError!void {
+    const buffer: [5]u8 = [_]u8{ 0, 1, 2, 3, 4 };
+    var target: c_int = 2 + 256; // 258 % 256 == 2
+    const n: usize = buffer.len;
+
+    const result = c.ft_memchr(&buffer, target, n);
+    try assert.expect(result != null, "ft_memchr should find the character 2");
+    if (result) |ptr| {
+        try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[2], "ft_memchr should return pointer to the first occurrence of 2");
+    }
+
+    target = 300; // 300 % 256 == 44
+    const result2 = c.ft_memchr(&buffer, target, n);
+    try assert.expect(result2 == null, "ft_memchr should not find the character 44");
+}
+
+// Test with negative character value
+var test_memchr_negative_character = TestCase{
+    .name = "Memchr with negative character",
+    .fn_ptr = &test_memchr_negative_character_fn,
+};
+
+fn test_memchr_negative_character_fn(_: std.mem.Allocator) AssertError!void {
+    const buffer: [5]u8 = [_]u8{ 0, 1, 2, 3, 4 };
+    var target: c_int = -1;
+    const n: usize = buffer.len;
+
+    const result = c.ft_memchr(&buffer, target, n);
+    try assert.expect(result == null, "ft_memchr should not find the character -1");
+
+    target = -256; // -256 % 256 == 0
+    const result2 = c.ft_memchr(&buffer, target, n);
+    try assert.expect(result2 != null, "ft_memchr should find the character 0");
+    if (result2) |ptr| {
+        try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[0], "ft_memchr should return pointer to the first occurrence of 0");
+    }
+
+    target = -253; // -253 % 256 == 3
+    const result3 = c.ft_memchr(&buffer, target, n);
+    try assert.expect(result3 != null, "ft_memchr should find the character 3");
+    if (result3) |ptr| {
+        try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[3], "ft_memchr should return pointer to the first occurrence of 3");
+    }
+}
+
 var test_cases = [_]*TestCase{
     &test_memchr_found,
     &test_memchr_not_found,
@@ -140,6 +191,8 @@ var test_cases = [_]*TestCase{
     &test_memchr_multiple_occurrences,
     &test_memchr_beyond_string,
     &test_memchr_null_character,
+    &test_memchr_large_character,
+    &test_memchr_negative_character,
     &test_memchr_empty_buffer,
 };
 
