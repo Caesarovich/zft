@@ -121,6 +121,17 @@ fn test_split_empty_string_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
+// Test split with null string
+var test_split_null_string = TestCase{
+    .name = "Null string",
+    .fn_ptr = &test_split_null_string_fn,
+};
+
+fn test_split_null_string_fn(_: std.mem.Allocator) AssertError!void {
+    const result = c.ft_split(null, ',');
+    try assert.expect(result == null, "ft_split should return null for null input string");
+}
+
 // Test split with only delimiters
 var test_split_only_delims = TestCase{
     .name = "Only delimiters",
@@ -179,6 +190,7 @@ var test_cases = [_]*TestCase{
     &test_split_leading_trailing,
     &test_split_no_delims,
     &test_split_empty_string,
+    &test_split_null_string,
     &test_split_only_delims,
     &test_split_space,
     &test_split_single_char,
