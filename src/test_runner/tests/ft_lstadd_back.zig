@@ -109,10 +109,64 @@ fn test_lstadd_back_multiple_fn(allocator: std.mem.Allocator) TestCaseError!void
     try assert.expect(current == null, "List should end after 5 nodes");
 }
 
+// Test adding a list to the back of the list
+var test_lstadd_back_list = TestCase{
+    .name = "Add list to back of list",
+    .fn_ptr = &test_lstadd_back_list_fn,
+};
+
+fn test_lstadd_back_list_fn(allocator: std.mem.Allocator) TestCaseError!void {
+    const values1: [5]u8 = .{ 1, 2, 3, 4, 5 };
+    var lst1: ?*c.t_list = null;
+
+    for (&values1) |*value| {
+        var new_node = try allocator.create(c.t_list);
+        new_node.content = @constCast(value);
+        new_node.next = null;
+
+        c.ft_lstadd_back(&lst1, new_node);
+    }
+
+    const values2: [5]u8 = .{ 0, 2, 4, 6, 8 };
+    var lst2: ?*c.t_list = null;
+
+    for (&values2) |*value| {
+        var new_node = try allocator.create(c.t_list);
+        new_node.content = @constCast(value);
+        new_node.next = null;
+
+        c.ft_lstadd_back(&lst2, new_node);
+    }
+
+    c.ft_lstadd_back(&lst1, lst2);
+
+    // Now the list should have 5 nodes with values 1, 2, 3, 4, 5
+    var current = lst1;
+    for (0..5) |expected_value| {
+        try assert.expect(current != null, "List should have enough nodes");
+        if (current) |node| {
+            try assert.expect(@as(*u8, @ptrCast(node.content)).* == (expected_value + 1), "Node content mismatch");
+            current = node.next;
+        }
+    }
+
+    //And after it should have 5 nodes with values 0, 2, 4, 6, 8
+    for (0..5) |expected_value| {
+        try assert.expect(current != null, "List should have enough nodes");
+        if (current) |node| {
+            try assert.expect(@as(*u8, @ptrCast(node.content)).* == (expected_value * 2), "Node content mismatch");
+            current = node.next;
+        }
+    }
+
+    try assert.expect(current == null, "List should end after 10 nodes");
+}
+
 var test_cases = [_]*TestCase{
     &test_lstadd_back_to_empty,
     &test_lstadd_back_to_non_empty,
     &test_lstadd_back_multiple,
+    &test_lstadd_back_list,
 };
 
 const is_function_defined = function_list.hasFunction("ft_lstadd_back");
