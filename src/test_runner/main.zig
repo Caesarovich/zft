@@ -52,8 +52,6 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: tests.tests.TestSuite
         counts.skipped += skipped_count;
         counts.total += skipped_count;
 
-        std.debug.print("Suite {s} skipped with {d} test cases.\n", .{ suite.name, skipped_count });
-
         try stdout.writeAll(" - Skipped");
         try ansi.format.resetStyle(stdout);
         try stdout.writeAll("\n");
