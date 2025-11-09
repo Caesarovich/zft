@@ -26,6 +26,8 @@ var jmp_buffer: c.jmp_buf = undefined;
 pub const TestCase = struct {
     /// Human-readable name for the test case
     name: []const u8,
+    /// Optional longer description or notes for the test case
+    description: ?[]const u8 = null,
     /// Current result of the test execution
     result: TestResult = .not_run,
     /// Information about test failure (if any)
