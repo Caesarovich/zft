@@ -182,6 +182,39 @@ fn test_striteri_special_chars_fn(_: std.mem.Allocator) AssertError!void {
     try assert.expect(g_call_count == 9, "Expected function to be called 9 times");
 }
 
+// Test with NULL string
+var test_striteri_null_string = TestCase{
+    .name = "NULL string",
+    .fn_ptr = &test_striteri_null_string_fn,
+};
+
+fn test_striteri_null_string_fn(_: std.mem.Allocator) AssertError!void {
+    reset_call_tracking();
+    const str_ptr: [*c]u8 = null;
+
+    // Expect no crash or undefined behavior
+    c.ft_striteri(str_ptr, to_upper_inplace);
+
+    try assert.expect(g_call_count == 0, "Expected function to not be called for NULL string");
+}
+
+// Test with NULL function pointer
+var test_striteri_null_function = TestCase{
+    .name = "NULL function pointer",
+    .fn_ptr = &test_striteri_null_function_fn,
+};
+
+fn test_striteri_null_function_fn(_: std.mem.Allocator) AssertError!void {
+    reset_call_tracking();
+    var test_str = [_]u8{ 'h', 'e', 'l', 'l', 'o', 0 };
+
+    // Expect no crash or undefined behavior
+    c.ft_striteri(&test_str, null);
+
+    try assert.expect(c.strcmp(&test_str, "hello") == 0, "Expected string to remain unchanged");
+    try assert.expect(g_call_count == 0, "Expected function to not be called for NULL function pointer");
+}
+
 var test_cases = [_]*TestCase{
     &test_striteri_uppercase,
     &test_striteri_add_index,
@@ -190,6 +223,8 @@ var test_cases = [_]*TestCase{
     &test_striteri_single_char,
     &test_striteri_mixed_case,
     &test_striteri_special_chars,
+    &test_striteri_null_string,
+    &test_striteri_null_function,
 };
 
 const is_function_defined = function_list.hasFunction("ft_striteri");

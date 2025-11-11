@@ -141,6 +141,33 @@ fn test_strmapi_special_chars_fn(_: std.mem.Allocator) AssertError!void {
     }
 }
 
+// Test with NULL string
+var test_strmapi_null_string = TestCase{
+    .name = "NULL string",
+    .fn_ptr = &test_strmapi_null_string_fn,
+};
+
+fn test_strmapi_null_string_fn(_: std.mem.Allocator) AssertError!void {
+    const result = c.ft_strmapi(null, to_upper);
+    try assert.expect(result == null, "ft_strmapi should return null for null input string");
+}
+
+// Test with NULL function pointer
+var test_strmapi_null_function = TestCase{
+    .name = "NULL function pointer",
+    .fn_ptr = &test_strmapi_null_function_fn,
+};
+
+fn test_strmapi_null_function_fn(_: std.mem.Allocator) AssertError!void {
+    const result = c.ft_strmapi("hello", null);
+    // strmapi should return a copy of the original string when function pointer is null
+    try assert.expect(result != null, "ft_strmapi should return a valid pointer when function is null");
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "hello") == 0, "Expected string to remain unchanged");
+        c.free(str);
+    }
+}
+
 var test_cases = [_]*TestCase{
     &test_strmapi_uppercase,
     &test_strmapi_add_index,
@@ -149,6 +176,8 @@ var test_cases = [_]*TestCase{
     &test_strmapi_single_char,
     &test_strmapi_mixed_case,
     &test_strmapi_special_chars,
+    &test_strmapi_null_string,
+    &test_strmapi_null_function,
 };
 
 const is_function_defined = function_list.hasFunction("ft_strmapi");
