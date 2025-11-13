@@ -239,6 +239,40 @@ fn test_atoi_limits_fn(_: std.mem.Allocator) TestCaseError!void {
     try assert.expect(result == -2147483648, "ft_atoi should convert '-2147483648' to INT_MIN");
 }
 
+// Test with overflow bigger than int but smaller than long long
+var test_atoi_overflow = TestCase{
+    .name = "Atoi overflow beyond int",
+    .speculative = true,
+    .fn_ptr = &test_atoi_overflow_fn,
+};
+
+fn test_atoi_overflow_fn(_: std.mem.Allocator) TestCaseError!void {
+    var str: [*c]const u8 = "9223372036854775805"; // LLONG_MAX - 2
+    var result = ft_atoi(str);
+    try assert.expect(result == -3, "ft_atoi should overflow and return -3 for overflow beyond int");
+
+    str = "-9223372036854775806"; // LLONG_MIN + 2
+    result = ft_atoi(str);
+    try assert.expect(result == 2, "ft_atoi should overflow and return 2 for underflow beyond int");
+}
+
+// Test with overflow bigger than long long
+var test_atoi_overflow_long_long = TestCase{
+    .name = "Atoi overflow beyond long long",
+    .speculative = true,
+    .fn_ptr = &test_atoi_overflow_long_long_fn,
+};
+
+fn test_atoi_overflow_long_long_fn(_: std.mem.Allocator) TestCaseError!void {
+    var str: [*c]const u8 = "92233720368547758079223372036854775807"; // way beyond LLONG_MAX
+    var result = ft_atoi(str);
+    try assert.expect(result == -1, "ft_atoi should return -1 for extreme overflow beyond long long");
+
+    str = "-92233720368547758089223372036854775808"; // way beyond LLONG_MIN
+    result = ft_atoi(str);
+    try assert.expect(result == 0, "ft_atoi should return 0 for extreme underflow beyond long long");
+}
+
 var test_cases = [_]*TestCase{
     &test_atoi_positive,
     &test_atoi_negative,
@@ -251,6 +285,8 @@ var test_cases = [_]*TestCase{
     &test_atoi_empty_string,
     &test_atoi_only_invalid,
     &test_atoi_limits,
+    &test_atoi_overflow,
+    &test_atoi_overflow_long_long,
 };
 
 pub var suite = TestSuite{

@@ -203,6 +203,7 @@ fn test_lstiter_string_fn(_: std.mem.Allocator) TestCaseError!void {
 // Test iterating over nodes with null content
 var test_lstiter_null_content = TestCase{
     .name = "Iterate over nodes with null content",
+    .speculative = true,
     .fn_ptr = &test_lstiter_null_content_fn,
 };
 

@@ -38,6 +38,12 @@ var test_long_string = TestCase{
     .fn_ptr = &test_long_string_fn,
 };
 
+var test_null_string = TestCase{
+    .name = "NULL string",
+    .speculative = true,
+    .fn_ptr = &test_null_string_fn,
+};
+
 fn test_empty_string_fn(_: std.mem.Allocator) TestCaseError!void {
     try assert.expect(ft_strlen("") == 0, "Expected empty string to have length 0");
 }
@@ -50,7 +56,17 @@ fn test_long_string_fn(_: std.mem.Allocator) TestCaseError!void {
     try assert.expect(ft_strlen("abcdefghijklmnopqrstuvwxyz") == 26, "Expected alphabet string to have length 26");
 }
 
-var test_cases = [_]*TestCase{ &test_empty_string, &test_normal_string, &test_long_string };
+fn test_null_string_fn(_: std.mem.Allocator) TestCaseError!void {
+    // Depending on the implementation, ft_strlen may return 0 or cause a segmentation fault.
+    try assert.expect(ft_strlen(null) == 0, "Expected NULL string to have length 0");
+}
+
+var test_cases = [_]*TestCase{
+    &test_empty_string,
+    &test_normal_string,
+    &test_long_string,
+    &test_null_string,
+};
 
 pub var suite = TestSuite{
     .name = "ft_strlen",

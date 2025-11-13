@@ -79,6 +79,7 @@ fn test_substr_start_beyond_fn(_: std.mem.Allocator) TestCaseError!void {
 // Test substring with length longer than remaining string
 var test_substr_len_beyond = TestCase{
     .name = "Length beyond remaining string",
+    .speculative = true,
     .fn_ptr = &test_substr_len_beyond_fn,
 };
 
@@ -124,6 +125,7 @@ fn test_substr_empty_src_fn(_: std.mem.Allocator) TestCaseError!void {
 // Test with null source string
 var test_substr_null_src = TestCase{
     .name = "Null source string",
+    .speculative = true,
     .fn_ptr = &test_substr_null_src_fn,
 };
 

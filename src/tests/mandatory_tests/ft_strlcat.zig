@@ -139,6 +139,35 @@ fn test_append_with_garbage_fn(_: std.mem.Allocator) TestCaseError!void {
     try assert.expect(dest[5] == 0xFF, "Expected garbage values to remain after null-termination");
 }
 
+// Test with NULL destination pointer
+var test_append_with_null_dest = TestCase{
+    .name = "Append with NULL destination",
+    .speculative = true,
+    .fn_ptr = &test_append_with_null_dest_fn,
+};
+
+fn test_append_with_null_dest_fn(_: std.mem.Allocator) TestCaseError!void {
+    const src = "Hello";
+    // This should not crash - behavior depends on implementation
+    const result = ft_strlcat(null, src, 10);
+    try assert.expect(result == c.strlen(src), "Expected length to be length of source when dest is NULL");
+}
+
+// Test with NULL source pointer
+var test_append_with_null_src = TestCase{
+    .name = "Append with NULL source",
+    .speculative = true,
+    .fn_ptr = &test_append_with_null_src_fn,
+};
+
+fn test_append_with_null_src_fn(_: std.mem.Allocator) TestCaseError!void {
+    var dest: [20]u8 = undefined;
+    @memcpy(dest[0..6], "Hello");
+    dest[5] = 0; // Null-terminate
+    const result = ft_strlcat(&dest[0], null, dest.len);
+    try assert.expect(result == c.strlen(dest[0..]), "Expected length to be length of destination when src is NULL");
+}
+
 var test_cases = [_]*TestCase{
     &test_append_to_empty_dest,
     &test_append_with_small_buffer,
@@ -147,6 +176,8 @@ var test_cases = [_]*TestCase{
     &test_append_exact_fit,
     &test_append_with_dest_size_smaller,
     &test_append_with_garbage,
+    &test_append_with_null_dest,
+    &test_append_with_null_src,
 };
 
 pub var suite = TestSuite{

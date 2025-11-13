@@ -34,6 +34,9 @@ pub const TestCase = struct {
     fail_info: ?AssertFailureInfo = null,
     /// Whether this test is expected to segfault (used for testing error conditions)
     expect_segfault: bool = false,
+
+    /// Wether this test's expected outcome is speculative (i.e., undefined behavior)
+    speculative: bool = false,
     /// Function pointer to the actual test implementation
     fn_ptr: *const fn (std.mem.Allocator) TestCaseError!void,
 

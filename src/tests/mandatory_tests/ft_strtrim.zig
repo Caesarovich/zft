@@ -146,6 +146,7 @@ fn test_strtrim_end_only_fn(_: std.mem.Allocator) TestCaseError!void {
 // Test string is null
 var test_strtrim_null_string = TestCase{
     .name = "Null string input",
+    .speculative = true,
     .fn_ptr = &test_strtrim_null_string_fn,
 };
 
@@ -157,6 +158,7 @@ fn test_strtrim_null_string_fn(_: std.mem.Allocator) TestCaseError!void {
 // Test set is null
 var test_strtrim_null_set = TestCase{
     .name = "Null set input",
+    .speculative = true,
     .fn_ptr = &test_strtrim_null_set_fn,
 };
 

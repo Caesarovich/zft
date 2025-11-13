@@ -78,6 +78,7 @@ fn test_putendl_fd_empty_fn(_: std.mem.Allocator) TestCaseError!void {
 // Test ft_putendl_fd with null string
 var test_putendl_fd_null = TestCase{
     .name = "Put null string with newline to fd",
+    .speculative = true,
     .fn_ptr = &test_putendl_fd_null_fn,
 };
 

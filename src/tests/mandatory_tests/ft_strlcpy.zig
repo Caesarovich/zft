@@ -115,6 +115,34 @@ fn test_copy_with_size_larger_fn(_: std.mem.Allocator) TestCaseError!void {
     try assert.expect(std.mem.eql(u8, dest[8..20], "AAAAAAAAAAAA"), "Expected remaining bytes to be unchanged");
 }
 
+// Test with destination as null pointer
+var test_copy_with_null_dest = TestCase{
+    .name = "Copy with null destination",
+    .speculative = true,
+    .fn_ptr = &test_copy_with_null_dest_fn,
+};
+
+fn test_copy_with_null_dest_fn(_: std.mem.Allocator) TestCaseError!void {
+    const src = "Hello";
+    // This should not crash - behavior depends on implementation
+    const result = ft_strlcpy(null, src, 10);
+    try assert.expect(result == c.strlen(src), "Expected length to be length of source when dest is NULL");
+}
+
+// Test with source as null pointer
+var test_copy_with_null_src = TestCase{
+    .name = "Copy with null source",
+    .speculative = true,
+    .fn_ptr = &test_copy_with_null_src_fn,
+};
+
+fn test_copy_with_null_src_fn(_: std.mem.Allocator) TestCaseError!void {
+    var dest: [10]u8 = undefined;
+    // This should not crash - behavior depends on implementation
+    const result = ft_strlcpy(&dest[0], null, dest.len);
+    try assert.expect(result == 0, "Expected length to be 0 when source is NULL");
+}
+
 var test_cases = [_]*TestCase{
     &test_normal_copy,
     &test_truncated_copy,
@@ -122,6 +150,8 @@ var test_cases = [_]*TestCase{
     &test_copy_size_zero,
     &test_copy_with_dest_size_smaller,
     &test_copy_with_size_larger,
+    &test_copy_with_null_dest,
+    &test_copy_with_null_src,
 };
 
 pub var suite = TestSuite{

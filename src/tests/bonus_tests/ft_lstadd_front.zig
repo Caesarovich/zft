@@ -116,10 +116,37 @@ fn test_lstadd_front_multiple_fn(allocator: std.mem.Allocator) TestCaseError!voi
     try assert.expect(current == null, "List should end after 5 nodes");
 }
 
+// Test adding a NULL node
+var test_lstadd_front_null_node = TestCase{
+    .name = "Add NULL node to front of list",
+    .speculative = true,
+    .fn_ptr = &test_lstadd_front_null_node_fn,
+};
+
+fn test_lstadd_front_null_node_fn(_: std.mem.Allocator) TestCaseError!void {
+    const value: u8 = 42;
+    var lst: ?*c.t_list = null;
+    var first_node: c.t_list = .{
+        .content = @constCast(&value),
+        .next = null,
+    };
+
+    lst = &first_node;
+
+    ft_lstadd_front(&lst, null);
+
+    try assert.expect(lst == &first_node, "List should remain unchanged when adding NULL node");
+    if (lst) |node| {
+        try assert.expect(@as(*u8, @ptrCast(node.content)).* == value, "Expected content to be 42");
+        try assert.expect(node.next == null, "Expected next to be null");
+    }
+}
+
 var test_cases = [_]*TestCase{
     &test_lstadd_front_to_empty,
     &test_lstadd_front_to_non_empty,
     &test_lstadd_front_multiple,
+    &test_lstadd_front_null_node,
 };
 
 pub var suite = TestSuite{

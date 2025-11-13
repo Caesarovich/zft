@@ -117,10 +117,37 @@ fn test_lstclear_multiple_fn(_: std.mem.Allocator) TestCaseError!void {
     try assert.expect(clear_delete_call_count == node_count, "Expected delete function to be called for each node");
 }
 
+// Test with NULL function
+var test_lstclear_null_function = TestCase{
+    .name = "Clear list with NULL delete function",
+    .speculative = true,
+    .fn_ptr = &test_lstclear_null_function_fn,
+};
+
+fn test_lstclear_null_function_fn(_: std.mem.Allocator) TestCaseError!void {
+    const content = c.malloc(10);
+    try assert.expect(content != null, "Failed to allocate memory for content (This is an error in the test, not in the function being tested)");
+    defer c.free(content);
+
+    const node = c.malloc(@sizeOf(c.t_list));
+    try assert.expect(node != null, "Failed to allocate memory for node (This is an error in the test, not in the function being tested)");
+
+    const list_node: *c.t_list = @ptrCast(@alignCast(node));
+    list_node.content = content;
+    list_node.next = null;
+
+    var lst: ?*c.t_list = list_node;
+
+    ft_lstclear(&lst, null);
+
+    try assert.expect(lst == null, "Expected list to be null after clearing with NULL delete function");
+}
+
 var test_cases = [_]*TestCase{
     &test_lstclear_empty,
     &test_lstclear_single,
     &test_lstclear_multiple,
+    &test_lstclear_null_function,
 };
 
 pub var suite = TestSuite{

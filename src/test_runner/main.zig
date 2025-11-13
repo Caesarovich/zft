@@ -17,7 +17,6 @@ pub const TestCounts = struct {
     passed: usize,
     failed: usize,
     skipped: usize,
-    segfault: usize,
 
     pub fn add(self: TestCounts, other: TestCounts) TestCounts {
         return TestCounts{
@@ -25,13 +24,12 @@ pub const TestCounts = struct {
             .passed = self.passed + other.passed,
             .failed = self.failed + other.failed,
             .skipped = self.skipped + other.skipped,
-            .segfault = self.segfault + other.segfault,
         };
     }
 };
 
 fn print_test_suite_results(stdout: *std.io.Writer, suite: TestSuite) !TestCounts {
-    var counts: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0, .segfault = 0 };
+    var counts: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0 };
 
     try ansi.format.resetStyle(stdout);
 
@@ -78,12 +76,12 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: TestSuite) !TestCount
                 try stdout.print("{s}\n", .{test_case.name});
                 try ansi.format.resetStyle(stdout);
             },
-            TestResult.fail => {
+            TestResult.fail, TestResult.segfault => |r| {
                 counts.failed += 1;
                 try ansi.format.updateStyle(stdout, .{
-                    .foreground = .Red,
+                    .foreground = if (test_case.speculative) .Yellow else .Red,
                 }, .{});
-                try stdout.print(" ✕ {s}\n", .{test_case.name});
+                try stdout.print(" ✕ {s}{s}{s}\n", .{ test_case.name, if (test_case.speculative) " (speculative)" else "", if (r == .segfault) " [⚠️ SEGFAULT]" else "" });
                 try ansi.format.resetStyle(stdout);
 
                 if (test_case.fail_info) |info| {
@@ -108,15 +106,6 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: TestSuite) !TestCount
                         try stdout.print("   at {s}:{d}\n", .{ info.file, info.line });
                     }
                 }
-            },
-            TestResult.segfault => {
-                counts.segfault += 1;
-                try ansi.format.updateStyle(stdout, .{ .foreground = .Red }, .{});
-                try stdout.writeAll(" ⚠️ ");
-                try ansi.format.resetStyle(stdout);
-                try ansi.format.updateStyle(stdout, .{ .font_style = .{ .bold = true } }, .{});
-                try stdout.print("{s} [SEGFAULT]\n", .{test_case.name});
-                try ansi.format.resetStyle(stdout);
             },
             else => {},
         }
@@ -161,7 +150,7 @@ fn run_test_collection(allocator: std.mem.Allocator, writer: *std.io.Writer, col
     try print_test_collection_title(allocator, writer, collection);
     collection.run(allocator);
 
-    var total_counts: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0, .segfault = 0 };
+    var total_counts: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0 };
 
     for (collection.suites) |suite| {
         const suite_counts = try print_test_suite_results(writer, suite.*);
@@ -172,7 +161,6 @@ fn run_test_collection(allocator: std.mem.Allocator, writer: *std.io.Writer, col
 }
 
 fn print_final_report(allocator: std.mem.Allocator, stdout: *std.io.Writer, counts: TestCounts) !void {
-    const failed_total = counts.failed + counts.segfault;
     const pass_percent: usize = if (counts.total == 0) 0 else (counts.passed * 100) / counts.total;
 
     const headers = [_][]const u8{ "Passed", "Failed", "Skipped", "Total", "Pass%" };
@@ -180,7 +168,7 @@ fn print_final_report(allocator: std.mem.Allocator, stdout: *std.io.Writer, coun
     // Prepare value strings
     const val_passed = try std.fmt.allocPrint(allocator, "{d}", .{counts.passed});
     defer allocator.free(val_passed);
-    const val_failed = try std.fmt.allocPrint(allocator, "{d}", .{failed_total});
+    const val_failed = try std.fmt.allocPrint(allocator, "{d}", .{counts.failed});
     defer allocator.free(val_failed);
     const val_skipped = try std.fmt.allocPrint(allocator, "{d}", .{counts.skipped});
     defer allocator.free(val_skipped);
@@ -304,7 +292,7 @@ pub fn main() !void {
     const stdout = &stdout_write.interface;
     defer stdout.flush() catch {};
 
-    var total_report: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0, .segfault = 0 };
+    var total_report: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0 };
 
     const base_counts = try run_test_collection(allocator, stdout, &test_collections.mandatory_test_collection);
     total_report = total_report.add(base_counts);

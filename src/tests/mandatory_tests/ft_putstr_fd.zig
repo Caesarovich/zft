@@ -75,6 +75,7 @@ fn test_putstr_fd_empty_fn(_: std.mem.Allocator) TestCaseError!void {
 // Test ft_putstr_fd with null string
 var test_putstr_fd_null = TestCase{
     .name = "Put null string to fd",
+    .speculative = true,
     .fn_ptr = &test_putstr_fd_null_fn,
 };
 

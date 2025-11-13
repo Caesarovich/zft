@@ -132,10 +132,53 @@ fn test_lstdelone_with_next_fn(_: std.mem.Allocator) TestCaseError!void {
     c.free(node2);
 }
 
+// Test deleting a NULL node pointer
+var test_lstdelone_null_node = TestCase{
+    .name = "Delete null node pointer",
+    .speculative = true,
+    .fn_ptr = &test_lstdelone_null_node_fn,
+};
+
+fn test_lstdelone_null_node_fn(_: std.mem.Allocator) TestCaseError!void {
+    delete_call_count = 0;
+
+    // Call ft_lstdelone with a null pointer
+    ft_lstdelone(null, &test_delete_function);
+
+    try assert.expect(delete_call_count == 0, "Expected delete function not to be called for null node");
+}
+
+// Test deleting a node with a null deletion function
+var test_lstdelone_null_function = TestCase{
+    .name = "Delete node with null deletion function",
+    .speculative = true,
+    .fn_ptr = &test_lstdelone_null_function_fn,
+};
+
+fn test_lstdelone_null_function_fn(_: std.mem.Allocator) TestCaseError!void {
+    const content = c.malloc(10);
+    try assert.expect(content != null, "Failed to allocate memory for content");
+    defer c.free(content);
+
+    const node = c.malloc(@sizeOf(c.t_list));
+    try assert.expect(node != null, "Failed to allocate memory for node");
+
+    const list_node: *c.t_list = @ptrCast(@alignCast(node));
+    list_node.* = .{
+        .content = content,
+        .next = null,
+    };
+
+    // Call ft_lstdelone with a null deletion function
+    ft_lstdelone(list_node, null);
+}
+
 var test_cases = [_]*TestCase{
     &test_lstdelone_with_content,
     &test_lstdelone_null_content,
     &test_lstdelone_with_next,
+    &test_lstdelone_null_node,
+    &test_lstdelone_null_function,
 };
 
 pub var suite = TestSuite{

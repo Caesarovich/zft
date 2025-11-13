@@ -86,23 +86,33 @@ fn test_strjoin_both_empty_fn(_: std.mem.Allocator) TestCaseError!void {
 // Test join with null first string
 var test_strjoin_null_first = TestCase{
     .name = "Null first string",
+    .speculative = true,
     .fn_ptr = &test_strjoin_null_first_fn,
 };
 
 fn test_strjoin_null_first_fn(_: std.mem.Allocator) TestCaseError!void {
     const result = ft_strjoin(null, "World");
-    try assert.expect(result == null, "ft_strjoin should return null for null first string");
+    try assert.expect(result != null, "ft_strjoin should return a valid pointer even with null first string");
+    defer c.free(result);
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "World") == 0, "Expected second string 'World' when first is null");
+    }
 }
 
 // Test join with null second string
 var test_strjoin_null_second = TestCase{
     .name = "Null second string",
+    .speculative = true,
     .fn_ptr = &test_strjoin_null_second_fn,
 };
 
 fn test_strjoin_null_second_fn(_: std.mem.Allocator) TestCaseError!void {
     const result = ft_strjoin("Hello", null);
-    try assert.expect(result == null, "ft_strjoin should return null for null second string");
+    try assert.expect(result != null, "ft_strjoin should return a valid pointer even with null second string");
+    defer c.free(result);
+    if (result) |str| {
+        try assert.expect(c.strcmp(str, "Hello") == 0, "Expected first string 'Hello' when second is null");
+    }
 }
 
 // Test join with long strings

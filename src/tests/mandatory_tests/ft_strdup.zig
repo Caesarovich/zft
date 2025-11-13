@@ -69,9 +69,23 @@ fn test_strdup_empty_fn(_: std.mem.Allocator) TestCaseError!void {
     }
 }
 
+// Test with NULL input
+var test_strdup_null = TestCase{
+    .name = "NULL string duplication",
+    .speculative = true,
+    .fn_ptr = &test_strdup_null_fn,
+};
+
+fn test_strdup_null_fn(_: std.mem.Allocator) TestCaseError!void {
+    const duplicated: ?[*c]const u8 = ft_strdup(null);
+
+    try assert.expect(duplicated == null, "ft_strdup should return null when input is null");
+}
+
 var test_cases = [_]*TestCase{
     &test_strdup_basic,
     &test_strdup_empty,
+    &test_strdup_null,
 };
 
 pub var suite = TestSuite{

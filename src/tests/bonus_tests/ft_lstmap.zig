@@ -279,12 +279,73 @@ fn test_lstmap_counter_fn(_: std.mem.Allocator) TestCaseError!void {
     }
 }
 
+// Test with null delete function
+var test_lstmap_null_delete = TestCase{
+    .name = "Map with null delete function",
+    .speculative = true,
+    .fn_ptr = &test_lstmap_null_delete_fn,
+};
+
+fn test_lstmap_null_delete_fn(_: std.mem.Allocator) TestCaseError!void {
+    var value: u8 = 5;
+    var node: c.t_list = .{
+        .content = &value,
+        .next = null,
+    };
+
+    const new_list = ft_lstmap(&node, &double_map_function, null);
+    try assert.expect(new_list != null, "Expected new list to be created");
+
+    if (new_list) |list| {
+        try assert.expect(list.*.content != null, "Expected new node to have content");
+        if (list.*.content) |content| {
+            const new_value = @as(*u8, @ptrCast(@alignCast(content)));
+            try assert.expect(new_value.* == 10, "Expected doubled value to be 10");
+        }
+        try assert.expect(list.*.next == null, "Expected single node list");
+
+        // Clean up
+        var list_start: ?*c.t_list = list;
+        ft_lstclear(&list_start, &simple_map_delete_function);
+    }
+}
+
+// Test with null mapping function
+var test_lstmap_null_mapping = TestCase{
+    .name = "Map with null mapping function",
+    .speculative = true,
+    .fn_ptr = &test_lstmap_null_mapping_fn,
+};
+
+fn test_lstmap_null_mapping_fn(_: std.mem.Allocator) TestCaseError!void {
+    var value: u8 = 5;
+    var node: c.t_list = .{
+        .content = &value,
+        .next = null,
+    };
+
+    const new_list = ft_lstmap(&node, null, &simple_map_delete_function);
+    try assert.expect(new_list != null, "Expected new list to be created");
+
+    if (new_list) |list| {
+        const new_value = @as(*u8, @ptrCast(@alignCast(list.*.content)));
+        try assert.expect(new_value.* == 5, "Expected original value to be unchanged");
+        try assert.expect(list.*.next == null, "Expected single node list");
+
+        // Clean up
+        var list_start: ?*c.t_list = list;
+        ft_lstclear(&list_start, &simple_map_delete_function);
+    }
+}
+
 var test_cases = [_]*TestCase{
     &test_lstmap_empty,
     &test_lstmap_single,
     &test_lstmap_multiple,
     &test_lstmap_strings,
     &test_lstmap_counter,
+    &test_lstmap_null_delete,
+    &test_lstmap_null_mapping,
 };
 
 pub var suite = TestSuite{

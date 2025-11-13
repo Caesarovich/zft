@@ -194,6 +194,7 @@ fn test_striteri_special_chars_fn(_: std.mem.Allocator) TestCaseError!void {
 // Test with NULL string
 var test_striteri_null_string = TestCase{
     .name = "NULL string",
+    .speculative = true,
     .fn_ptr = &test_striteri_null_string_fn,
 };
 
@@ -210,6 +211,7 @@ fn test_striteri_null_string_fn(_: std.mem.Allocator) TestCaseError!void {
 // Test with NULL function pointer
 var test_striteri_null_function = TestCase{
     .name = "NULL function pointer",
+    .speculative = true,
     .fn_ptr = &test_striteri_null_function_fn,
 };
 
