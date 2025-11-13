@@ -126,7 +126,7 @@ fn test_copy_with_null_dest_fn(_: std.mem.Allocator) TestCaseError!void {
     const src = "Hello";
     // This should not crash - behavior depends on implementation
     const result = ft_strlcpy(null, src, 10);
-    try assert.expect(result == c.strlen(src), "Expected length to be length of source when dest is NULL");
+    try assert.expect(result == 5, "Expected length to be length of source when dest is NULL");
 }
 
 // Test with source as null pointer

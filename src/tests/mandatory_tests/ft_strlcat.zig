@@ -150,7 +150,7 @@ fn test_append_with_null_dest_fn(_: std.mem.Allocator) TestCaseError!void {
     const src = "Hello";
     // This should not crash - behavior depends on implementation
     const result = ft_strlcat(null, src, 10);
-    try assert.expect(result == c.strlen(src), "Expected length to be length of source when dest is NULL");
+    try assert.expect(result == 5, "Expected length to be length of source when dest is NULL");
 }
 
 // Test with NULL source pointer
@@ -162,10 +162,10 @@ var test_append_with_null_src = TestCase{
 
 fn test_append_with_null_src_fn(_: std.mem.Allocator) TestCaseError!void {
     var dest: [20]u8 = undefined;
-    @memcpy(dest[0..6], "Hello");
+    @memcpy(dest[0..5], "Hello");
     dest[5] = 0; // Null-terminate
     const result = ft_strlcat(&dest[0], null, dest.len);
-    try assert.expect(result == c.strlen(dest[0..]), "Expected length to be length of destination when src is NULL");
+    try assert.expect(result == 5, "Expected length to be length of destination when src is NULL");
 }
 
 var test_cases = [_]*TestCase{
