@@ -16,3 +16,5 @@ zig-*
 
 # Test LIBFT
 test_libft
+
+function_list.txt

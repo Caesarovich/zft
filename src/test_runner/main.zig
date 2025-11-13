@@ -2,8 +2,12 @@ const std = @import("std");
 const ansi = @import("ansi");
 const termsize = @import("termsize");
 
-const tests = @import("tests");
-const test_collections = @import("tests/main.zig");
+const TestFramework = @import("test-framework");
+const TestSuite = TestFramework.tests.TestSuite;
+const TestResult = TestFramework.tests.TestResult;
+const TestCollection = TestFramework.tests.TestCollection;
+
+const test_collections = @import("tests");
 
 const config = @import("config");
 const bonus_enabled = config.bonus;
@@ -26,7 +30,7 @@ pub const TestCounts = struct {
     }
 };
 
-fn print_test_suite_results(stdout: *std.io.Writer, suite: tests.tests.TestSuite) !TestCounts {
+fn print_test_suite_results(stdout: *std.io.Writer, suite: TestSuite) !TestCounts {
     var counts: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0, .segfault = 0 };
 
     try ansi.format.resetStyle(stdout);
@@ -64,7 +68,7 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: tests.tests.TestSuite
     for (suite.cases) |test_case| {
         counts.total += 1;
         switch (test_case.result) {
-            tests.tests.TestResult.pass => {
+            TestResult.pass => {
                 counts.passed += 1;
                 try ansi.format.updateStyle(stdout, .{ .foreground = .Green }, .{});
                 try stdout.writeAll(" ✔ ");
@@ -74,7 +78,7 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: tests.tests.TestSuite
                 try stdout.print("{s}\n", .{test_case.name});
                 try ansi.format.resetStyle(stdout);
             },
-            tests.tests.TestResult.fail => {
+            TestResult.fail => {
                 counts.failed += 1;
                 try ansi.format.updateStyle(stdout, .{
                     .foreground = .Red,
@@ -105,7 +109,7 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: tests.tests.TestSuite
                     }
                 }
             },
-            tests.tests.TestResult.segfault => {
+            TestResult.segfault => {
                 counts.segfault += 1;
                 try ansi.format.updateStyle(stdout, .{ .foreground = .Red }, .{});
                 try stdout.writeAll(" ⚠️ ");
@@ -121,7 +125,7 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: tests.tests.TestSuite
     return counts;
 }
 
-fn print_test_collection_title(allocator: std.mem.Allocator, stdout: *std.io.Writer, collection: *tests.tests.TestCollection) !void {
+fn print_test_collection_title(allocator: std.mem.Allocator, stdout: *std.io.Writer, collection: *TestCollection) !void {
     const size = try termsize.termSize(std.fs.File.stdout());
     const width = if (size) |s| s.width else 80;
     const delimiter_width = (width - collection.name.len - 2) / 2;
@@ -153,7 +157,7 @@ fn print_test_collection_title(allocator: std.mem.Allocator, stdout: *std.io.Wri
     try stdout.writeAll("\n\n");
 }
 
-fn run_test_collection(allocator: std.mem.Allocator, writer: *std.io.Writer, collection: *tests.tests.TestCollection) !TestCounts {
+fn run_test_collection(allocator: std.mem.Allocator, writer: *std.io.Writer, collection: *TestCollection) !TestCounts {
     try print_test_collection_title(allocator, writer, collection);
     collection.run(allocator);
 
@@ -302,7 +306,7 @@ pub fn main() !void {
 
     var total_report: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0, .segfault = 0 };
 
-    const base_counts = try run_test_collection(allocator, stdout, &test_collections.base_test_collection);
+    const base_counts = try run_test_collection(allocator, stdout, &test_collections.mandatory_test_collection);
     total_report = total_report.add(base_counts);
 
     if (bonus_enabled) {

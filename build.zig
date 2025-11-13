@@ -39,12 +39,25 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    // TESTS MODULE
-    const tests_module = b.createModule(.{
-        .root_source_file = b.path("lib/tests/main.zig"),
+    // UNIT TESTS FRAMEWORK
+    const test_framework_module = b.createModule(.{
+        .root_source_file = b.path("lib/test-framework/main.zig"),
         .target = target,
         .optimize = optimize,
     });
+
+    // UNIT TESTS
+    const tests_module = b.createModule(.{
+        .root_source_file = b.path("src/tests/main.zig"),
+        .target = target,
+        .optimize = optimize,
+        .imports = &.{
+            .{ .name = "test-framework", .module = test_framework_module },
+        },
+    });
+
+    tests_module.addIncludePath(b.path("includes"));
+    tests_module.addObjectFile(b.path(libft_archive_path));
 
     // LIBFT_MAKER
     const libft_maker = b.addExecutable(.{
@@ -72,6 +85,26 @@ pub fn build(b: *std.Build) void {
     var libft_maker_step = b.step("libft_maker", "Build the libft library");
     libft_maker_step.dependOn(&libft_maker.step);
 
+    // FUNCTION LIST MODULE
+    const get_function_list = b.addSystemCommand(&[_][]const u8{ "nm", libft_archive_path, "--defined-only", "--format=just-symbols" });
+    get_function_list.step.dependOn(&run_libft_maker.step);
+    get_function_list.addFileInput(b.path(libft_archive_path));
+    const nm_output = get_function_list.captureStdOut();
+
+    const copy_function_list = b.addSystemCommand(&[_][]const u8{"cp"});
+    copy_function_list.addFileArg(nm_output);
+    copy_function_list.addArg("src/function_list.txt");
+    copy_function_list.step.dependOn(&get_function_list.step);
+    copy_function_list.addFileInput(b.path(libft_archive_path));
+
+    const function_list_module = b.createModule(.{
+        .root_source_file = b.path("src/function_list.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
+    tests_module.addImport("function_list", function_list_module);
+
     // MAIN EXECUTABLE
     const exe = b.addExecutable(.{
         .name = "zft",
@@ -82,43 +115,16 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
             .link_libc = true,
             .imports = &.{
-                .{ .name = "tests", .module = tests_module },
+                .{ .name = "test-framework", .module = test_framework_module },
                 .{ .name = "ansi", .module = ansi_module },
                 .{ .name = "termsize", .module = termsize_module },
+                .{ .name = "tests", .module = tests_module },
             },
         }),
     });
 
-    exe.root_module.addIncludePath(b.path("includes"));
-    exe.root_module.addObjectFile(b.path(libft_archive_path));
     exe.step.dependOn(run_libft_maker_step);
-
-    // FUNCTION LIST MODULE - Independent module approach
-    // Capture nm output at compile time (force rebuild by making it depend on libft file)
-    const get_function_list = b.addSystemCommand(&[_][]const u8{ "nm", libft_archive_path, "--defined-only", "--format=just-symbols" });
-    // Depend on the run step that actually creates the libft.a file
-    get_function_list.step.dependOn(&run_libft_maker.step);
-    // Add the libft.a file as an input to force cache invalidation when it changes
-    get_function_list.addFileInput(b.path(libft_archive_path));
-    const nm_output = get_function_list.captureStdOut();
-
-    // Copy the function list to src directory so our independent module can access it
-    const copy_function_list = b.addSystemCommand(&[_][]const u8{"cp"});
-    copy_function_list.addFileArg(nm_output);
-    copy_function_list.addArg("src/function_list.txt");
-    copy_function_list.step.dependOn(&get_function_list.step);
-    // Also add libft.a as input to the copy step to ensure proper dependency tracking
-    copy_function_list.addFileInput(b.path(libft_archive_path));
     exe.step.dependOn(&copy_function_list.step);
-
-    // Create a module for the function list using our independent module
-    const function_list_module = b.createModule(.{
-        .root_source_file = b.path("src/function_list.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
-
-    exe.root_module.addImport("function_list", function_list_module);
 
     const exe_options = b.addOptions();
     exe_options.addOption([]const u8, "libft-path", libft_path_option);

@@ -1,0 +1,57 @@
+const TestSuite = @import("test-framework").tests.TestSuite;
+const TestCollection = @import("test-framework").tests.TestCollection;
+
+pub var mandatory_test_collection = TestCollection{
+    .name = "ZFT Mandatory Tests",
+    .suites = &[_]*TestSuite{
+        &@import("mandatory_tests/ft_isalpha.zig").suite,
+        &@import("mandatory_tests/ft_isdigit.zig").suite,
+        &@import("mandatory_tests/ft_isalnum.zig").suite,
+        &@import("mandatory_tests/ft_isascii.zig").suite,
+        &@import("mandatory_tests/ft_isprint.zig").suite,
+        &@import("mandatory_tests/ft_toupper.zig").suite,
+        &@import("mandatory_tests/ft_tolower.zig").suite,
+        &@import("mandatory_tests/ft_strlen.zig").suite,
+        &@import("mandatory_tests/ft_strchr.zig").suite,
+        &@import("mandatory_tests/ft_strrchr.zig").suite,
+        &@import("mandatory_tests/ft_strncmp.zig").suite,
+        &@import("mandatory_tests/ft_strlcpy.zig").suite,
+        &@import("mandatory_tests/ft_strlcat.zig").suite,
+        &@import("mandatory_tests/ft_strnstr.zig").suite,
+        &@import("mandatory_tests/ft_memset.zig").suite,
+        &@import("mandatory_tests/ft_bzero.zig").suite,
+        &@import("mandatory_tests/ft_memcpy.zig").suite,
+        &@import("mandatory_tests/ft_memmove.zig").suite,
+        &@import("mandatory_tests/ft_memchr.zig").suite,
+        &@import("mandatory_tests/ft_memcmp.zig").suite,
+        &@import("mandatory_tests/ft_atoi.zig").suite,
+        &@import("mandatory_tests/ft_calloc.zig").suite,
+        &@import("mandatory_tests/ft_strdup.zig").suite,
+        &@import("mandatory_tests/ft_substr.zig").suite,
+        &@import("mandatory_tests/ft_strjoin.zig").suite,
+        &@import("mandatory_tests/ft_strtrim.zig").suite,
+        &@import("mandatory_tests/ft_split.zig").suite,
+        &@import("mandatory_tests/ft_itoa.zig").suite,
+        &@import("mandatory_tests/ft_strmapi.zig").suite,
+        &@import("mandatory_tests/ft_striteri.zig").suite,
+        &@import("mandatory_tests/ft_putchar_fd.zig").suite,
+        &@import("mandatory_tests/ft_putstr_fd.zig").suite,
+        &@import("mandatory_tests/ft_putendl_fd.zig").suite,
+        &@import("mandatory_tests/ft_putnbr_fd.zig").suite,
+    },
+};
+
+pub var bonus_test_collection = TestCollection{
+    .name = "ZFT Bonus Tests",
+    .suites = &[_]*TestSuite{
+        &@import("bonus_tests/ft_lstnew.zig").suite,
+        &@import("bonus_tests/ft_lstadd_front.zig").suite,
+        &@import("bonus_tests/ft_lstsize.zig").suite,
+        &@import("bonus_tests/ft_lstlast.zig").suite,
+        &@import("bonus_tests/ft_lstadd_back.zig").suite,
+        &@import("bonus_tests/ft_lstdelone.zig").suite,
+        &@import("bonus_tests/ft_lstclear.zig").suite,
+        &@import("bonus_tests/ft_lstiter.zig").suite,
+        &@import("bonus_tests/ft_lstmap.zig").suite,
+    },
+};
