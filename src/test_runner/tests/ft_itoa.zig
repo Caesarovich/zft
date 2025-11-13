@@ -15,6 +15,16 @@ const c = @cImport({
     @cInclude("limits.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_itoa");
+
+fn ft_itoa(n: c_int) [*c]u8 {
+    if (comptime is_function_defined) {
+        return c.ft_itoa(n);
+    } else {
+        return null;
+    }
+}
+
 // Test zero
 var test_itoa_zero = TestCase{
     .name = "Convert zero",
@@ -22,7 +32,7 @@ var test_itoa_zero = TestCase{
 };
 
 fn test_itoa_zero_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_itoa(0);
+    const result = ft_itoa(0);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "0") == 0, "Expected '0'");
@@ -37,7 +47,7 @@ var test_itoa_positive = TestCase{
 };
 
 fn test_itoa_positive_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_itoa(42);
+    const result = ft_itoa(42);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "42") == 0, "Expected '42'");
@@ -52,7 +62,7 @@ var test_itoa_negative = TestCase{
 };
 
 fn test_itoa_negative_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_itoa(-42);
+    const result = ft_itoa(-42);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "-42") == 0, "Expected '-42'");
@@ -67,7 +77,7 @@ var test_itoa_int_max = TestCase{
 };
 
 fn test_itoa_int_max_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_itoa(c.INT_MAX);
+    const result = ft_itoa(c.INT_MAX);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "2147483647") == 0, "Expected '2147483647'");
@@ -82,7 +92,7 @@ var test_itoa_int_min = TestCase{
 };
 
 fn test_itoa_int_min_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_itoa(c.INT_MIN);
+    const result = ft_itoa(c.INT_MIN);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "-2147483648") == 0, "Expected '-2147483648'");
@@ -97,7 +107,7 @@ var test_itoa_single_digit_pos = TestCase{
 };
 
 fn test_itoa_single_digit_pos_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_itoa(7);
+    const result = ft_itoa(7);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "7") == 0, "Expected '7'");
@@ -112,7 +122,7 @@ var test_itoa_single_digit_neg = TestCase{
 };
 
 fn test_itoa_single_digit_neg_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_itoa(-3);
+    const result = ft_itoa(-3);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "-3") == 0, "Expected '-3'");
@@ -127,7 +137,7 @@ var test_itoa_large_positive = TestCase{
 };
 
 fn test_itoa_large_positive_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_itoa(123456789);
+    const result = ft_itoa(123456789);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "123456789") == 0, "Expected '123456789'");
@@ -142,7 +152,7 @@ var test_itoa_large_negative = TestCase{
 };
 
 fn test_itoa_large_negative_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_itoa(-987654321);
+    const result = ft_itoa(-987654321);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "-987654321") == 0, "Expected '-987654321'");
@@ -157,7 +167,7 @@ var test_itoa_multiples_of_ten = TestCase{
 };
 
 fn test_itoa_multiples_of_ten_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_itoa(1000);
+    const result = ft_itoa(1000);
     try assert.expect(result != null, "ft_itoa should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "1000") == 0, "Expected '1000'");
@@ -178,10 +188,8 @@ var test_cases = [_]*TestCase{
     &test_itoa_multiples_of_ten,
 };
 
-const is_function_defined = function_list.hasFunction("ft_itoa");
-
 pub var suite = TestSuite{
     .name = "ft_itoa",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

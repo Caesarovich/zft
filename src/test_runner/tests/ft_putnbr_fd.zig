@@ -18,6 +18,16 @@ const c = @cImport({
     @cInclude("limits.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_putnbr_fd");
+
+fn ft_putnbr_fd(n: c_int, fd: c_int) void {
+    if (comptime !is_function_defined) {
+        return;
+    } else {
+        c.ft_putnbr_fd(n, fd);
+    }
+}
+
 fn create_temp_file() !c_int {
     const fd: c_int = try std.posix.memfd_create("zft_test", 0);
     return fd;
@@ -33,7 +43,7 @@ fn test_putnbr_fd_zero_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putnbr_fd(0, fd);
+    ft_putnbr_fd(0, fd);
 
     var buffer: [10]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -53,7 +63,7 @@ fn test_putnbr_fd_positive_single_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putnbr_fd(7, fd);
+    ft_putnbr_fd(7, fd);
 
     var buffer: [10]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -73,7 +83,7 @@ fn test_putnbr_fd_negative_single_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putnbr_fd(-5, fd);
+    ft_putnbr_fd(-5, fd);
 
     var buffer: [10]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -94,7 +104,7 @@ fn test_putnbr_fd_positive_multi_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putnbr_fd(123, fd);
+    ft_putnbr_fd(123, fd);
 
     var buffer: [10]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -114,7 +124,7 @@ fn test_putnbr_fd_negative_multi_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putnbr_fd(-456, fd);
+    ft_putnbr_fd(-456, fd);
 
     var buffer: [10]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -134,7 +144,7 @@ fn test_putnbr_fd_int_max_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putnbr_fd(c.INT_MAX, fd);
+    ft_putnbr_fd(c.INT_MAX, fd);
 
     var buffer: [20]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -155,7 +165,7 @@ fn test_putnbr_fd_int_min_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putnbr_fd(c.INT_MIN, fd);
+    ft_putnbr_fd(c.INT_MIN, fd);
 
     var buffer: [20]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -176,7 +186,7 @@ fn test_putnbr_fd_large_positive_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putnbr_fd(987654321, fd);
+    ft_putnbr_fd(987654321, fd);
 
     var buffer: [20]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -197,7 +207,7 @@ fn test_putnbr_fd_large_negative_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putnbr_fd(-987654321, fd);
+    ft_putnbr_fd(-987654321, fd);
 
     var buffer: [20]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -218,7 +228,7 @@ fn test_putnbr_fd_zeros_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putnbr_fd(1001, fd);
+    ft_putnbr_fd(1001, fd);
 
     var buffer: [10]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -241,10 +251,8 @@ var test_cases = [_]*TestCase{
     &test_putnbr_fd_zeros,
 };
 
-const is_function_defined = function_list.hasFunction("ft_putnbr_fd");
-
 pub var suite = TestSuite{
     .name = "ft_putnbr_fd",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

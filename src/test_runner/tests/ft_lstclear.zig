@@ -16,6 +16,16 @@ const c = @cImport({
     @cInclude("stdlib.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_lstclear");
+
+pub fn ft_lstclear(lst: ?*?*c.t_list, del: ?*const fn (?*anyopaque) callconv(.c) void) void {
+    if (comptime !is_function_defined) {
+        return;
+    } else {
+        c.ft_lstclear(lst, del);
+    }
+}
+
 // Helper deletion function that tracks calls
 var clear_delete_call_count: u32 = 0;
 
@@ -36,7 +46,7 @@ fn test_lstclear_empty_fn(_: std.mem.Allocator) AssertError!void {
     clear_delete_call_count = 0;
     var lst: ?*c.t_list = null;
 
-    c.ft_lstclear(&lst, &test_clear_delete_function);
+    ft_lstclear(&lst, &test_clear_delete_function);
 
     try assert.expect(lst == null, "Expected list to remain null");
     try assert.expect(clear_delete_call_count == 0, "Expected delete function not to be called for empty list");
@@ -63,7 +73,7 @@ fn test_lstclear_single_fn(_: std.mem.Allocator) AssertError!void {
 
     var lst: ?*c.t_list = list_node;
 
-    c.ft_lstclear(&lst, &test_clear_delete_function);
+    ft_lstclear(&lst, &test_clear_delete_function);
 
     try assert.expect(lst == null, "Expected list to be null after clearing");
     try assert.expect(clear_delete_call_count == 1, "Expected delete function to be called once");
@@ -103,7 +113,7 @@ fn test_lstclear_multiple_fn(_: std.mem.Allocator) AssertError!void {
         }
     }
 
-    c.ft_lstclear(&lst, &test_clear_delete_function);
+    ft_lstclear(&lst, &test_clear_delete_function);
 
     try assert.expect(lst == null, "Expected list to be null after clearing");
     try assert.expect(clear_delete_call_count == node_count, "Expected delete function to be called for each node");
@@ -115,10 +125,8 @@ var test_cases = [_]*TestCase{
     &test_lstclear_multiple,
 };
 
-const is_function_defined = function_list.hasFunction("ft_lstclear");
-
 pub var suite = TestSuite{
     .name = "ft_lstclear",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

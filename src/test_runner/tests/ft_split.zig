@@ -14,6 +14,16 @@ const c = @cImport({
     @cInclude("string.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_split");
+
+fn ft_split(s: [*c]const u8, char: u8) [*c][*c]u8 {
+    if (comptime !is_function_defined) {
+        return null;
+    } else {
+        return c.ft_split(s, char);
+    }
+}
+
 // Helper function to count words in a split result
 fn count_words(split_result: [*c][*c]u8) usize {
     var count: usize = 0;
@@ -40,7 +50,7 @@ var test_split_normal = TestCase{
 };
 
 fn test_split_normal_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_split("Hello,World,Test", ',');
+    const result = ft_split("Hello,World,Test", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
         try assert.expect(count_words(split) == 3, "Expected 3 words");
@@ -59,7 +69,7 @@ var test_split_consecutive_delims = TestCase{
 };
 
 fn test_split_consecutive_delims_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_split("Hello,,World", ',');
+    const result = ft_split("Hello,,World", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
         try assert.expect(count_words(split) == 2, "Expected 2 words with consecutive delimiters");
@@ -77,7 +87,7 @@ var test_split_leading_trailing = TestCase{
 };
 
 fn test_split_leading_trailing_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_split(",Hello,World,", ',');
+    const result = ft_split(",Hello,World,", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
         try assert.expect(count_words(split) == 2, "Expected 2 words with leading/trailing delimiters");
@@ -95,7 +105,7 @@ var test_split_no_delims = TestCase{
 };
 
 fn test_split_no_delims_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_split("HelloWorld", ',');
+    const result = ft_split("HelloWorld", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
         try assert.expect(count_words(split) == 1, "Expected 1 word with no delimiters");
@@ -112,7 +122,7 @@ var test_split_empty_string = TestCase{
 };
 
 fn test_split_empty_string_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_split("", ',');
+    const result = ft_split("", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
         try assert.expect(count_words(split) == 0, "Expected 0 words for empty string");
@@ -128,7 +138,7 @@ var test_split_null_string = TestCase{
 };
 
 fn test_split_null_string_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_split(null, ',');
+    const result = ft_split(null, ',');
     try assert.expect(result == null, "ft_split should return null for null input string");
 }
 
@@ -139,7 +149,7 @@ var test_split_only_delims = TestCase{
 };
 
 fn test_split_only_delims_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_split(",,,", ',');
+    const result = ft_split(",,,", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
         try assert.expect(count_words(split) == 0, "Expected 0 words for string with only delimiters");
@@ -154,7 +164,7 @@ var test_split_space = TestCase{
 };
 
 fn test_split_space_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_split("The quick brown fox", ' ');
+    const result = ft_split("The quick brown fox", ' ');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
         try assert.expect(count_words(split) == 4, "Expected 4 words");
@@ -174,7 +184,7 @@ var test_split_single_char = TestCase{
 };
 
 fn test_split_single_char_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_split("a", ',');
+    const result = ft_split("a", ',');
     try assert.expect(result != null, "ft_split should return a valid pointer");
     if (result) |split| {
         try assert.expect(count_words(split) == 1, "Expected 1 word");
@@ -196,10 +206,8 @@ var test_cases = [_]*TestCase{
     &test_split_single_char,
 };
 
-const is_function_defined = function_list.hasFunction("ft_split");
-
 pub var suite = TestSuite{
     .name = "ft_split",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

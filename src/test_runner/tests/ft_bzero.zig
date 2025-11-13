@@ -16,6 +16,16 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_bzero");
+
+fn ft_bzero(s: ?*anyopaque, n: usize) void {
+    if (comptime !is_function_defined) {
+        return;
+    } else {
+        c.ft_bzero(s, n);
+    }
+}
+
 // ft_bzero
 
 // Test basic functionality of ft_bzero
@@ -28,7 +38,7 @@ fn test_bzero_basic_fn(_: std.mem.Allocator) AssertError!void {
     var buffer: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     const n: usize = buffer.len;
 
-    c.ft_bzero(&buffer, n);
+    ft_bzero(&buffer, n);
 
     for (buffer) |byte| {
         try assert.expect(byte == 0, "Each byte should be zeroed out");
@@ -46,7 +56,7 @@ fn test_bzero_zero_fn(_: std.mem.Allocator) AssertError!void {
     const original_buffer = buffer;
     const n: usize = 0;
 
-    c.ft_bzero(&buffer, n);
+    ft_bzero(&buffer, n);
 
     for (0..10) |i| {
         try assert.expect(buffer[i] == original_buffer[i], "Buffer should remain unchanged when n = 0");
@@ -68,7 +78,7 @@ fn test_bzero_large_fn(allocator: std.mem.Allocator) TestCaseError!void {
         byte.* = 0xFF;
     }
 
-    c.ft_bzero(buffer.ptr, size);
+    ft_bzero(buffer.ptr, size);
 
     for (buffer) |byte| {
         try assert.expect(byte == 0, "Each byte in large buffer should be zeroed out");
@@ -85,7 +95,7 @@ fn test_bzero_already_zeroed_fn(_: std.mem.Allocator) AssertError!void {
     var buffer: [10]u8 = [_]u8{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     const n: usize = buffer.len;
 
-    c.ft_bzero(&buffer, n);
+    ft_bzero(&buffer, n);
 
     for (buffer) |byte| {
         try assert.expect(byte == 0, "Each byte should remain zeroed out");
@@ -103,7 +113,7 @@ fn test_bzero_partial_fn(_: std.mem.Allocator) AssertError!void {
     const original_buffer = buffer;
     const n: usize = 5;
 
-    c.ft_bzero(&buffer, n);
+    ft_bzero(&buffer, n);
 
     for (0..10) |i| {
         if (i < n) {
@@ -122,10 +132,8 @@ var test_cases = [_]*TestCase{
     &test_bzero_partial,
 };
 
-const is_function_defined = function_list.hasFunction("ft_bzero");
-
 pub var suite = TestSuite{
     .name = "ft_bzero",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

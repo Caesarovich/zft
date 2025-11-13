@@ -14,7 +14,15 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
-// ft_memcmp
+const is_function_defined = function_list.hasFunction("ft_memcmp");
+
+fn ft_memcmp(s1: [*]const u8, s2: [*]const u8, n: usize) c_int {
+    if (comptime !is_function_defined) {
+        return 0;
+    } else {
+        return c.ft_memcmp(s1, s2, n);
+    }
+}
 
 // Test equal memory blocks
 var test_memcmp_equal = TestCase{
@@ -27,7 +35,7 @@ fn test_memcmp_equal_fn(_: std.mem.Allocator) AssertError!void {
     const buffer2: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     const n: usize = buffer1.len;
 
-    const result = c.ft_memcmp(&buffer1, &buffer2, n);
+    const result = ft_memcmp(&buffer1, &buffer2, n);
     try assert.expect(result == 0, "ft_memcmp should return 0 for equal memory blocks");
 }
 
@@ -42,7 +50,7 @@ fn test_memcmp_different_fn(_: std.mem.Allocator) AssertError!void {
     const buffer2: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 0, 7, 8, 9, 10 };
     const n: usize = buffer1.len;
 
-    const result = c.ft_memcmp(&buffer1, &buffer2, n);
+    const result = ft_memcmp(&buffer1, &buffer2, n);
     try assert.expect(result != 0, "ft_memcmp should return non-zero for different memory blocks");
 }
 
@@ -57,7 +65,7 @@ fn test_memcmp_first_less_fn(_: std.mem.Allocator) AssertError!void {
     const buffer2: [5]u8 = [_]u8{ 1, 2, 3, 4, 6 };
     const n: usize = buffer1.len;
 
-    const result = c.ft_memcmp(&buffer1, &buffer2, n);
+    const result = ft_memcmp(&buffer1, &buffer2, n);
     try assert.expect(result < 0, "ft_memcmp should return negative when first block is less than second");
 }
 
@@ -72,7 +80,7 @@ fn test_memcmp_first_greater_fn(_: std.mem.Allocator) AssertError!void {
     const buffer2: [5]u8 = [_]u8{ 1, 2, 3, 4, 6 };
     const n: usize = buffer1.len;
 
-    const result = c.ft_memcmp(&buffer1, &buffer2, n);
+    const result = ft_memcmp(&buffer1, &buffer2, n);
     try assert.expect(result > 0, "ft_memcmp should return positive when first block is greater than second");
 }
 
@@ -87,7 +95,7 @@ fn test_memcmp_n_zero_fn(_: std.mem.Allocator) AssertError!void {
     const buffer2: [10]u8 = [_]u8{ 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
     const n: usize = 0;
 
-    const result = c.ft_memcmp(&buffer1, &buffer2, n);
+    const result = ft_memcmp(&buffer1, &buffer2, n);
     try assert.expect(result == 0, "ft_memcmp should return 0 when n = 0");
 }
 
@@ -102,9 +110,9 @@ fn test_memcmp_partial_fn(_: std.mem.Allocator) AssertError!void {
     const buffer2: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 0, 7, 8, 9, 10 };
     const n: usize = 5;
 
-    const result = c.ft_memcmp(&buffer1, &buffer2, n);
+    const result = ft_memcmp(&buffer1, &buffer2, n);
     try assert.expect(result == 0, "ft_memcmp should return 0 for equal first n bytes");
-    const result_diff = c.ft_memcmp(&buffer1, &buffer2, n + 1);
+    const result_diff = ft_memcmp(&buffer1, &buffer2, n + 1);
     try assert.expect(result_diff != 0, "ft_memcmp should return non-zero when differing byte is included");
 }
 
@@ -120,19 +128,19 @@ fn test_memcmp_positive_wrapped_fn(_: std.mem.Allocator) AssertError!void {
     const buffer2: [5]i8 = [_]i8{ -128, 1, 2, 3, 4 };
     const n: usize = buffer1.len;
 
-    const result = c.ft_memcmp(&buffer1, &buffer2, n);
+    const result = ft_memcmp(&buffer1, @ptrCast(&buffer2), n);
     try assert.expect(result == 0, "ft_memcmp should treat 128 as -128 when cast to i8");
 
     // 192 -> -64
     const buffer3: [5]u8 = [_]u8{ 192, 1, 2, 3, 4 };
     const buffer4: [5]i8 = [_]i8{ -64, 1, 2, 3, 4 };
-    const result2 = c.ft_memcmp(&buffer3, &buffer4, n);
+    const result2 = ft_memcmp(&buffer3, @ptrCast(&buffer4), n);
     try assert.expect(result2 == 0, "ft_memcmp should treat 192 as -64 when cast to i8");
 
     // 255 -> -1
     const buffer5: [5]u8 = [_]u8{ 255, 0, 0, 0, 0 };
     const buffer6: [5]i8 = [_]i8{ -1, 0, 0, 0, 0 };
-    const result3 = c.ft_memcmp(&buffer5, &buffer6, n);
+    const result3 = ft_memcmp(&buffer5, @ptrCast(&buffer6), n);
     try assert.expect(result3 == 0, "ft_memcmp should treat 255 as -1 when cast to i8");
 }
 
@@ -148,19 +156,19 @@ fn test_memcmp_negative_wrapped_fn(_: std.mem.Allocator) AssertError!void {
     const buffer2: [5]u8 = [_]u8{ 128, 1, 2, 3, 4 };
     const n: usize = buffer1.len;
 
-    const result = c.ft_memcmp(&buffer1, &buffer2, n);
+    const result = ft_memcmp(@ptrCast(&buffer1), &buffer2, n);
     try assert.expect(result == 0, "ft_memcmp should treat -128 as 128 when cast to u8");
 
     // -64 -> 192
     const buffer3: [5]i8 = [_]i8{ -64, 1, 2, 3, 4 };
     const buffer4: [5]u8 = [_]u8{ 192, 1, 2, 3, 4 };
-    const result2 = c.ft_memcmp(&buffer3, &buffer4, n);
+    const result2 = ft_memcmp(@ptrCast(&buffer3), &buffer4, n);
     try assert.expect(result2 == 0, "ft_memcmp should treat -64 as 192 when cast to u8");
 
     // -1 -> 255
     const buffer5: [5]i8 = [_]i8{ -1, 0, 0, 0, 0 };
     const buffer6: [5]u8 = [_]u8{ 255, 0, 0, 0, 0 };
-    const result3 = c.ft_memcmp(&buffer5, &buffer6, n);
+    const result3 = ft_memcmp(@ptrCast(&buffer5), &buffer6, n);
     try assert.expect(result3 == 0, "ft_memcmp should treat -1 as 255 when cast to u8");
 }
 
@@ -175,10 +183,8 @@ var test_cases = [_]*TestCase{
     &test_memcmp_negative_wrapped,
 };
 
-const is_function_defined = function_list.hasFunction("ft_memcmp");
-
 pub var suite = TestSuite{
     .name = "ft_memcmp",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

@@ -17,6 +17,16 @@ const c = @cImport({
     @cInclude("sys/mman.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_putchar_fd");
+
+fn ft_putchar_fd(char: u8, fd: c_int) void {
+    if (comptime !is_function_defined) {
+        return;
+    } else {
+        c.ft_putchar_fd(char, fd);
+    }
+}
+
 fn create_temp_file() !c_int {
     const fd: c_int = try std.posix.memfd_create("zft_test", 0);
     return fd;
@@ -32,7 +42,7 @@ fn test_putchar_fd_valid_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putchar_fd('A', fd);
+    ft_putchar_fd('A', fd);
 
     var buffer: [10]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -52,7 +62,7 @@ fn test_putchar_fd_special_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putchar_fd('\n', fd);
+    ft_putchar_fd('\n', fd);
 
     var buffer: [10]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -72,7 +82,7 @@ fn test_putchar_fd_zero_fn(_: std.mem.Allocator) AssertError!void {
     const fd = create_temp_file() catch return AssertError.AssertionFailed;
     defer _ = c.close(fd);
 
-    c.ft_putchar_fd(0, fd);
+    ft_putchar_fd(0, fd);
 
     var buffer: [10]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -95,7 +105,7 @@ fn test_putchar_fd_many_fn(_: std.mem.Allocator) AssertError!void {
     const chars: [5]u8 = [_]u8{ 'H', 'e', 'l', 'l', 'o' };
 
     for (chars) |ch| {
-        c.ft_putchar_fd(ch, fd);
+        ft_putchar_fd(ch, fd);
     }
 
     var buffer: [10]u8 = undefined;
@@ -115,10 +125,8 @@ var test_cases = [_]*TestCase{
     &test_putchar_fd_many,
 };
 
-const is_function_defined = function_list.hasFunction("ft_putchar_fd");
-
 pub var suite = TestSuite{
     .name = "ft_putchar_fd",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

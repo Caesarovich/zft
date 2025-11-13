@@ -17,6 +17,16 @@ const c = @cImport({
     @cInclude("sys/mman.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_putendl_fd");
+
+fn ft_putendl_fd(s: [*c]u8, fd: c_int) void {
+    if (comptime !is_function_defined) {
+        return;
+    } else {
+        c.ft_putendl_fd(s, fd);
+    }
+}
+
 fn create_temp_file() !c_int {
     const fd: c_int = try std.posix.memfd_create("zft_test", 0);
     return fd;
@@ -33,7 +43,7 @@ fn test_putendl_fd_normal_fn(_: std.mem.Allocator) AssertError!void {
     defer _ = c.close(fd);
 
     const test_str = "Hello World";
-    c.ft_putendl_fd(@constCast(test_str), fd);
+    ft_putendl_fd(@constCast(test_str), fd);
 
     var buffer: [50]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -56,7 +66,7 @@ fn test_putendl_fd_empty_fn(_: std.mem.Allocator) AssertError!void {
     defer _ = c.close(fd);
 
     const test_str = "";
-    c.ft_putendl_fd(@constCast(test_str), fd);
+    ft_putendl_fd(@constCast(test_str), fd);
 
     var buffer: [10]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -77,7 +87,7 @@ fn test_putendl_fd_null_fn(_: std.mem.Allocator) AssertError!void {
     defer _ = c.close(fd);
 
     // This should not crash - behavior depends on implementation
-    c.ft_putendl_fd(null, fd);
+    ft_putendl_fd(null, fd);
 
     var buffer: [20]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -99,7 +109,7 @@ fn test_putendl_fd_with_newlines_fn(_: std.mem.Allocator) AssertError!void {
     defer _ = c.close(fd);
 
     const test_str = "Hello\nWorld";
-    c.ft_putendl_fd(@constCast(test_str), fd);
+    ft_putendl_fd(@constCast(test_str), fd);
 
     var buffer: [50]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -122,7 +132,7 @@ fn test_putendl_fd_single_char_fn(_: std.mem.Allocator) AssertError!void {
     defer _ = c.close(fd);
 
     const test_str = "A";
-    c.ft_putendl_fd(@constCast(test_str), fd);
+    ft_putendl_fd(@constCast(test_str), fd);
 
     var buffer: [10]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -144,7 +154,7 @@ fn test_putendl_fd_long_fn(_: std.mem.Allocator) AssertError!void {
     defer _ = c.close(fd);
 
     const test_str = "This is a longer string that tests the function's ability to handle longer inputs and still append the newline correctly.";
-    c.ft_putendl_fd(@constCast(test_str), fd);
+    ft_putendl_fd(@constCast(test_str), fd);
 
     var buffer: [200]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -167,7 +177,7 @@ fn test_putendl_fd_special_fn(_: std.mem.Allocator) AssertError!void {
     defer _ = c.close(fd);
 
     const test_str = "Hello\tWorld!";
-    c.ft_putendl_fd(@constCast(test_str), fd);
+    ft_putendl_fd(@constCast(test_str), fd);
 
     var buffer: [50]u8 = undefined;
     std.posix.lseek_SET(fd, 0) catch return AssertError.AssertionFailed;
@@ -189,10 +199,8 @@ var test_cases = [_]*TestCase{
     &test_putendl_fd_special,
 };
 
-const is_function_defined = function_list.hasFunction("ft_putendl_fd");
-
 pub var suite = TestSuite{
     .name = "ft_putendl_fd",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

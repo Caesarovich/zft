@@ -15,6 +15,16 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_calloc");
+
+fn ft_calloc(count: usize, size: usize) ?*anyopaque {
+    if (comptime is_function_defined) {
+        return c.ft_calloc(count, size);
+    } else {
+        return null;
+    }
+}
+
 // ft_calloc
 
 // Test allocation of zero-initialized memory
@@ -27,7 +37,7 @@ fn test_calloc_basic_fn(_: std.mem.Allocator) AssertError!void {
     const num_elements: usize = 5;
     const element_size: usize = @sizeOf(u8);
 
-    const ptr: ?*[5]u8 = @ptrCast(c.ft_calloc(num_elements, element_size));
+    const ptr: ?*[5]u8 = @ptrCast(ft_calloc(num_elements, element_size));
 
     if (ptr) |p| {
         for (0..num_elements) |i| {
@@ -50,7 +60,7 @@ fn test_calloc_large_fn(_: std.mem.Allocator) AssertError!void {
     const num_elements: usize = 1_000_000;
     const element_size: usize = @sizeOf(u8);
 
-    const ptr: ?*[num_elements]u8 = @ptrCast(c.ft_calloc(num_elements, element_size));
+    const ptr: ?*[num_elements]u8 = @ptrCast(ft_calloc(num_elements, element_size));
 
     if (ptr) |p| {
         for (0..num_elements) |i| {
@@ -83,7 +93,7 @@ fn test_calloc_garbage_fn(_: std.mem.Allocator) TestCaseError!void {
 
     const num_elements: usize = 100_000; // 100 KB
     const element_size: usize = @sizeOf(u8);
-    const ptr: ?*[num_elements]u8 = @ptrCast(c.ft_calloc(num_elements, element_size));
+    const ptr: ?*[num_elements]u8 = @ptrCast(ft_calloc(num_elements, element_size));
     if (ptr) |p| {
         for (0..num_elements) |i| {
             try assert.expect(p[i] == 0, "Allocated memory should be zero-initialized");
@@ -104,7 +114,7 @@ fn test_calloc_different_sizes_fn(_: std.mem.Allocator) AssertError!void {
     const num_elements: usize = 100_000;
     const element_size: usize = @sizeOf(u32);
 
-    const ptr: ?*[num_elements * element_size]u8 = @ptrCast(c.ft_calloc(num_elements, element_size));
+    const ptr: ?*[num_elements * element_size]u8 = @ptrCast(ft_calloc(num_elements, element_size));
 
     if (ptr) |p| {
         for (0..(num_elements * element_size)) |i| {
@@ -129,14 +139,14 @@ fn test_calloc_overflow_fn(_: std.mem.Allocator) AssertError!void {
     var num_elements: usize = std.math.maxInt(usize) / 2 + 1;
     const element_size: usize = 2;
 
-    var ptr: ?*u8 = @ptrCast(c.ft_calloc(num_elements, element_size));
+    var ptr: ?*u8 = @ptrCast(ft_calloc(num_elements, element_size));
 
     try assert.expect(ptr == null, "ft_calloc should return null pointer on overflow");
 
     // Non-exact overflow case (overflows to 2)
     num_elements = std.math.maxInt(usize) / 2 + 2;
 
-    ptr = @ptrCast(c.ft_calloc(num_elements, element_size));
+    ptr = @ptrCast(ft_calloc(num_elements, element_size));
 
     try assert.expect(ptr == null, "ft_calloc should return null pointer on overflow");
 }
@@ -151,7 +161,7 @@ fn test_calloc_zero_elements_fn(_: std.mem.Allocator) AssertError!void {
     const num_elements: usize = 0;
     const element_size: usize = @sizeOf(u8);
 
-    const ptr: ?*[num_elements * element_size]u8 = @ptrCast(c.ft_calloc(num_elements, element_size));
+    const ptr: ?*[num_elements * element_size]u8 = @ptrCast(ft_calloc(num_elements, element_size));
 
     try assert.expect(ptr != null, "ft_calloc should return a non-null pointer when allocating zero elements");
 
@@ -168,7 +178,7 @@ fn test_calloc_zero_size_fn(_: std.mem.Allocator) AssertError!void {
     const num_elements: usize = 5;
     const element_size: usize = 0;
 
-    const ptr: ?*[num_elements * element_size]u8 = @ptrCast(c.ft_calloc(num_elements, element_size));
+    const ptr: ?*[num_elements * element_size]u8 = @ptrCast(ft_calloc(num_elements, element_size));
 
     try assert.expect(ptr != null, "ft_calloc should return a non-null pointer when allocating with zero size");
 
@@ -185,10 +195,8 @@ var test_cases = [_]*TestCase{
     &test_calloc_zero_size,
 };
 
-const is_function_defined = function_list.hasFunction("ft_calloc");
-
 pub var suite = TestSuite{
     .name = "ft_calloc",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

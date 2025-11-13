@@ -93,6 +93,7 @@ pub const TestSuite = struct {
     /// Sets the suite result based on individual test outcomes
     /// Uses an arena allocator for temporary allocations during execution
     pub fn run(self: *TestSuite, allocator: std.mem.Allocator) void {
+        if (self.result == .skipped) return;
         for (self.cases) |case| {
             const result = case.run(allocator);
 
@@ -111,7 +112,7 @@ pub const TestCollection = struct {
     /// Human-readable name for the test collection
     name: []const u8,
     /// Array of test suites in the collection
-    suites: []*TestSuite,
+    suites: []const *TestSuite,
     /// Executes all test suites in the collection
     /// Uses an arena allocator for temporary allocations during execution
     pub fn run(self: *TestCollection, allocator: std.mem.Allocator) void {

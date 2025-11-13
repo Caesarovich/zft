@@ -14,7 +14,15 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
-// ft_strnstr
+const is_function_defined = function_list.hasFunction("ft_strnstr");
+
+fn ft_strnstr(haystack: [*c]const u8, needle: [*c]const u8, n: usize) [*c]u8 {
+    if (comptime !is_function_defined) {
+        return null;
+    } else {
+        return c.ft_strnstr(haystack, needle, n);
+    }
+}
 
 // Test when the substring is found within the first n characters
 var test_substring_found = TestCase{
@@ -27,7 +35,7 @@ fn test_substring_found_fn(_: std.mem.Allocator) AssertError!void {
     const needle = "world";
     const n: usize = 13;
 
-    const result = c.ft_strnstr(haystack, needle, n);
+    const result = ft_strnstr(haystack, needle, n);
     try assert.expect(result != null, "Expected to find substring 'world' in haystack");
     try assert.expect(result == &haystack[7], "Expected result to point to 'world!'");
 }
@@ -43,7 +51,7 @@ fn test_substring_not_found_fn(_: std.mem.Allocator) AssertError!void {
     const needle = "world";
     const n: usize = 5;
 
-    const result = c.ft_strnstr(haystack, needle, n);
+    const result = ft_strnstr(haystack, needle, n);
     try assert.expect(result == null, "Expected not to find substring 'world' in haystack within first 5 characters");
 }
 
@@ -58,7 +66,7 @@ fn test_empty_needle_fn(_: std.mem.Allocator) AssertError!void {
     const needle = "";
     const n: usize = 13;
 
-    const result = c.ft_strnstr(haystack, needle, n);
+    const result = ft_strnstr(haystack, needle, n);
     try assert.expect(result == haystack, "Expected to return haystack when needle is empty");
 }
 
@@ -73,7 +81,7 @@ fn test_n_zero_fn(_: std.mem.Allocator) AssertError!void {
     const needle = "Hello";
     const n: usize = 0;
 
-    const result = c.ft_strnstr(haystack, needle, n);
+    const result = ft_strnstr(haystack, needle, n);
     try assert.expect(result == null, "Expected not to find any substring when n is zero");
 }
 
@@ -88,7 +96,7 @@ fn test_needle_longer_than_haystack_fn(_: std.mem.Allocator) AssertError!void {
     const needle = "Hello, world!";
     const n: usize = 5;
 
-    const result = c.ft_strnstr(haystack, needle, n);
+    const result = ft_strnstr(haystack, needle, n);
     try assert.expect(result == null, "Expected not to find needle longer than haystack");
 }
 
@@ -103,7 +111,7 @@ fn test_needle_at_end_within_n_fn(_: std.mem.Allocator) AssertError!void {
     const needle = "world!";
     const n: usize = 13;
 
-    const result = c.ft_strnstr(haystack, needle, n);
+    const result = ft_strnstr(haystack, needle, n);
     try assert.expect(result != null, "Expected to find needle at the end of haystack within n characters");
     try assert.expect(result == &haystack[7], "Expected result to point to 'world!'");
 }
@@ -119,7 +127,7 @@ fn test_needle_at_end_exceeds_n_fn(_: std.mem.Allocator) AssertError!void {
     const needle = "world!";
     const n: usize = 10;
 
-    const result = c.ft_strnstr(haystack, needle, n);
+    const result = ft_strnstr(haystack, needle, n);
     try assert.expect(result == null, "Expected not to find needle at the end of haystack when it exceeds n characters");
 }
 
@@ -133,10 +141,8 @@ var test_cases = [_]*TestCase{
     &test_needle_at_end_exceeds_n,
 };
 
-const is_function_defined = function_list.hasFunction("ft_strnstr");
-
 pub var suite = TestSuite{
     .name = "ft_strnstr",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

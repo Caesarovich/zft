@@ -16,6 +16,16 @@ const c = @cImport({
     @cInclude("stdlib.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_lstiter");
+
+fn ft_lstiter(lst: ?*c.t_list, f: ?*const fn (?*anyopaque) callconv(.c) void) void {
+    if (comptime !is_function_defined) {
+        return;
+    } else {
+        c.ft_lstiter(lst, f);
+    }
+}
+
 // Helper function that tracks calls and modifies content
 var iter_call_count: u32 = 0;
 var iter_sum: u32 = 0;
@@ -63,7 +73,7 @@ fn test_lstiter_empty_fn(_: std.mem.Allocator) AssertError!void {
     iter_call_count = 0;
     iter_sum = 0;
 
-    c.ft_lstiter(null, &count_and_sum_function);
+    ft_lstiter(null, &count_and_sum_function);
 
     try assert.expect(iter_call_count == 0, "Expected function not to be called for empty list");
     try assert.expect(iter_sum == 0, "Expected sum to remain 0");
@@ -85,7 +95,7 @@ fn test_lstiter_single_fn(_: std.mem.Allocator) AssertError!void {
         .next = null,
     };
 
-    c.ft_lstiter(&node, &count_and_sum_function);
+    ft_lstiter(&node, &count_and_sum_function);
 
     try assert.expect(iter_call_count == 1, "Expected function to be called once");
     try assert.expect(iter_sum == 42, "Expected sum to be 42");
@@ -120,7 +130,7 @@ fn test_lstiter_multiple_fn(_: std.mem.Allocator) AssertError!void {
         .next = &node2,
     };
 
-    c.ft_lstiter(&node1, &count_and_sum_function);
+    ft_lstiter(&node1, &count_and_sum_function);
 
     try assert.expect(iter_call_count == 3, "Expected function to be called three times");
     try assert.expect(iter_sum == 60, "Expected sum to be 60");
@@ -152,7 +162,7 @@ fn test_lstiter_modify_fn(_: std.mem.Allocator) AssertError!void {
         .next = &node2,
     };
 
-    c.ft_lstiter(&node1, &double_function);
+    ft_lstiter(&node1, &double_function);
 
     try assert.expect(value1 == 10, "Expected first value to be doubled to 10");
     try assert.expect(value2 == 20, "Expected second value to be doubled to 20");
@@ -185,7 +195,7 @@ fn test_lstiter_string_fn(_: std.mem.Allocator) AssertError!void {
         .next = &node2,
     };
 
-    c.ft_lstiter(&node1, &to_upper_function);
+    ft_lstiter(&node1, &to_upper_function);
 
     try assert.expect(ch1 == 'A', "Expected 'a' to become 'A'");
     try assert.expect(ch2 == 'B', "Expected 'b' to become 'B'");
@@ -211,7 +221,7 @@ fn test_lstiter_null_content_fn(_: std.mem.Allocator) AssertError!void {
         .next = &node2,
     };
 
-    c.ft_lstiter(&node1, &count_calls_function);
+    ft_lstiter(&node1, &count_calls_function);
 
     try assert.expect(null_content_call_count == 2, "Expected function to be called twice even with null content");
 }
@@ -225,10 +235,8 @@ var test_cases = [_]*TestCase{
     &test_lstiter_null_content,
 };
 
-const is_function_defined = function_list.hasFunction("ft_lstiter");
-
 pub var suite = TestSuite{
     .name = "ft_lstiter",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

@@ -16,6 +16,16 @@ const c = @cImport({
     @cInclude("stdlib.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_lstadd_front");
+
+fn ft_lstadd_front(lst: ?*?*c.t_list, new: ?*c.t_list) void {
+    if (comptime !is_function_defined) {
+        return;
+    } else {
+        c.ft_lstadd_front(lst, new);
+    }
+}
+
 // Test adding a node to the front of an empty list
 var test_lstadd_front_to_empty = TestCase{
     .name = "Add node to front of empty list",
@@ -30,7 +40,7 @@ fn test_lstadd_front_to_empty_fn(_: std.mem.Allocator) AssertError!void {
         .next = null,
     };
 
-    c.ft_lstadd_front(&lst, &new_node);
+    ft_lstadd_front(&lst, &new_node);
 
     try assert.expect(lst != null, "List should not be null after adding node");
     try assert.expect(lst == &new_node, "List should point to the new node");
@@ -63,7 +73,7 @@ fn test_lstadd_front_to_non_empty_fn(_: std.mem.Allocator) AssertError!void {
         .next = null,
     };
 
-    c.ft_lstadd_front(&lst, &new_node);
+    ft_lstadd_front(&lst, &new_node);
 
     try assert.expect(lst != null, "List should not be null after adding node");
     try assert.expect(lst == &new_node, "List should point to the new node");
@@ -93,7 +103,7 @@ fn test_lstadd_front_multiple_fn(allocator: std.mem.Allocator) TestCaseError!voi
         var new_node = try allocator.create(c.t_list);
         new_node.content = @constCast(value);
 
-        c.ft_lstadd_front(&lst, new_node);
+        ft_lstadd_front(&lst, new_node);
     }
 
     // Now the list should have 5 nodes with values 5, 4, 3, 2, 1
@@ -114,10 +124,8 @@ var test_cases = [_]*TestCase{
     &test_lstadd_front_multiple,
 };
 
-const is_function_defined = function_list.hasFunction("ft_lstadd_front");
-
 pub var suite = TestSuite{
     .name = "ft_lstadd_front",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

@@ -15,6 +15,16 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_lstsize");
+
+fn ft_lstsize(lst: ?*c.t_list) c_int {
+    if (comptime !is_function_defined) {
+        return 0;
+    } else {
+        return c.ft_lstsize(lst);
+    }
+}
+
 // Test ft_lstsize with empty list
 var test_lstsize_empty = TestCase{
     .name = "Size of empty list",
@@ -22,7 +32,7 @@ var test_lstsize_empty = TestCase{
 };
 
 fn test_lstsize_empty_fn(_: std.mem.Allocator) AssertError!void {
-    const size = c.ft_lstsize(null);
+    const size = ft_lstsize(null);
     try assert.expect(size == 0, "Expected size of empty list to be 0");
 }
 
@@ -39,7 +49,7 @@ fn test_lstsize_single_fn(_: std.mem.Allocator) AssertError!void {
         .next = null,
     };
 
-    const size = c.ft_lstsize(@constCast(&lst));
+    const size = ft_lstsize(@constCast(&lst));
 
     try assert.expect(size == 1, "Expected size of single node list to be 1");
 }
@@ -64,7 +74,7 @@ fn test_lstsize_multiple_fn(_: std.mem.Allocator) AssertError!void {
         .next = @constCast(&node2),
     };
 
-    const size = c.ft_lstsize(@constCast(&lst));
+    const size = ft_lstsize(@constCast(&lst));
     try assert.expect(size == 3, "Expected size of three node list to be 3");
 }
 
@@ -96,7 +106,7 @@ fn test_lstsize_large_fn(allocator: std.mem.Allocator) TestCaseError!void {
         }
     }
 
-    const size = c.ft_lstsize(@constCast(head));
+    const size = ft_lstsize(@constCast(head));
     try assert.expect(size == list_size, "Expected size of large list to match the number of nodes");
 }
 
@@ -107,10 +117,8 @@ var test_cases = [_]*TestCase{
     &test_lstsize_large,
 };
 
-const is_function_defined = function_list.hasFunction("ft_lstsize");
-
 pub var suite = TestSuite{
     .name = "ft_lstsize",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

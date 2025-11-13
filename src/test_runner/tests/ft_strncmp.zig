@@ -14,6 +14,16 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_strncmp");
+
+fn ft_strncmp(s1: [*c]const u8, s2: [*c]const u8, n: usize) c_int {
+    if (comptime !is_function_defined) {
+        return 0;
+    } else {
+        return c.ft_strncmp(s1, s2, n);
+    }
+}
+
 // Test with equal strings
 var test_equal_strings = TestCase{
     .name = "Equal strings",
@@ -21,7 +31,7 @@ var test_equal_strings = TestCase{
 };
 
 fn test_equal_strings_fn(_: std.mem.Allocator) AssertError!void {
-    try assert.expect(c.ft_strncmp("Hello", "Hello", 5) == 0, "Expected equal strings to return 0");
+    try assert.expect(ft_strncmp("Hello", "Hello", 5) == 0, "Expected equal strings to return 0");
 }
 
 // Test with first string less than second
@@ -31,7 +41,7 @@ var test_first_less = TestCase{
 };
 
 fn test_first_less_fn(_: std.mem.Allocator) AssertError!void {
-    try assert.expect(c.ft_strncmp("Apple", "Banana", 5) < 0, "Expected 'Apple' to be less than 'Banana'");
+    try assert.expect(ft_strncmp("Apple", "Banana", 5) < 0, "Expected 'Apple' to be less than 'Banana'");
 }
 
 // Test with first string greater than second
@@ -41,7 +51,7 @@ var test_first_greater = TestCase{
 };
 
 fn test_first_greater_fn(_: std.mem.Allocator) AssertError!void {
-    try assert.expect(c.ft_strncmp("Orange", "Grape", 5) > 0, "Expected 'Orange' to be greater than 'Grape'");
+    try assert.expect(ft_strncmp("Orange", "Grape", 5) > 0, "Expected 'Orange' to be greater than 'Grape'");
 }
 
 // Test with n less than string lengths
@@ -51,8 +61,8 @@ var test_n_less_than_length = TestCase{
 };
 
 fn test_n_less_than_length_fn(_: std.mem.Allocator) AssertError!void {
-    try assert.expect(c.ft_strncmp("HelloWorld", "HelloZebra", 5) == 0, "Expected first 5 characters to be equal");
-    try assert.expect(c.ft_strncmp("HelloWorld", "HelloZebra", 7) < 0, "Expected 'HelloWo' to be less than 'HelloZe'");
+    try assert.expect(ft_strncmp("HelloWorld", "HelloZebra", 5) == 0, "Expected first 5 characters to be equal");
+    try assert.expect(ft_strncmp("HelloWorld", "HelloZebra", 7) < 0, "Expected 'HelloWo' to be less than 'HelloZe'");
 }
 
 // Test with n greater than string lengths
@@ -62,8 +72,8 @@ var test_n_greater_than_length = TestCase{
 };
 
 fn test_n_greater_than_length_fn(_: std.mem.Allocator) AssertError!void {
-    try assert.expect(c.ft_strncmp("Short", "Shorter", 10) < 0, "Expected 'Short' to be less than 'Shorter'");
-    try assert.expect(c.ft_strncmp("Longer", "Long", 10) > 0, "Expected 'Longer' to be greater than 'Long'");
+    try assert.expect(ft_strncmp("Short", "Shorter", 10) < 0, "Expected 'Short' to be less than 'Shorter'");
+    try assert.expect(ft_strncmp("Longer", "Long", 10) > 0, "Expected 'Longer' to be greater than 'Long'");
 }
 
 // Test with empty strings
@@ -73,9 +83,9 @@ var test_empty_strings = TestCase{
 };
 
 fn test_empty_strings_fn(_: std.mem.Allocator) AssertError!void {
-    try assert.expect(c.ft_strncmp("", "", 5) == 0, "Expected two empty strings to be equal");
-    try assert.expect(c.ft_strncmp("", "NonEmpty", 5) < 0, "Expected empty string to be less than non-empty string");
-    try assert.expect(c.ft_strncmp("NonEmpty", "", 5) > 0, "Expected non-empty string to be greater than empty string");
+    try assert.expect(ft_strncmp("", "", 5) == 0, "Expected two empty strings to be equal");
+    try assert.expect(ft_strncmp("", "NonEmpty", 5) < 0, "Expected empty string to be less than non-empty string");
+    try assert.expect(ft_strncmp("NonEmpty", "", 5) > 0, "Expected non-empty string to be greater than empty string");
 }
 
 // Test with zero n
@@ -85,7 +95,7 @@ var test_zero_n = TestCase{
 };
 
 fn test_zero_n_fn(_: std.mem.Allocator) AssertError!void {
-    try assert.expect(c.ft_strncmp("Anything", "Different", 0) == 0, "Expected comparison with n=0 to return 0");
+    try assert.expect(ft_strncmp("Anything", "Different", 0) == 0, "Expected comparison with n=0 to return 0");
 }
 
 // Test with characters beyond ASCII
@@ -97,11 +107,11 @@ var test_non_ascii = TestCase{
 fn test_non_ascii_fn(_: std.mem.Allocator) AssertError!void {
     const str1 = "test\x00";
     const str2 = "test\x80"; // 0x80 is 128 in unsigned and -128 in signed
-    try assert.expect(c.ft_strncmp(str1, str2, 5) < 0, "Expected '-128' to be less than '0'");
+    try assert.expect(ft_strncmp(str1, str2, 5) < 0, "Expected '-128' to be less than '0'");
 
     const str3 = "test\x80";
     const str4 = "test\x00";
-    try assert.expect(c.ft_strncmp(str3, str4, 5) > 0, "Expected '-128' to be less than '0'");
+    try assert.expect(ft_strncmp(str3, str4, 5) > 0, "Expected '-128' to be less than '0'");
 }
 
 var test_cases = [_]*TestCase{
@@ -115,10 +125,8 @@ var test_cases = [_]*TestCase{
     &test_non_ascii,
 };
 
-const is_function_defined = function_list.hasFunction("ft_strncmp");
-
 pub var suite = TestSuite{
     .name = "ft_strncmp",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

@@ -16,6 +16,16 @@ const c = @cImport({
     @cInclude("stdlib.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_lstadd_back");
+
+fn ft_lstadd_back(lst: ?*?*c.t_list, new: ?*c.t_list) void {
+    if (comptime !is_function_defined) {
+        return;
+    } else {
+        c.ft_lstadd_back(lst, new);
+    }
+}
+
 // Test adding a node to the back of an empty list
 var test_lstadd_back_to_empty = TestCase{
     .name = "Add node to back of empty list",
@@ -30,7 +40,7 @@ fn test_lstadd_back_to_empty_fn(_: std.mem.Allocator) AssertError!void {
         .next = null,
     };
 
-    c.ft_lstadd_back(&lst, &new_node);
+    ft_lstadd_back(&lst, &new_node);
 
     try assert.expect(lst != null, "List should not be null after adding node");
     try assert.expect(lst == &new_node, "List should point to the new node");
@@ -63,7 +73,7 @@ fn test_lstadd_back_to_non_empty_fn(_: std.mem.Allocator) AssertError!void {
         .next = null,
     };
 
-    c.ft_lstadd_back(&lst, &new_node);
+    ft_lstadd_back(&lst, &new_node);
 
     try assert.expect(lst != null, "List should not be null after adding node");
     try assert.expect(lst == &first_node, "List should still point to the first node");
@@ -94,7 +104,7 @@ fn test_lstadd_back_multiple_fn(allocator: std.mem.Allocator) TestCaseError!void
         new_node.content = @constCast(value);
         new_node.next = null;
 
-        c.ft_lstadd_back(&lst, new_node);
+        ft_lstadd_back(&lst, new_node);
     }
 
     // Now the list should have 5 nodes with values 1, 2, 3, 4, 5
@@ -124,7 +134,7 @@ fn test_lstadd_back_list_fn(allocator: std.mem.Allocator) TestCaseError!void {
         new_node.content = @constCast(value);
         new_node.next = null;
 
-        c.ft_lstadd_back(&lst1, new_node);
+        ft_lstadd_back(&lst1, new_node);
     }
 
     const values2: [5]u8 = .{ 0, 2, 4, 6, 8 };
@@ -135,10 +145,10 @@ fn test_lstadd_back_list_fn(allocator: std.mem.Allocator) TestCaseError!void {
         new_node.content = @constCast(value);
         new_node.next = null;
 
-        c.ft_lstadd_back(&lst2, new_node);
+        ft_lstadd_back(&lst2, new_node);
     }
 
-    c.ft_lstadd_back(&lst1, lst2);
+    ft_lstadd_back(&lst1, lst2);
 
     // Now the list should have 5 nodes with values 1, 2, 3, 4, 5
     var current = lst1;
@@ -169,10 +179,8 @@ var test_cases = [_]*TestCase{
     &test_lstadd_back_list,
 };
 
-const is_function_defined = function_list.hasFunction("ft_lstadd_back");
-
 pub var suite = TestSuite{
     .name = "ft_lstadd_back",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

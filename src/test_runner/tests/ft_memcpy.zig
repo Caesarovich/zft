@@ -16,7 +16,15 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
-// ft_memcpy
+const is_function_defined = function_list.hasFunction("ft_memcpy");
+
+fn ft_memcpy(dest: [*]u8, src: [*]const u8, n: usize) [*]u8 {
+    if (comptime !is_function_defined) {
+        return dest;
+    } else {
+        return @ptrCast(c.ft_memcpy(dest, src, n));
+    }
+}
 
 // Test basic functionality of ft_memcpy
 var test_memcpy_basic = TestCase{
@@ -25,11 +33,11 @@ var test_memcpy_basic = TestCase{
 };
 
 fn test_memcpy_basic_fn(_: std.mem.Allocator) AssertError!void {
-    var src: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    const src: [10]u8 = .{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     var dest: [10]u8 = undefined;
     const n: usize = src.len;
 
-    const result: *[10]u8 = @ptrCast(c.ft_memcpy(&dest, &src, n));
+    const result = ft_memcpy(&dest, &src, n);
 
     try assert.expect(std.mem.eql(u8, dest[0..n], src[0..n]), "Destination should match source after memcpy");
     try assert.expect(result == &dest, "ft_memcpy should return the original destination pointer");
@@ -43,12 +51,12 @@ var test_memcpy_zero = TestCase{
 };
 
 fn test_memcpy_zero_fn(_: std.mem.Allocator) AssertError!void {
-    var src: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    const src: [10]u8 = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     var dest: [10]u8 = [_]u8{ 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
     const original_dest = dest;
     const n: usize = 0;
 
-    const result: *[10]u8 = @ptrCast(c.ft_memcpy(&dest, &src, n));
+    const result = ft_memcpy(&dest, &src, n);
 
     try assert.expect(std.mem.eql(u8, dest[0..10], original_dest[0..10]), "Destination should remain unchanged when n = 0");
     try assert.expect(result == &dest, "ft_memcpy should return the original destination pointer");
@@ -63,18 +71,18 @@ var test_memcpy_large = TestCase{
 
 fn test_memcpy_large_fn(allocator: std.mem.Allocator) TestCaseError!void {
     const size: usize = 1024 * 1024; // 1 MB
-    var src = try allocator.alloc(u8, size);
-    var dest = try allocator.alloc(u8, size);
+    const src = try allocator.alloc(u8, size);
+    const dest = try allocator.alloc(u8, size);
 
     // Initialize source with some data
     for (0..size) |i| {
         src[i] = @truncate(i);
     }
 
-    const result: *u8 = @ptrCast(c.ft_memcpy(dest.ptr, src.ptr, size));
+    const result = ft_memcpy(dest.ptr, src.ptr, size);
 
     try assert.expect(std.mem.eql(u8, dest, src), "Destination should match source after large memcpy");
-    try assert.expect(result == &dest[0], "ft_memcpy should return the original destination pointer");
+    try assert.expect(result == dest.ptr, "ft_memcpy should return the original destination pointer");
 }
 
 // Test memcpy partial length
@@ -88,7 +96,7 @@ fn test_memcpy_partial_fn(_: std.mem.Allocator) AssertError!void {
     var dest: [10]u8 = [_]u8{ 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
     const n: usize = 5;
 
-    const result: *[10]u8 = @ptrCast(c.ft_memcpy(&dest, &src, n));
+    const result = ft_memcpy(&dest, &src, n);
 
     try assert.expect(std.mem.eql(u8, dest[0..n], src[0..n]), "First n bytes of destination should match source after memcpy");
     try assert.expect(std.mem.eql(u8, dest[n..10], &[_]u8{ 16, 17, 18, 19, 20 }), "Bytes beyond n should remain unchanged in destination");
@@ -102,10 +110,8 @@ var test_cases = [_]*TestCase{
     &test_memcpy_partial,
 };
 
-const is_function_defined = function_list.hasFunction("ft_memcpy");
-
 pub var suite = TestSuite{
     .name = "ft_memcpy",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

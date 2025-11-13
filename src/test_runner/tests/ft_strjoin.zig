@@ -14,6 +14,16 @@ const c = @cImport({
     @cInclude("string.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_strjoin");
+
+fn ft_strjoin(s1: [*c]const u8, s2: [*c]const u8) [*c]u8 {
+    if (comptime !is_function_defined) {
+        return null;
+    } else {
+        return c.ft_strjoin(s1, s2);
+    }
+}
+
 // Test normal string join
 var test_strjoin_normal = TestCase{
     .name = "Normal string join",
@@ -21,7 +31,7 @@ var test_strjoin_normal = TestCase{
 };
 
 fn test_strjoin_normal_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strjoin("Hello", " World");
+    const result = ft_strjoin("Hello", " World");
     try assert.expect(result != null, "ft_strjoin should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "Hello World") == 0, "Expected joined string 'Hello World'");
@@ -36,7 +46,7 @@ var test_strjoin_empty_first = TestCase{
 };
 
 fn test_strjoin_empty_first_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strjoin("", "World");
+    const result = ft_strjoin("", "World");
     try assert.expect(result != null, "ft_strjoin should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "World") == 0, "Expected second string 'World'");
@@ -51,7 +61,7 @@ var test_strjoin_empty_second = TestCase{
 };
 
 fn test_strjoin_empty_second_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strjoin("Hello", "");
+    const result = ft_strjoin("Hello", "");
     try assert.expect(result != null, "ft_strjoin should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "Hello") == 0, "Expected first string 'Hello'");
@@ -66,7 +76,7 @@ var test_strjoin_both_empty = TestCase{
 };
 
 fn test_strjoin_both_empty_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strjoin("", "");
+    const result = ft_strjoin("", "");
     try assert.expect(result != null, "ft_strjoin should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "") == 0, "Expected empty string");
@@ -81,7 +91,7 @@ var test_strjoin_null_first = TestCase{
 };
 
 fn test_strjoin_null_first_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strjoin(null, "World");
+    const result = ft_strjoin(null, "World");
     try assert.expect(result == null, "ft_strjoin should return null for null first string");
 }
 
@@ -92,7 +102,7 @@ var test_strjoin_null_second = TestCase{
 };
 
 fn test_strjoin_null_second_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strjoin("Hello", null);
+    const result = ft_strjoin("Hello", null);
     try assert.expect(result == null, "ft_strjoin should return null for null second string");
 }
 
@@ -107,7 +117,7 @@ fn test_strjoin_long_strings_fn(_: std.mem.Allocator) AssertError!void {
     const s2 = " the lazy dog";
     const expected = "The quick brown fox jumps over the lazy dog";
 
-    const result = c.ft_strjoin(s1, s2);
+    const result = ft_strjoin(s1, s2);
     try assert.expect(result != null, "ft_strjoin should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, expected) == 0, "Expected properly joined long string");
@@ -125,10 +135,8 @@ var test_cases = [_]*TestCase{
     &test_strjoin_long_strings,
 };
 
-const is_function_defined = function_list.hasFunction("ft_strjoin");
-
 pub var suite = TestSuite{
     .name = "ft_strjoin",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

@@ -14,6 +14,18 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_memchr");
+
+const ft_memchr_wrapper = struct {
+    fn call(s: ?*const anyopaque, ch: c_int, n: usize) ?*anyopaque {
+        if (is_function_defined) {
+            return c.ft_memchr(s, ch, n);
+        } else {
+            return null;
+        }
+    }
+};
+
 // ft_memchr
 // Test with a character present in the memory block
 var test_memchr_found = TestCase{
@@ -26,7 +38,7 @@ fn test_memchr_found_fn(_: std.mem.Allocator) AssertError!void {
     const target: u8 = 'e';
     const n: usize = buffer.len;
 
-    const result = c.ft_memchr(&buffer, target, n);
+    const result = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result != null, "ft_memchr should find the character 'e'");
     if (result) |ptr| {
         try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[4], "ft_memchr should return pointer to the first occurrence of 'e'");
@@ -44,7 +56,7 @@ fn test_memchr_not_found_fn(_: std.mem.Allocator) AssertError!void {
     const target: u8 = 'z';
     const n: usize = buffer.len;
 
-    const result = c.ft_memchr(&buffer, target, n);
+    const result = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result == null, "ft_memchr should not find the character 'z'");
 }
 
@@ -59,7 +71,7 @@ fn test_memchr_n_zero_fn(_: std.mem.Allocator) AssertError!void {
     const target: u8 = 'a';
     const n: usize = 0;
 
-    const result = c.ft_memchr(&buffer, target, n);
+    const result = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result == null, "ft_memchr should not find any character when n = 0");
 }
 // Test with multiple occurrences of the character
@@ -73,7 +85,7 @@ fn test_memchr_multiple_occurrences_fn(_: std.mem.Allocator) AssertError!void {
     const target: u8 = 'a';
     const n: usize = buffer.len;
 
-    const result = c.ft_memchr(&buffer, target, n);
+    const result = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result != null, "ft_memchr should find the character 'a'");
 
     if (result) |ptr| {
@@ -92,7 +104,7 @@ fn test_memchr_beyond_string_fn(_: std.mem.Allocator) AssertError!void {
     const target: u8 = 'W';
     const n: usize = 15;
 
-    const result = c.ft_memchr(&buffer, target, n);
+    const result = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result != null, "ft_memchr should find the character 'W'");
     if (result) |ptr| {
         try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[6], "ft_memchr should return pointer to the first occurrence of 'W'");
@@ -110,7 +122,7 @@ fn test_memchr_null_character_fn(_: std.mem.Allocator) AssertError!void {
     const target: u8 = 0;
     const n: usize = buffer.len;
 
-    const result = c.ft_memchr(&buffer, target, n);
+    const result = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result != null, "ft_memchr should find the null character");
 
     if (result) |ptr| {
@@ -129,7 +141,7 @@ fn test_memchr_empty_buffer_fn(_: std.mem.Allocator) AssertError!void {
     const target: u8 = 'a';
     const n: usize = 0;
 
-    const result = c.ft_memchr(&buffer, target, n);
+    const result = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result == null, "ft_memchr should not find any character in an empty buffer");
 }
 
@@ -144,14 +156,14 @@ fn test_memchr_large_character_fn(_: std.mem.Allocator) AssertError!void {
     var target: c_int = 2 + 256; // 258 % 256 == 2
     const n: usize = buffer.len;
 
-    const result = c.ft_memchr(&buffer, target, n);
+    const result = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result != null, "ft_memchr should find the character 2");
     if (result) |ptr| {
         try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[2], "ft_memchr should return pointer to the first occurrence of 2");
     }
 
     target = 300; // 300 % 256 == 44
-    const result2 = c.ft_memchr(&buffer, target, n);
+    const result2 = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result2 == null, "ft_memchr should not find the character 44");
 }
 
@@ -166,18 +178,18 @@ fn test_memchr_negative_character_fn(_: std.mem.Allocator) AssertError!void {
     var target: c_int = -1;
     const n: usize = buffer.len;
 
-    const result = c.ft_memchr(&buffer, target, n);
+    const result = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result == null, "ft_memchr should not find the character -1");
 
     target = -256; // -256 % 256 == 0
-    const result2 = c.ft_memchr(&buffer, target, n);
+    const result2 = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result2 != null, "ft_memchr should find the character 0");
     if (result2) |ptr| {
         try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[0], "ft_memchr should return pointer to the first occurrence of 0");
     }
 
     target = -253; // -253 % 256 == 3
-    const result3 = c.ft_memchr(&buffer, target, n);
+    const result3 = ft_memchr_wrapper.call(&buffer, target, n);
     try assert.expect(result3 != null, "ft_memchr should find the character 3");
     if (result3) |ptr| {
         try assert.expect(@as(*u8, @ptrCast(ptr)) == &buffer[3], "ft_memchr should return pointer to the first occurrence of 3");
@@ -196,10 +208,8 @@ var test_cases = [_]*TestCase{
     &test_memchr_empty_buffer,
 };
 
-const is_function_defined = function_list.hasFunction("ft_memchr");
-
 pub var suite = TestSuite{
     .name = "ft_memchr",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

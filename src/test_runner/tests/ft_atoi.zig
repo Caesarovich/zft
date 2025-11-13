@@ -14,6 +14,16 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_atoi");
+
+fn ft_atoi(str: [*c]const u8) c_int {
+    if (comptime !is_function_defined) {
+        return 0;
+    } else {
+        return c.ft_atoi(str);
+    }
+}
+
 // ft_atoi
 
 // Test basic positive number conversion
@@ -24,19 +34,19 @@ var test_atoi_positive = TestCase{
 
 fn test_atoi_positive_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "1";
-    var result = c.ft_atoi(str);
+    var result = ft_atoi(str);
     try assert.expect(result == 1, "ft_atoi should convert '1' to 1");
 
     str = "9";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 9, "ft_atoi should convert '9' to 9");
 
     str = "42";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 42, "ft_atoi should convert '42' to 42");
 
     str = "12345";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 12345, "ft_atoi should convert '12345' to 12345");
 }
 
@@ -48,19 +58,19 @@ var test_atoi_negative = TestCase{
 
 fn test_atoi_negative_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "-1";
-    var result = c.ft_atoi(str);
+    var result = ft_atoi(str);
     try assert.expect(result == -1, "ft_atoi should convert '-1' to -1");
 
     str = "-9";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == -9, "ft_atoi should convert '-9' to -9");
 
     str = "-42";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == -42, "ft_atoi should convert '-42' to -42");
 
     str = "-12345";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == -12345, "ft_atoi should convert '-12345' to -12345");
 }
 
@@ -72,11 +82,11 @@ var test_atoi_zero = TestCase{
 
 fn test_atoi_zero_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "0";
-    var result = c.ft_atoi(str);
+    var result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should convert '0' to 0");
 
     str = "-0";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should convert '-0' to 0");
 }
 
@@ -88,11 +98,11 @@ var test_atoi_leading_whitespace = TestCase{
 
 fn test_atoi_leading_whitespace_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "   42";
-    var result = c.ft_atoi(str);
+    var result = ft_atoi(str);
     try assert.expect(result == 42, "ft_atoi should ignore leading whitespace and convert '   42' to 42");
 
     str = "\t\n  -42";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == -42, "ft_atoi should ignore leading whitespace and convert '\\t\\n  -42' to -42");
 }
 
@@ -104,19 +114,19 @@ var test_atoi_multiple_signs = TestCase{
 
 fn test_atoi_multiple_signs_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "--42";
-    var result = c.ft_atoi(str);
+    var result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '--42'");
 
     str = "++42";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '++42'");
 
     str = "-+42";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '-+42'");
 
     str = "+-42";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '+-42'");
 }
 
@@ -128,19 +138,19 @@ var test_atoi_multiple_signs_whitespace = TestCase{
 
 fn test_atoi_multiple_signs_whitespace_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "   --42";
-    var result = c.ft_atoi(str);
+    var result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '   --42'");
 
     str = "\t\n ++42";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '\\t\\n ++42'");
 
     str = "  -+42";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '  -+42'");
 
     str = " +-42";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for ' + -42'");
 }
 
@@ -153,15 +163,15 @@ var test_atoi_invalid_leading = TestCase{
 
 fn test_atoi_invalid_leading_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "abc42";
-    var result = c.ft_atoi(str);
+    var result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for 'abc42'");
 
     str = "!!-42";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '!!-42'");
 
     str = "  - 123";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '  - 123'");
 }
 
@@ -173,15 +183,15 @@ var test_atoi_invalid_trailing = TestCase{
 
 fn test_atoi_invalid_trailing_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "42abc";
-    var result = c.ft_atoi(str);
+    var result = ft_atoi(str);
     try assert.expect(result == 42, "ft_atoi should convert '42abc' to 42");
 
     str = "-42!!";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == -42, "ft_atoi should convert '-42!!' to -42");
 
     str = "123 456";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 123, "ft_atoi should convert '123 456' to 123");
 }
 
@@ -193,7 +203,7 @@ var test_atoi_empty_string = TestCase{
 
 fn test_atoi_empty_string_fn(_: std.mem.Allocator) AssertError!void {
     const str: [*c]const u8 = "";
-    const result = c.ft_atoi(str);
+    const result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for empty string");
 }
 
@@ -205,11 +215,11 @@ var test_atoi_only_invalid = TestCase{
 
 fn test_atoi_only_invalid_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "!!!";
-    var result = c.ft_atoi(str);
+    var result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for '!!!'");
 
     str = "   ";
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == 0, "ft_atoi should return 0 for string with only whitespace");
 }
 
@@ -222,11 +232,11 @@ var test_atoi_limits = TestCase{
 
 fn test_atoi_limits_fn(_: std.mem.Allocator) AssertError!void {
     var str: [*c]const u8 = "2147483647"; // INT_MAX
-    var result = c.ft_atoi(str);
+    var result = ft_atoi(str);
     try assert.expect(result == 2147483647, "ft_atoi should convert '2147483647' to INT_MAX");
 
     str = "-2147483648"; // INT_MIN
-    result = c.ft_atoi(str);
+    result = ft_atoi(str);
     try assert.expect(result == -2147483648, "ft_atoi should convert '-2147483648' to INT_MIN");
 }
 
@@ -244,10 +254,8 @@ var test_cases = [_]*TestCase{
     &test_atoi_limits,
 };
 
-const is_function_defined = function_list.hasFunction("ft_atoi");
-
 pub var suite = TestSuite{
     .name = "ft_atoi",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

@@ -16,9 +16,17 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
-// ft_memset
-// Test setting a block of memory to a specific value
+const is_function_defined = function_list.hasFunction("ft_memset");
 
+fn ft_memset(s: [*]u8, char: c_int, n: usize) [*]u8 {
+    if (comptime !is_function_defined) {
+        return s;
+    } else {
+        return @ptrCast(c.ft_memset(s, char, n));
+    }
+}
+
+// Test setting a block of memory to a specific value
 var test_memset_basic = TestCase{
     .name = "Basic memset",
     .fn_ptr = &test_memset_basic_fn,
@@ -29,7 +37,7 @@ fn test_memset_basic_fn(_: std.mem.Allocator) AssertError!void {
     const value: u8 = 0xAB;
     const n: usize = buffer.len;
 
-    const result: *[10]u8 = @ptrCast(c.ft_memset(&buffer, value, n));
+    const result = ft_memset(&buffer, value, n);
     try assert.expect(result == &buffer, "ft_memset should return the original pointer");
 
     for (buffer) |byte| {
@@ -49,7 +57,7 @@ fn test_memset_zero_fn(_: std.mem.Allocator) AssertError!void {
     const value: u8 = 0xFF;
     const n: usize = 0;
 
-    const result: *[10]u8 = @ptrCast(c.ft_memset(&buffer, value, n));
+    const result = ft_memset(&buffer, value, n);
     try assert.expect(result == &buffer, "ft_memset should return the original pointer");
 
     for (0..10) |i| {
@@ -65,12 +73,12 @@ var test_memset_large = TestCase{
 
 fn test_memset_large_fn(allocator: std.mem.Allocator) TestCaseError!void {
     const large_size: usize = 1024 * 1024; // 1 MB
-    var buffer = try allocator.alloc(u8, large_size);
+    const buffer = try allocator.alloc(u8, large_size);
     const value: u8 = 0x7F;
 
-    const result: *u8 = @ptrCast(c.ft_memset(buffer.ptr, value, large_size));
+    const result = ft_memset(buffer.ptr, value, large_size);
 
-    try assert.expect(result == &buffer[0], "ft_memset should return the original pointer");
+    try assert.expect(result == buffer.ptr, "ft_memset should return the original pointer");
 
     for (buffer) |byte| {
         try assert.expect(byte == value, "Each byte should be set to 0x7F");
@@ -88,7 +96,7 @@ fn test_memset_partial_fn(_: std.mem.Allocator) AssertError!void {
     const value: u8 = 0x5A;
     const n: usize = 5;
 
-    const result: *[10]u8 = @ptrCast(c.ft_memset(&buffer, value, n));
+    const result = ft_memset(&buffer, value, n);
     try assert.expect(result == &buffer, "ft_memset should return the original pointer");
 
     for (0..n) |i| {
@@ -106,10 +114,8 @@ var test_cases = [_]*TestCase{
     &test_memset_partial,
 };
 
-const is_function_defined = function_list.hasFunction("ft_memset");
-
 pub var suite = TestSuite{
     .name = "ft_memset",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

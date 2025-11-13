@@ -16,6 +16,22 @@ const c = @cImport({
     @cInclude("stdlib.h");
 });
 
+const ft_lstclear = @import("ft_lstclear.zig").ft_lstclear;
+
+const is_function_defined = function_list.hasFunction("ft_lstmap");
+
+fn ft_lstmap(
+    lst: ?*c.t_list,
+    f: ?*const fn (?*anyopaque) callconv(.c) ?*anyopaque,
+    del: ?*const fn (?*anyopaque) callconv(.c) void,
+) [*c]c.t_list {
+    if (comptime !is_function_defined) {
+        return null;
+    } else {
+        return c.ft_lstmap(lst, f, del);
+    }
+}
+
 // Helper mapping function that doubles integers
 fn double_map_function(content: ?*anyopaque) callconv(.c) ?*anyopaque {
     if (content == null) return null;
@@ -79,7 +95,7 @@ var test_lstmap_empty = TestCase{
 };
 
 fn test_lstmap_empty_fn(_: std.mem.Allocator) AssertError!void {
-    const new_list = c.ft_lstmap(null, &double_map_function, &simple_map_delete_function);
+    const new_list = ft_lstmap(null, &double_map_function, &simple_map_delete_function);
     try assert.expect(new_list == null, "Expected mapping empty list to return null");
 }
 
@@ -96,7 +112,7 @@ fn test_lstmap_single_fn(_: std.mem.Allocator) AssertError!void {
         .next = null,
     };
 
-    const new_list: [*c]c.t_list = c.ft_lstmap(&node, &double_map_function, &simple_map_delete_function);
+    const new_list: [*c]c.t_list = ft_lstmap(&node, &double_map_function, &simple_map_delete_function);
     try assert.expect(new_list != null, "Expected new list to be created");
 
     if (new_list) |list| {
@@ -109,7 +125,7 @@ fn test_lstmap_single_fn(_: std.mem.Allocator) AssertError!void {
 
         // Clean up
         var list_start: ?*c.t_list = list;
-        c.ft_lstclear(&list_start, &simple_map_delete_function);
+        ft_lstclear(&list_start, &simple_map_delete_function);
     }
 }
 
@@ -139,7 +155,7 @@ fn test_lstmap_multiple_fn(_: std.mem.Allocator) AssertError!void {
         .next = &node2,
     };
 
-    const new_list = c.ft_lstmap(&node1, &double_map_function, &simple_map_delete_function);
+    const new_list = ft_lstmap(&node1, &double_map_function, &simple_map_delete_function);
     try assert.expect(new_list != null, "Expected new list to be created");
 
     if (new_list) |list| {
@@ -161,7 +177,7 @@ fn test_lstmap_multiple_fn(_: std.mem.Allocator) AssertError!void {
 
         // Clean up
         var list_start: ?*c.t_list = list;
-        c.ft_lstclear(&list_start, &simple_map_delete_function);
+        ft_lstclear(&list_start, &simple_map_delete_function);
     }
 }
 
@@ -185,7 +201,7 @@ fn test_lstmap_strings_fn(_: std.mem.Allocator) AssertError!void {
         .next = &node2,
     };
 
-    const new_list = c.ft_lstmap(&node1, &copy_string_map_function, &simple_map_delete_function);
+    const new_list = ft_lstmap(&node1, &copy_string_map_function, &simple_map_delete_function);
     try assert.expect(new_list != null, "Expected new list to be created");
 
     if (new_list) |list| {
@@ -209,7 +225,7 @@ fn test_lstmap_strings_fn(_: std.mem.Allocator) AssertError!void {
 
         // Clean up
         var list_start: ?*c.t_list = list;
-        c.ft_lstclear(&list_start, &simple_map_delete_function);
+        ft_lstclear(&list_start, &simple_map_delete_function);
     }
 }
 
@@ -241,7 +257,7 @@ fn test_lstmap_counter_fn(_: std.mem.Allocator) AssertError!void {
         .next = &node2,
     };
 
-    const new_list = c.ft_lstmap(&node1, &increment_map_function, &simple_map_delete_function);
+    const new_list = ft_lstmap(&node1, &increment_map_function, &simple_map_delete_function);
     try assert.expect(new_list != null, "Expected new list to be created");
 
     if (new_list) |list| {
@@ -261,7 +277,7 @@ fn test_lstmap_counter_fn(_: std.mem.Allocator) AssertError!void {
 
         // Clean up
         var list_start: ?*c.t_list = list;
-        c.ft_lstclear(&list_start, &simple_map_delete_function);
+        ft_lstclear(&list_start, &simple_map_delete_function);
     }
 }
 
@@ -273,10 +289,8 @@ var test_cases = [_]*TestCase{
     &test_lstmap_counter,
 };
 
-const is_function_defined = function_list.hasFunction("ft_lstmap");
-
 pub var suite = TestSuite{
     .name = "ft_lstmap",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

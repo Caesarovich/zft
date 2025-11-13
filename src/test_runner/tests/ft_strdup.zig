@@ -14,7 +14,15 @@ const c = @cImport({
     @cInclude("ctype.h");
 });
 
-// ft_strdup
+const is_function_defined = function_list.hasFunction("ft_strdup");
+
+fn ft_strdup(s: [*c]const u8) [*c]u8 {
+    if (comptime !is_function_defined) {
+        return null;
+    } else {
+        return c.ft_strdup(s);
+    }
+}
 
 // Test basic string duplication
 var test_strdup_basic = TestCase{
@@ -24,7 +32,7 @@ var test_strdup_basic = TestCase{
 
 fn test_strdup_basic_fn(_: std.mem.Allocator) AssertError!void {
     var original: [*c]const u8 = "Hello, World!";
-    var duplicated: ?[*c]const u8 = c.ft_strdup(original);
+    var duplicated: ?[*c]const u8 = ft_strdup(original);
 
     if (duplicated) |d| {
         try assert.expect(std.mem.eql(u8, std.mem.span(original), std.mem.span(d)), "Duplicated string should match the original");
@@ -34,7 +42,7 @@ fn test_strdup_basic_fn(_: std.mem.Allocator) AssertError!void {
     }
 
     original = "Zig is awesome!";
-    duplicated = c.ft_strdup(original);
+    duplicated = ft_strdup(original);
 
     if (duplicated) |d| {
         try assert.expect(std.mem.eql(u8, std.mem.span(original), std.mem.span(d)), "Duplicated string should match the original");
@@ -52,7 +60,7 @@ var test_strdup_empty = TestCase{
 
 fn test_strdup_empty_fn(_: std.mem.Allocator) AssertError!void {
     const original: [*c]const u8 = "";
-    const duplicated: ?[*c]const u8 = c.ft_strdup(original);
+    const duplicated: ?[*c]const u8 = ft_strdup(original);
 
     if (duplicated) |d| {
         try assert.expect(std.mem.eql(u8, std.mem.span(original), std.mem.span(d)), "Duplicated string should match the original empty string");
@@ -67,10 +75,8 @@ var test_cases = [_]*TestCase{
     &test_strdup_empty,
 };
 
-const is_function_defined = function_list.hasFunction("ft_strdup");
-
 pub var suite = TestSuite{
     .name = "ft_strdup",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

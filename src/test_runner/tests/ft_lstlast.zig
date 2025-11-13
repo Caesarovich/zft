@@ -16,6 +16,16 @@ const c = @cImport({
     @cInclude("stdlib.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_lstlast");
+
+fn ft_lstlast(lst: ?*c.t_list) ?*c.t_list {
+    if (comptime !is_function_defined) {
+        return null;
+    } else {
+        return c.ft_lstlast(lst);
+    }
+}
+
 // Test ft_lstlast with empty list
 var test_lstlast_empty = TestCase{
     .name = "Last node of empty list",
@@ -23,7 +33,7 @@ var test_lstlast_empty = TestCase{
 };
 
 fn test_lstlast_empty_fn(_: std.mem.Allocator) AssertError!void {
-    const last = c.ft_lstlast(null);
+    const last = ft_lstlast(null);
     try assert.expect(last == null, "Expected last node of empty list to be null");
 }
 
@@ -40,7 +50,7 @@ fn test_lstlast_single_fn(_: std.mem.Allocator) AssertError!void {
         .next = null,
     };
 
-    const last = c.ft_lstlast(&lst);
+    const last = ft_lstlast(&lst);
     try assert.expect(last != null, "Expected last node to be non-null");
     try assert.expect(last == &lst, "Expected last node to be the only node");
 
@@ -76,7 +86,7 @@ fn test_lstlast_multiple_fn(_: std.mem.Allocator) AssertError!void {
         .next = &node2,
     };
 
-    const last = c.ft_lstlast(&lst);
+    const last = ft_lstlast(&lst);
     try assert.expect(last != null, "Expected last node to be non-null");
     try assert.expect(last == &node3, "Expected last node to be the third node");
 
@@ -119,7 +129,7 @@ fn test_lstlast_large_fn(allocator: std.mem.Allocator) TestCaseError!void {
         last_node = new_node;
     }
 
-    const found_last = c.ft_lstlast(@constCast(head));
+    const found_last = ft_lstlast(@constCast(head));
     try assert.expect(found_last != null, "Expected last node to be found");
     try assert.expect(found_last == last_node, "Expected found last node to match the actual last node");
 
@@ -136,10 +146,8 @@ var test_cases = [_]*TestCase{
     &test_lstlast_large,
 };
 
-const is_function_defined = function_list.hasFunction("ft_lstlast");
-
 pub var suite = TestSuite{
     .name = "ft_lstlast",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

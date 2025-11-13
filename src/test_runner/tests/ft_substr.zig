@@ -14,6 +14,16 @@ const c = @cImport({
     @cInclude("string.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_substr");
+
+fn ft_substr(s: [*c]const u8, start: c_uint, len: usize) [*c]u8 {
+    if (comptime !is_function_defined) {
+        return null;
+    } else {
+        return c.ft_substr(s, start, len);
+    }
+}
+
 // Test normal substring extraction
 var test_substr_normal = TestCase{
     .name = "Normal substring extraction",
@@ -21,7 +31,7 @@ var test_substr_normal = TestCase{
 };
 
 fn test_substr_normal_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_substr("Hello World", 6, 5);
+    const result = ft_substr("Hello World", 6, 5);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "World") == 0, "Expected substring 'World'");
@@ -36,7 +46,7 @@ var test_substr_from_start = TestCase{
 };
 
 fn test_substr_from_start_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_substr("Hello", 0, 3);
+    const result = ft_substr("Hello", 0, 3);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "Hel") == 0, "Expected substring 'Hel'");
@@ -51,7 +61,7 @@ var test_substr_start_beyond = TestCase{
 };
 
 fn test_substr_start_beyond_fn(_: std.mem.Allocator) AssertError!void {
-    var result = c.ft_substr("Hello", 10, 5);
+    var result = ft_substr("Hello", 10, 5);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "") == 0, "Expected empty string when start is beyond length");
@@ -59,7 +69,7 @@ fn test_substr_start_beyond_fn(_: std.mem.Allocator) AssertError!void {
     }
 
     // With really large start index
-    result = c.ft_substr("Hello", 42_000_000, 5);
+    result = ft_substr("Hello", 42_000_000, 5);
     try assert.expect(result != null, "ft_substr should return a valid pointer for large start index");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "") == 0, "Expected empty string when start is beyond length");
@@ -74,7 +84,7 @@ var test_substr_len_beyond = TestCase{
 };
 
 fn test_substr_len_beyond_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_substr("Hello", 2, 10);
+    const result = ft_substr("Hello", 2, 10);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "llo") == 0, "Expected remaining substring 'llo'");
@@ -89,7 +99,7 @@ var test_substr_zero_len = TestCase{
 };
 
 fn test_substr_zero_len_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_substr("Hello", 2, 0);
+    const result = ft_substr("Hello", 2, 0);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "") == 0, "Expected empty string with zero length");
@@ -104,7 +114,7 @@ var test_substr_empty_src = TestCase{
 };
 
 fn test_substr_empty_src_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_substr("", 0, 5);
+    const result = ft_substr("", 0, 5);
     try assert.expect(result != null, "ft_substr should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "") == 0, "Expected empty string from empty source");
@@ -119,7 +129,7 @@ var test_substr_null_src = TestCase{
 };
 
 fn test_substr_null_src_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_substr(null, 0, 5);
+    const result = ft_substr(null, 0, 5);
     try assert.expect(result == null, "ft_substr should return null for null source");
 }
 
@@ -133,10 +143,8 @@ var test_cases = [_]*TestCase{
     &test_substr_null_src,
 };
 
-const is_function_defined = function_list.hasFunction("ft_substr");
-
 pub var suite = TestSuite{
     .name = "ft_substr",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

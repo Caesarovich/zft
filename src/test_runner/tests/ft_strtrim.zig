@@ -14,6 +14,16 @@ const c = @cImport({
     @cInclude("string.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_strtrim");
+
+fn ft_strtrim(s1: [*c]const u8, set: [*c]const u8) [*c]u8 {
+    if (comptime !is_function_defined) {
+        return null;
+    } else {
+        return c.ft_strtrim(s1, set);
+    }
+}
+
 // Test normal string trim
 var test_strtrim_normal = TestCase{
     .name = "Normal string trim",
@@ -21,7 +31,7 @@ var test_strtrim_normal = TestCase{
 };
 
 fn test_strtrim_normal_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strtrim("   Hello World   ", " ");
+    const result = ft_strtrim("   Hello World   ", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "Hello World") == 0, "Expected trimmed string 'Hello World'");
@@ -36,7 +46,7 @@ var test_strtrim_multiple_chars = TestCase{
 };
 
 fn test_strtrim_multiple_chars_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strtrim(".,!Hello World!,.", ".,!");
+    const result = ft_strtrim(".,!Hello World!,.", ".,!");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "Hello World") == 0, "Expected trimmed string 'Hello World'");
@@ -51,7 +61,7 @@ var test_strtrim_nothing = TestCase{
 };
 
 fn test_strtrim_nothing_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strtrim("Hello World", " ");
+    const result = ft_strtrim("Hello World", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "Hello World") == 0, "Expected unchanged string 'Hello World'");
@@ -66,7 +76,7 @@ var test_strtrim_entire = TestCase{
 };
 
 fn test_strtrim_entire_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strtrim("   ", " ");
+    const result = ft_strtrim("   ", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "") == 0, "Expected empty string when entire string is trimmed");
@@ -81,7 +91,7 @@ var test_strtrim_empty_set = TestCase{
 };
 
 fn test_strtrim_empty_set_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strtrim("  Hello World  ", "");
+    const result = ft_strtrim("  Hello World  ", "");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "  Hello World  ") == 0, "Expected unchanged string with empty set");
@@ -96,7 +106,7 @@ var test_strtrim_empty_string = TestCase{
 };
 
 fn test_strtrim_empty_string_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strtrim("", " ");
+    const result = ft_strtrim("", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "") == 0, "Expected empty string");
@@ -111,7 +121,7 @@ var test_strtrim_beginning_only = TestCase{
 };
 
 fn test_strtrim_beginning_only_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strtrim("   Hello World", " ");
+    const result = ft_strtrim("   Hello World", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "Hello World") == 0, "Expected string trimmed from beginning");
@@ -126,7 +136,7 @@ var test_strtrim_end_only = TestCase{
 };
 
 fn test_strtrim_end_only_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strtrim("Hello World   ", " ");
+    const result = ft_strtrim("Hello World   ", " ");
     try assert.expect(result != null, "ft_strtrim should return a valid pointer");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "Hello World") == 0, "Expected string trimmed from end");
@@ -141,7 +151,7 @@ var test_strtrim_null_string = TestCase{
 };
 
 fn test_strtrim_null_string_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strtrim(null, " ");
+    const result = ft_strtrim(null, " ");
     try assert.expect(result == null, "ft_strtrim should return null for null string input");
 }
 
@@ -152,7 +162,7 @@ var test_strtrim_null_set = TestCase{
 };
 
 fn test_strtrim_null_set_fn(_: std.mem.Allocator) AssertError!void {
-    const result = c.ft_strtrim("   Hello World   ", null);
+    const result = ft_strtrim("   Hello World   ", null);
     try assert.expect(result != null, "ft_strtrim should return a valid pointer when set is null");
     if (result) |str| {
         try assert.expect(c.strcmp(str, "   Hello World   ") == 0, "Expected unchanged string when set is null");
@@ -173,10 +183,8 @@ var test_cases = [_]*TestCase{
     &test_strtrim_null_set,
 };
 
-const is_function_defined = function_list.hasFunction("ft_strtrim");
-
 pub var suite = TestSuite{
     .name = "ft_strtrim",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

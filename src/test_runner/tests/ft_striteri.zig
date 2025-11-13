@@ -14,6 +14,16 @@ const c = @cImport({
     @cInclude("string.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_striteri");
+
+fn ft_striteri(s: [*c]u8, f: ?*const fn (c_uint, [*c]u8) callconv(.c) void) void {
+    if (comptime !is_function_defined) {
+        return;
+    } else {
+        c.ft_striteri(s, f);
+    }
+}
+
 // Global variable to track function calls
 var g_striteri_calls: [10]u8 = undefined;
 var g_call_count: usize = 0;
@@ -68,7 +78,7 @@ fn test_striteri_uppercase_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'h', 'e', 'l', 'l', 'o', 0 };
 
-    c.ft_striteri(&test_str, to_upper_inplace);
+    ft_striteri(&test_str, to_upper_inplace);
 
     try assert.expect(c.strcmp(&test_str, "HELLO") == 0, "Expected string to be converted to 'HELLO'");
     try assert.expect(g_call_count == 5, "Expected function to be called 5 times");
@@ -91,7 +101,7 @@ fn test_striteri_add_index_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'a', 'a', 'a', 'a', 0 };
 
-    c.ft_striteri(&test_str, add_index_inplace);
+    ft_striteri(&test_str, add_index_inplace);
 
     try assert.expect(test_str[0] == 'a' + 0, "Expected first char to be 'a'");
     try assert.expect(test_str[1] == 'a' + 1, "Expected second char to be 'b'");
@@ -111,7 +121,7 @@ fn test_striteri_replace_all_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'H', 'e', 'l', 'l', 'o', 0 };
 
-    c.ft_striteri(&test_str, replace_with_x_inplace);
+    ft_striteri(&test_str, replace_with_x_inplace);
 
     try assert.expect(c.strcmp(&test_str, "XXXXX") == 0, "Expected 'XXXXX'");
     try assert.expect(g_call_count == 5, "Expected function to be called 5 times");
@@ -127,7 +137,7 @@ fn test_striteri_empty_string_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{0};
 
-    c.ft_striteri(&test_str, to_upper_inplace);
+    ft_striteri(&test_str, to_upper_inplace);
 
     try assert.expect(c.strcmp(&test_str, "") == 0, "Expected empty string to remain empty");
     try assert.expect(g_call_count == 0, "Expected function to not be called for empty string");
@@ -143,7 +153,7 @@ fn test_striteri_single_char_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'a', 0 };
 
-    c.ft_striteri(&test_str, to_upper_inplace);
+    ft_striteri(&test_str, to_upper_inplace);
 
     try assert.expect(c.strcmp(&test_str, "A") == 0, "Expected 'A'");
     try assert.expect(g_call_count == 1, "Expected function to be called once");
@@ -160,7 +170,7 @@ fn test_striteri_mixed_case_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'H', 'e', 'L', 'L', 'o', 0 };
 
-    c.ft_striteri(&test_str, to_upper_inplace);
+    ft_striteri(&test_str, to_upper_inplace);
 
     try assert.expect(c.strcmp(&test_str, "HELLO") == 0, "Expected 'HELLO'");
     try assert.expect(g_call_count == 5, "Expected function to be called 5 times");
@@ -176,7 +186,7 @@ fn test_striteri_special_chars_fn(_: std.mem.Allocator) AssertError!void {
     reset_call_tracking();
     var test_str = [_]u8{ 'h', 'e', 'l', 'l', 'o', '1', '2', '3', '!', 0 };
 
-    c.ft_striteri(&test_str, to_upper_inplace);
+    ft_striteri(&test_str, to_upper_inplace);
 
     try assert.expect(c.strcmp(&test_str, "HELLO123!") == 0, "Expected 'HELLO123!'");
     try assert.expect(g_call_count == 9, "Expected function to be called 9 times");
@@ -193,7 +203,7 @@ fn test_striteri_null_string_fn(_: std.mem.Allocator) AssertError!void {
     const str_ptr: [*c]u8 = null;
 
     // Expect no crash or undefined behavior
-    c.ft_striteri(str_ptr, to_upper_inplace);
+    ft_striteri(str_ptr, to_upper_inplace);
 
     try assert.expect(g_call_count == 0, "Expected function to not be called for NULL string");
 }
@@ -209,7 +219,7 @@ fn test_striteri_null_function_fn(_: std.mem.Allocator) AssertError!void {
     var test_str = [_]u8{ 'h', 'e', 'l', 'l', 'o', 0 };
 
     // Expect no crash or undefined behavior
-    c.ft_striteri(&test_str, null);
+    ft_striteri(&test_str, null);
 
     try assert.expect(c.strcmp(&test_str, "hello") == 0, "Expected string to remain unchanged");
     try assert.expect(g_call_count == 0, "Expected function to not be called for NULL function pointer");
@@ -227,10 +237,8 @@ var test_cases = [_]*TestCase{
     &test_striteri_null_function,
 };
 
-const is_function_defined = function_list.hasFunction("ft_striteri");
-
 pub var suite = TestSuite{
     .name = "ft_striteri",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };

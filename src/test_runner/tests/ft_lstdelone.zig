@@ -16,6 +16,16 @@ const c = @cImport({
     @cInclude("stdlib.h");
 });
 
+const is_function_defined = function_list.hasFunction("ft_lstdelone");
+
+fn ft_lstdelone(lst: ?*c.t_list, del: ?*const fn (?*anyopaque) callconv(.c) void) void {
+    if (comptime !is_function_defined) {
+        return;
+    } else {
+        c.ft_lstdelone(lst, del);
+    }
+}
+
 // Helper deletion function that tracks calls
 var delete_call_count: u32 = 0;
 
@@ -48,7 +58,7 @@ fn test_lstdelone_with_content_fn(_: std.mem.Allocator) AssertError!void {
         .next = null,
     };
 
-    c.ft_lstdelone(list_node, &test_delete_function);
+    ft_lstdelone(list_node, &test_delete_function);
 
     try assert.expect(delete_call_count == 1, "Expected delete function to be called once");
 }
@@ -71,7 +81,7 @@ fn test_lstdelone_null_content_fn(_: std.mem.Allocator) AssertError!void {
         .next = null,
     };
 
-    c.ft_lstdelone(list_node, &test_delete_function);
+    ft_lstdelone(list_node, &test_delete_function);
 
     try assert.expect(delete_call_count == 1, "Expected delete function to be called once even with null content");
 }
@@ -112,7 +122,7 @@ fn test_lstdelone_with_next_fn(_: std.mem.Allocator) AssertError!void {
     };
 
     // Delete only the first node
-    c.ft_lstdelone(node1_ptr, &test_delete_function);
+    ft_lstdelone(node1_ptr, &test_delete_function);
 
     try assert.expect(delete_call_count == 1, "Expected delete function to be called once");
 
@@ -130,10 +140,8 @@ var test_cases = [_]*TestCase{
     &test_lstdelone_with_next,
 };
 
-const is_function_defined = function_list.hasFunction("ft_lstdelone");
-
 pub var suite = TestSuite{
     .name = "ft_lstdelone",
-    .cases = if (is_function_defined) &test_cases else &.{},
+    .cases = &test_cases,
     .result = if (is_function_defined) tests.tests.TestSuiteResult.success else tests.tests.TestSuiteResult.skipped,
 };
