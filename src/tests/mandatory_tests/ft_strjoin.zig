@@ -115,6 +115,18 @@ fn test_strjoin_null_second_fn(_: std.mem.Allocator) TestCaseError!void {
     }
 }
 
+// Test join with both null strings
+var test_strjoin_both_null = TestCase{
+    .name = "Both strings null",
+    .speculative = true,
+    .fn_ptr = &test_strjoin_both_null_fn,
+};
+
+fn test_strjoin_both_null_fn(_: std.mem.Allocator) TestCaseError!void {
+    const result = ft_strjoin(null, null);
+    try assert.expect(result == null, "ft_strjoin should return null when both strings are null");
+}
+
 // Test join with long strings
 var test_strjoin_long_strings = TestCase{
     .name = "Long strings join",
@@ -141,6 +153,7 @@ var test_cases = [_]*TestCase{
     &test_strjoin_both_empty,
     &test_strjoin_null_first,
     &test_strjoin_null_second,
+    &test_strjoin_both_null,
     &test_strjoin_long_strings,
 };
 

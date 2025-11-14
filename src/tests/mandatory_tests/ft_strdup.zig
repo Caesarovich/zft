@@ -77,7 +77,7 @@ var test_strdup_null = TestCase{
 };
 
 fn test_strdup_null_fn(_: std.mem.Allocator) TestCaseError!void {
-    const duplicated: ?[*c]const u8 = ft_strdup(null);
+    const duplicated = ft_strdup(null);
 
     try assert.expect(duplicated == null, "ft_strdup should return null when input is null");
 }
