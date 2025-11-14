@@ -76,12 +76,19 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: TestSuite) !TestCount
                 try stdout.print("{s}\n", .{test_case.name});
                 try ansi.format.resetStyle(stdout);
             },
-            TestResult.fail, TestResult.segfault => |r| {
+            TestResult.fail => {
                 counts.failed += 1;
                 try ansi.format.updateStyle(stdout, .{
                     .foreground = if (test_case.speculative) .Yellow else .Red,
                 }, .{});
-                try stdout.print(" ✕ {s}{s}{s}\n", .{ test_case.name, if (test_case.speculative) " (speculative)" else "", if (r == .segfault) " [⚠️ SEGFAULT]" else "" });
+
+                const intercepted_signal_str = switch (test_case.intercepted_signal) {
+                    .none => "",
+                    .segv => " [⚠️ SEGFAULT]",
+                    .abrt => " [⚠️ ABORT]",
+                };
+
+                try stdout.print(" ✕ {s}{s}{s}\n", .{ test_case.name, if (test_case.speculative) " (speculative)" else "", intercepted_signal_str });
                 try ansi.format.resetStyle(stdout);
 
                 if (test_case.fail_info) |info| {
