@@ -2,8 +2,6 @@
 
 This project is a Libft tester written in [Zig](https://ziglang.org/). I chose Zig because it has great C interoperability and I wanted to learn this language.
 
-⚠️ **This tester is still a work in progress.** More tests will be added over time to cover all Libft functions.
-
 ## 💿 Installation Instructions
 
 To **install** ZFT, run the following command in your terminal:
@@ -18,11 +16,9 @@ If you want to **reinstall** ZFT and overwrite the existing installation, you ca
 curl -sSL https://raw.githubusercontent.com/Caesarovich/zft/refs/heads/main/install.sh | bash -s -- --reinstall
 ```
 
-The script will clone the repository in your Downloads folder and create an alias `zft` in your `.bashrc` file for easy access. It will also download the Zig compiler in the installation directory.
+The script will clone the repository in your Downloads folder and create an alias `zft` in your shell configuration file (`.bashrc`, `.zshrc`, or `config.fish` depending on your shell).
 
-> **Note:** Make sure to restart your terminal or run `source ~/.bashrc` to apply the changes.
-
-> **Note 2:** If you are using a shell other than bash (like zsh or fish), you will need to manually add the alias to your shell configuration file or run it within bash.
+> **Note:** You may need to restart your terminal or run `source ~/.bashrc`, `source ~/.zshrc`, or `source config.fish` to apply the changes.
 
 ## ▶️ Usage
 
