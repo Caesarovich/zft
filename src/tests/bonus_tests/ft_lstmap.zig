@@ -86,6 +86,9 @@ fn simple_map_delete_function(content: ?*anyopaque) callconv(.c) void {
     }
 }
 
+fn noop_map_delete_function(content: ?*anyopaque) callconv(.c) void {
+    _ = content; // Do nothing
+}
 // Test mapping an empty list
 var test_lstmap_empty = TestCase{
     .name = "Map empty list",
@@ -324,7 +327,7 @@ fn test_lstmap_null_mapping_fn(_: std.mem.Allocator) TestCaseError!void {
         .next = null,
     };
 
-    const new_list = ft_lstmap(&node, null, &simple_map_delete_function);
+    const new_list = ft_lstmap(&node, null, &noop_map_delete_function);
     try assert.expect(new_list != null, "Expected new list to be created");
 
     if (new_list) |list| {
@@ -334,7 +337,7 @@ fn test_lstmap_null_mapping_fn(_: std.mem.Allocator) TestCaseError!void {
 
         // Clean up
         var list_start: ?*c.t_list = list;
-        ft_lstclear(&list_start, &simple_map_delete_function);
+        ft_lstclear(&list_start, &noop_map_delete_function);
     }
 }
 
