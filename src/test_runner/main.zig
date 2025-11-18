@@ -86,6 +86,7 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: TestSuite) !TestCount
                     .none => "",
                     .segv => " [⚠️ SEGFAULT]",
                     .abrt => " [⚠️ ABORT]",
+                    .alrm => " [⚠️ TIMEOUT]",
                 };
 
                 try stdout.print(" ✕ {s}{s}{s}\n", .{ test_case.name, if (test_case.speculative) " (speculative)" else "", intercepted_signal_str });

@@ -22,6 +22,7 @@ pub const InterceptSignal = enum {
     none,
     segv,
     abrt,
+    alrm,
 };
 
 /// Global variable to track the last intercepted signal
@@ -63,6 +64,12 @@ pub const TestCase = struct {
         c.longjmp(&jmp_buffer, 1);
     }
 
+    fn alarmHandler(sig: c_int) callconv(.c) void {
+        _ = sig;
+        intercepted_signal = .alrm;
+        c.longjmp(&jmp_buffer, 1);
+    }
+
     /// Prepares the test case for execution
     pub fn prepare(self: *TestCase) void {
         assert.clearFailure();
@@ -83,6 +90,13 @@ pub const TestCase = struct {
 
         const old_abrt_handler = c.signal(c.SIGABRT, abortHandler);
         defer _ = c.signal(c.SIGABRT, old_abrt_handler);
+
+        const old_alrm_handler = c.signal(c.SIGALRM, alarmHandler);
+        defer _ = c.signal(c.SIGALRM, old_alrm_handler);
+
+        // Set an alarm to prevent hanging tests
+        _ = std.c.alarm(1);
+        defer _ = std.c.alarm(0);
 
         const jmp_result = c.setjmp(&jmp_buffer);
 
