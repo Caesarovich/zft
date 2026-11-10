@@ -9,11 +9,15 @@ const TestCollection = TestFramework.tests.TestCollection;
 
 const test_collections = @import("tests");
 
+const config = @import("config");
+
 pub const TestCounts = struct {
     total: usize,
     passed: usize,
     failed: usize,
     skipped: usize,
+    speculative_failed: usize,
+    speculative_skipped: usize,
 
     pub fn add(self: TestCounts, other: TestCounts) TestCounts {
         return TestCounts{
@@ -21,12 +25,21 @@ pub const TestCounts = struct {
             .passed = self.passed + other.passed,
             .failed = self.failed + other.failed,
             .skipped = self.skipped + other.skipped,
+            .speculative_failed = self.speculative_failed + other.speculative_failed,
+            .speculative_skipped = self.speculative_skipped + other.speculative_skipped,
         };
     }
 };
 
 fn print_test_suite_results(stdout: *std.io.Writer, suite: TestSuite) !TestCounts {
-    var counts: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0 };
+    var counts: TestCounts = .{
+        .total = 0,
+        .passed = 0,
+        .failed = 0,
+        .skipped = 0,
+        .speculative_failed = 0,
+        .speculative_skipped = 0,
+    };
 
     try ansi.format.resetStyle(stdout);
 
@@ -75,6 +88,7 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: TestSuite) !TestCount
             },
             TestResult.fail => {
                 counts.failed += 1;
+                if (test_case.speculative) counts.speculative_failed += 1;
                 try ansi.format.updateStyle(stdout, .{
                     .foreground = if (test_case.speculative) .Yellow else .Red,
                 }, .{});
@@ -111,6 +125,13 @@ fn print_test_suite_results(stdout: *std.io.Writer, suite: TestSuite) !TestCount
                         try stdout.print("   at {s}:{d}\n", .{ info.file, info.line });
                     }
                 }
+            },
+            TestResult.skipped => {
+                counts.skipped += 1;
+                if (test_case.speculative) counts.speculative_skipped += 1;
+                try ansi.format.updateStyle(stdout, .{ .foreground = .{ .Grey = 128 } }, .{});
+                try stdout.print(" - {s} (speculative, disabled)\n", .{test_case.name});
+                try ansi.format.resetStyle(stdout);
             },
             else => {},
         }
@@ -153,9 +174,16 @@ fn print_test_collection_title(allocator: std.mem.Allocator, stdout: *std.io.Wri
 
 fn run_test_collection(allocator: std.mem.Allocator, writer: *std.io.Writer, collection: *TestCollection) !TestCounts {
     try print_test_collection_title(allocator, writer, collection);
-    collection.run(allocator);
+    collection.run(allocator, config.@"speculative-tests");
 
-    var total_counts: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0 };
+    var total_counts: TestCounts = .{
+        .total = 0,
+        .passed = 0,
+        .failed = 0,
+        .skipped = 0,
+        .speculative_failed = 0,
+        .speculative_skipped = 0,
+    };
 
     for (collection.suites) |suite| {
         const suite_counts = try print_test_suite_results(writer, suite.*);
@@ -166,7 +194,8 @@ fn run_test_collection(allocator: std.mem.Allocator, writer: *std.io.Writer, col
 }
 
 fn print_final_report(allocator: std.mem.Allocator, stdout: *std.io.Writer, counts: TestCounts) !void {
-    const pass_percent: usize = if (counts.total == 0) 0 else (counts.passed * 100) / counts.total;
+    const evaluated_total = counts.total - counts.speculative_skipped;
+    const pass_percent: usize = if (evaluated_total == 0) 0 else (counts.passed * 100) / evaluated_total;
 
     const headers = [_][]const u8{ "Passed", "Failed", "Skipped", "Total", "Pass%" };
 
@@ -285,6 +314,16 @@ fn print_final_report(allocator: std.mem.Allocator, stdout: *std.io.Writer, coun
     // Bottom border
     try stdout.writeAll(border.items);
     try stdout.writeAll("\n\n");
+
+    if (counts.speculative_failed > 0) {
+        try ansi.format.updateStyle(stdout, .{ .foreground = .Yellow, .font_style = .{ .bold = true } }, .{});
+        try stdout.print(
+            "Note: {d} speculative test failure(s) are not definitive subject requirements.\n",
+            .{counts.speculative_failed},
+        );
+        try ansi.format.resetStyle(stdout);
+        try stdout.writeAll("These tests reflect the tester's judgment about behavior the subject does not specify.\n\n");
+    }
 }
 
 pub fn main() !void {
@@ -297,7 +336,14 @@ pub fn main() !void {
     const stdout = &stdout_write.interface;
     defer stdout.flush() catch {};
 
-    var total_report: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0 };
+    var total_report: TestCounts = .{
+        .total = 0,
+        .passed = 0,
+        .failed = 0,
+        .skipped = 0,
+        .speculative_failed = 0,
+        .speculative_skipped = 0,
+    };
 
     const collections = [_]*TestCollection{
         &test_collections.part1_test_collection,

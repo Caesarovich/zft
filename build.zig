@@ -17,6 +17,12 @@ pub fn build(b: *std.Build) void {
         "Use LLVM backend for compilation",
     ) orelse false;
 
+    const speculative_tests_option = b.option(
+        bool,
+        "speculative-tests",
+        "Run tests whose behavior is not specified by the subject",
+    ) orelse false;
+
     const libft_archive_path = b.pathJoin(&.{ libft_path_option, "libft.a" });
 
     // ANSI MODULE (https://github.com/ziglibs/ansi_term)
@@ -68,6 +74,7 @@ pub fn build(b: *std.Build) void {
 
     const options = b.addOptions();
     options.addOption([]const u8, "libft-path", libft_path_option);
+    options.addOption(bool, "speculative-tests", speculative_tests_option);
     libft_maker.root_module.addOptions("config", options);
 
     const run_libft_maker = b.addRunArtifact(libft_maker);
@@ -121,6 +128,7 @@ pub fn build(b: *std.Build) void {
 
     const exe_options = b.addOptions();
     exe_options.addOption([]const u8, "libft-path", libft_path_option);
+    exe_options.addOption(bool, "speculative-tests", speculative_tests_option);
     exe.root_module.addOptions("config", exe_options);
 
     // ACTIONS

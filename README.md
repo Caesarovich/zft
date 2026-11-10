@@ -41,6 +41,21 @@ zft .
 
 ZFT runs all three subject parts: libc functions, additional functions, and linked-list functions.
 
+### Speculative tests
+
+Speculative tests are disabled by default. They check behavior that the subject does
+not definitively require, primarily how functions handle `NULL` arguments or other
+invalid inputs. Some implementations choose to guard these inputs while others
+allow undefined behavior, so these tests reflect personal judgment and are not
+definitive grading requirements. It is up to YOU to decide whether to enable them
+and be able to defend your implementation's behavior during the defense.
+
+Enable speculative tests with the `--speculative` flag:
+
+```bash
+zft --speculative
+```
+
 ### 🛡️ Valgrind
 To run tests with Valgrind, use the `--valgrind` flag:
 

@@ -15,6 +15,7 @@ const c = @cImport({
 pub const TestResult = enum {
     pass, // Test executed successfully without errors
     fail, // Test failed an assertion
+    skipped, // Test was not run because it is disabled
     not_run, // Test has not been executed yet
 };
 
@@ -81,8 +82,13 @@ pub const TestCase = struct {
     /// Executes the test case and returns the result
     /// Handles segfaults by installing a temporary signal handler
     /// Returns TestResult indicating success, failure, or segfault
-    pub fn run(self: *TestCase, allocator: std.mem.Allocator) TestResult {
+    pub fn run(self: *TestCase, allocator: std.mem.Allocator, include_speculative: bool) TestResult {
         self.prepare();
+
+        if (self.speculative and !include_speculative) {
+            self.result = .skipped;
+            return self.result;
+        }
 
         // Install signal handler for segfaults
         const old_segv_handler = c.signal(c.SIGSEGV, segfaultHandler);
@@ -136,10 +142,10 @@ pub const TestSuite = struct {
     /// Executes all test cases in the suite
     /// Sets the suite result based on individual test outcomes
     /// Uses an arena allocator for temporary allocations during execution
-    pub fn run(self: *TestSuite, allocator: std.mem.Allocator) void {
+    pub fn run(self: *TestSuite, allocator: std.mem.Allocator, include_speculative: bool) void {
         if (self.result == .skipped) return;
         for (self.cases) |case| {
-            const result = case.run(allocator);
+            const result = case.run(allocator, include_speculative);
 
             switch (result) {
                 TestResult.fail => {
@@ -159,11 +165,11 @@ pub const TestCollection = struct {
     suites: []const *TestSuite,
     /// Executes all test suites in the collection
     /// Uses an arena allocator for temporary allocations during execution
-    pub fn run(self: *TestCollection, allocator: std.mem.Allocator) void {
+    pub fn run(self: *TestCollection, allocator: std.mem.Allocator, include_speculative: bool) void {
         var arena = std.heap.ArenaAllocator.init(allocator);
         defer arena.deinit();
         for (self.suites) |suite| {
-            suite.run(arena.allocator());
+            suite.run(arena.allocator(), include_speculative);
         }
     }
 };

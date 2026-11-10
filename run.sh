@@ -8,12 +8,18 @@ ZIG_BIN="$ZFT_PATH/zig-$ZIG_ARCH-$ZIG_PLATFORM-$ZIG_VERSION/zig"
 
 WORK_DIR="$PWD"
 VALGRIND_FLAG=false
+SPECULATIVE_TESTS_FLAG=false
 
 
 for arg in "$@"; do
 	if [ "$arg" = "--valgrind" ]; then
 		VALGRIND_FLAG=true
-		break
+		continue
+	fi
+
+	if [ "$arg" = "--speculative" ]; then
+		SPECULATIVE_TESTS_FLAG=true
+		continue
 	fi
 
 	# If not a flag, assume it's the working directory
@@ -28,6 +34,10 @@ BUILD_FLAGS="-Dlibft-path=$RELATIVE_WORK_DIR"
 
 if [ "$VALGRIND_FLAG" = true ]; then
 	BUILD_FLAGS="$BUILD_FLAGS -Duse-llvm=true"
+fi
+
+if [ "$SPECULATIVE_TESTS_FLAG" = true ]; then
+	BUILD_FLAGS="$BUILD_FLAGS -Dspeculative-tests=true"
 fi
 
 $ZIG_BIN build $BUILD_FLAGS
