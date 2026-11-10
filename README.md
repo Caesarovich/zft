@@ -39,12 +39,7 @@ zft ../path/to/your/libft
 zft .
 ```
 
-### ✴️ Bonus Tests
-To enable bonus tests, use the `--bonus` flag:
-
-```bash
-zft --bonus
-```
+ZFT runs all three subject parts: libc functions, additional functions, and linked-list functions.
 
 ### 🛡️ Valgrind
 To run tests with Valgrind, use the `--valgrind` flag:

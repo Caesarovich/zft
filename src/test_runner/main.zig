@@ -9,9 +9,6 @@ const TestCollection = TestFramework.tests.TestCollection;
 
 const test_collections = @import("tests");
 
-const config = @import("config");
-const bonus_enabled = config.bonus;
-
 pub const TestCounts = struct {
     total: usize,
     passed: usize,
@@ -302,12 +299,15 @@ pub fn main() !void {
 
     var total_report: TestCounts = .{ .total = 0, .passed = 0, .failed = 0, .skipped = 0 };
 
-    const base_counts = try run_test_collection(allocator, stdout, &test_collections.mandatory_test_collection);
-    total_report = total_report.add(base_counts);
+    const collections = [_]*TestCollection{
+        &test_collections.part1_test_collection,
+        &test_collections.part2_test_collection,
+        &test_collections.part3_test_collection,
+    };
 
-    if (bonus_enabled) {
-        const bonus_counts = try run_test_collection(allocator, stdout, &test_collections.bonus_test_collection);
-        total_report = total_report.add(bonus_counts);
+    for (collections) |collection| {
+        const counts = try run_test_collection(allocator, stdout, collection);
+        total_report = total_report.add(counts);
     }
 
     try print_final_report(allocator, stdout, total_report);

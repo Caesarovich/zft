@@ -11,12 +11,6 @@ pub fn build(b: *std.Build) void {
         "Path to the libft directory",
     ) orelse "libft";
 
-    const bonus_option = b.option(
-        bool,
-        "bonus",
-        "Include bonus tests",
-    ) orelse false;
-
     const llvm_option = b.option(
         bool,
         "use-llvm",
@@ -74,7 +68,6 @@ pub fn build(b: *std.Build) void {
 
     const options = b.addOptions();
     options.addOption([]const u8, "libft-path", libft_path_option);
-    options.addOption(bool, "bonus", bonus_option);
     libft_maker.root_module.addOptions("config", options);
 
     const run_libft_maker = b.addRunArtifact(libft_maker);
@@ -128,7 +121,6 @@ pub fn build(b: *std.Build) void {
 
     const exe_options = b.addOptions();
     exe_options.addOption([]const u8, "libft-path", libft_path_option);
-    exe_options.addOption(bool, "bonus", bonus_option);
     exe.root_module.addOptions("config", exe_options);
 
     // ACTIONS

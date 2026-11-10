@@ -15,7 +15,7 @@ const c = @cImport({
 
 const is_function_defined = function_list.hasFunction("ft_lstsize");
 
-fn ft_lstsize(lst: ?*c.t_list) c_int {
+fn ft_lstsize(lst: ?*c.t_list) c_uint {
     if (comptime !is_function_defined) {
         return 0;
     } else {

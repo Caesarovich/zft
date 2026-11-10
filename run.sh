@@ -8,7 +8,6 @@ ZIG_BIN="$ZFT_PATH/zig-$ZIG_ARCH-$ZIG_PLATFORM-$ZIG_VERSION/zig"
 
 WORK_DIR="$PWD"
 VALGRIND_FLAG=false
-BONUS_FLAG=false
 
 
 for arg in "$@"; do
@@ -17,11 +16,6 @@ for arg in "$@"; do
 		break
 	fi
 
-	if [ "$arg" = "--bonus" ]; then
-		BONUS_FLAG=true
-		continue
-	fi
-	
 	# If not a flag, assume it's the working directory
 	WORK_DIR="$(realpath "$arg")"
 done
@@ -30,7 +24,7 @@ done
 cd "$ZFT_PATH" || { echo "Failed to change directory to $ZFT_PATH"; exit 1; }
 RELATIVE_WORK_DIR=$(realpath --relative-to="$ZFT_PATH" "$WORK_DIR")
 
-BUILD_FLAGS="-Dlibft-path=$RELATIVE_WORK_DIR -Dbonus=$BONUS_FLAG"
+BUILD_FLAGS="-Dlibft-path=$RELATIVE_WORK_DIR"
 
 if [ "$VALGRIND_FLAG" = true ]; then
 	BUILD_FLAGS="$BUILD_FLAGS -Duse-llvm=true"
