@@ -44,6 +44,10 @@ fn test_atoi_positive_fn(_: std.mem.Allocator) TestCaseError!void {
     result = ft_atoi(str);
     try assert.expect(result == 42, "ft_atoi should convert '42' to 42");
 
+    str = "+42";
+    result = ft_atoi(str);
+    try assert.expect(result == 42, "ft_atoi should convert '+42' to 42");
+
     str = "12345";
     result = ft_atoi(str);
     try assert.expect(result == 12345, "ft_atoi should convert '12345' to 12345");
