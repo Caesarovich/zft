@@ -109,19 +109,19 @@ var test_calloc_different_sizes = TestCase{
 
 fn test_calloc_different_sizes_fn(_: std.mem.Allocator) TestCaseError!void {
     const num_elements: usize = 100_000;
-    const element_size: usize = @sizeOf(u32);
 
-    const ptr: ?*[num_elements * element_size]u8 = @ptrCast(ft_calloc(num_elements, element_size));
+    for ([_]usize{ 1, 2, 4, 8, 16, 32, 64 }) |element_size| {
+        const ptr: ?*[num_elements * element_size]u8 = @ptrCast(ft_calloc(num_elements, element_size));
 
-    if (ptr) |p| {
-        for (0..(num_elements * element_size)) |i| {
-            try assert.expect(p[i] == 0, "Allocated memory should be zero-initialized");
+        if (ptr) |p| {
+            for (0..(num_elements * element_size)) |i| {
+                try assert.expect(p[i] == 0, "Allocated memory should be zero-initialized");
+            }
+
+            c.free(p);
+        } else {
+            try assert.expect(false, "ft_calloc returned null pointer");
         }
-
-        c.free(p);
-        return;
-    } else {
-        try assert.expect(false, "ft_calloc returned null pointer");
     }
 }
 
