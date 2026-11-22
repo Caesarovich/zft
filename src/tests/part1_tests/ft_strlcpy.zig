@@ -143,6 +143,25 @@ fn test_copy_with_null_src_fn(_: std.mem.Allocator) TestCaseError!void {
     try assert.expect(result == 0, "Expected length to be 0 when source is NULL");
 }
 
+// Test that strlcpy does not write beyond size bytes or past a guarded destination
+var test_strlcpy_bounds = TestCase{
+    .name = "Strlcpy respects destination bounds",
+    .fn_ptr = &test_strlcpy_bounds_fn,
+};
+
+fn test_strlcpy_bounds_fn(_: std.mem.Allocator) TestCaseError!void {
+    var guarded = [_]u8{ 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5 };
+    const src = "HelloWorld";
+
+    const result = ft_strlcpy(@ptrCast(&guarded[2]), src, 6);
+
+    try assert.expect(result == 10, "Expected length to be 10");
+    try assert.expect(guarded[0] == 0xA5 and guarded[1] == 0xA5, "Strlcpy wrote before the destination buffer");
+    try assert.expect(std.mem.eql(u8, guarded[2..7], "Hello"), "Expected destination payload to contain the first five bytes");
+    try assert.expect(guarded[7] == 0, "Expected the null terminator at size - 1");
+    try assert.expect(guarded[8] == 0xA5 and guarded[9] == 0xA5, "Strlcpy wrote beyond the destination size");
+}
+
 var test_cases = [_]*TestCase{
     &test_normal_copy,
     &test_truncated_copy,
@@ -152,6 +171,7 @@ var test_cases = [_]*TestCase{
     &test_copy_with_size_larger,
     &test_copy_with_null_dest,
     &test_copy_with_null_src,
+    &test_strlcpy_bounds,
 };
 
 pub var suite = TestSuite{

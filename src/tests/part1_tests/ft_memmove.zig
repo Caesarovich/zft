@@ -108,12 +108,31 @@ fn test_memmove_large_fn(allocator: std.mem.Allocator) TestCaseError!void {
     try assert.expect(result == dest.ptr, "ft_memmove should return the original destination pointer");
 }
 
+// Test that memmove does not write outside the destination area
+var test_memmove_bounds = TestCase{
+    .name = "Memmove respects destination bounds",
+    .fn_ptr = &test_memmove_bounds_fn,
+};
+
+fn test_memmove_bounds_fn(_: std.mem.Allocator) TestCaseError!void {
+    const src = [_]u8{ 1, 2, 3, 4, 5, 6 };
+    var guarded = [_]u8{ 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5 };
+
+    const result = ft_memmove(@ptrCast(&guarded[2]), @ptrCast(&src), 6);
+
+    try assert.expect(guarded[0] == 0xA5 and guarded[1] == 0xA5, "Memmove wrote before the destination area");
+    try assert.expect(std.mem.eql(u8, guarded[2..8], src[0..6]), "Destination payload should match source");
+    try assert.expect(guarded[8] == 0xA5 and guarded[9] == 0xA5, "Memmove wrote beyond the destination area");
+    try assert.expect(result == @as([*]u8, @ptrCast(&guarded[2])), "ft_memmove should return the guarded destination pointer");
+}
+
 var test_cases = [_]*TestCase{
     &test_memmove_basic,
     &test_memmove_overlap_src_before_dest,
     &test_memmove_overlap_dest_before_src,
     &test_memmove_zero,
     &test_memmove_large,
+    &test_memmove_bounds,
 };
 
 pub var suite = TestSuite{

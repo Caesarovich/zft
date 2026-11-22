@@ -168,6 +168,25 @@ fn test_append_with_null_src_fn(_: std.mem.Allocator) TestCaseError!void {
     try assert.expect(result == 5, "Expected length to be length of destination when src is NULL");
 }
 
+// Test that strlcat does not write outside the requested destination size
+var test_strlcat_bounds = TestCase{
+    .name = "Strlcat respects destination bounds",
+    .fn_ptr = &test_strlcat_bounds_fn,
+};
+
+fn test_strlcat_bounds_fn(_: std.mem.Allocator) TestCaseError!void {
+    var guarded = [_]u8{ 0xA5, 0xA5, 'H', 'i', 0, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5 };
+    const src = "World";
+
+    const result = ft_strlcat(@ptrCast(&guarded[2]), src, 6);
+
+    try assert.expect(result == 7, "Expected length to be 7");
+    try assert.expect(guarded[0] == 0xA5 and guarded[1] == 0xA5, "Strlcat wrote before the destination buffer");
+    try assert.expect(std.mem.eql(u8, guarded[2..7], "HiWor"), "Expected destination payload to contain the truncated source");
+    try assert.expect(guarded[7] == 0, "Expected the null terminator at size - 1");
+    try assert.expect(guarded[8] == 0xA5 and guarded[9] == 0xA5, "Strlcat wrote beyond the destination size");
+}
+
 var test_cases = [_]*TestCase{
     &test_append_to_empty_dest,
     &test_append_with_small_buffer,
@@ -178,6 +197,7 @@ var test_cases = [_]*TestCase{
     &test_append_with_garbage,
     &test_append_with_null_dest,
     &test_append_with_null_src,
+    &test_strlcat_bounds,
 };
 
 pub var suite = TestSuite{

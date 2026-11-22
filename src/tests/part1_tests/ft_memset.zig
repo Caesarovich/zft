@@ -104,11 +104,31 @@ fn test_memset_partial_fn(_: std.mem.Allocator) TestCaseError!void {
     }
 }
 
+// Test that memset does not write outside the requested n bytes
+var test_memset_bounds = TestCase{
+    .name = "Memset respects destination bounds",
+    .fn_ptr = &test_memset_bounds_fn,
+};
+
+fn test_memset_bounds_fn(_: std.mem.Allocator) TestCaseError!void {
+    var guarded = [_]u8{ 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5 };
+
+    const result = ft_memset(@ptrCast(&guarded[2]), 0x5A, 6);
+
+    try assert.expect(guarded[0] == 0xA5 and guarded[1] == 0xA5, "Memset wrote before the destination area");
+    for (guarded[2..8]) |byte| {
+        try assert.expect(byte == 0x5A, "Requested destination bytes should be set");
+    }
+    try assert.expect(guarded[8] == 0xA5 and guarded[9] == 0xA5, "Memset wrote beyond the destination area");
+    try assert.expect(result == @as([*]u8, @ptrCast(&guarded[2])), "ft_memset should return the guarded destination pointer");
+}
+
 var test_cases = [_]*TestCase{
     &test_memset_basic,
     &test_memset_zero,
     &test_memset_large,
     &test_memset_partial,
+    &test_memset_bounds,
 };
 
 pub var suite = TestSuite{

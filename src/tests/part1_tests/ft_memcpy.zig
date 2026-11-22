@@ -100,11 +100,30 @@ fn test_memcpy_partial_fn(_: std.mem.Allocator) TestCaseError!void {
     try assert.expect(result == &dest, "ft_memcpy should return the original destination pointer");
 }
 
+// Test that a copy does not modify memory outside the destination size
+var test_memcpy_bounds = TestCase{
+    .name = "Memcpy respects destination bounds",
+    .fn_ptr = &test_memcpy_bounds_fn,
+};
+
+fn test_memcpy_bounds_fn(_: std.mem.Allocator) TestCaseError!void {
+    const src = [_]u8{ 1, 2, 3, 4, 5, 6, 7, 8 };
+    var guarded = [_]u8{ 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5 };
+
+    const result = ft_memcpy(@ptrCast(&guarded[2]), @ptrCast(&src), src.len);
+
+    try assert.expect(guarded[0] == 0xA5 and guarded[1] == 0xA5, "Memcpy wrote before the destination buffer");
+    try assert.expect(std.mem.eql(u8, guarded[2..10], src[0..8]), "Destination payload should match source");
+    try assert.expect(guarded[10] == 0xA5 and guarded[11] == 0xA5, "Memcpy wrote beyond the destination buffer");
+    try assert.expect(result == @as([*]u8, @ptrCast(&guarded[2])), "ft_memcpy should return the guarded destination pointer");
+}
+
 var test_cases = [_]*TestCase{
     &test_memcpy_basic,
     &test_memcpy_zero,
     &test_memcpy_large,
     &test_memcpy_partial,
+    &test_memcpy_bounds,
 };
 
 pub var suite = TestSuite{
