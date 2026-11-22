@@ -169,6 +169,22 @@ fn test_memcmp_negative_wrapped_fn(_: std.mem.Allocator) TestCaseError!void {
     const buffer6: [5]u8 = [_]u8{ 255, 0, 0, 0, 0 };
     const result3 = ft_memcmp(@ptrCast(&buffer5), &buffer6, n);
     try assert.expect(result3 == 0, "ft_memcmp should treat -1 as 255 when cast to u8");
+
+    // Values above 127 must be ordered as unsigned bytes.
+    const buffer7: [1]u8 = [_]u8{128};
+    const buffer8: [1]u8 = [_]u8{127};
+    try assert.expect(ft_memcmp(&buffer7, &buffer8, 1) > 0, "ft_memcmp should treat 128 as greater than 127");
+    try assert.expect(ft_memcmp(&buffer8, &buffer7, 1) < 0, "ft_memcmp should treat 127 as less than 128");
+
+    const buffer9: [1]u8 = [_]u8{255};
+    const buffer10: [1]u8 = [_]u8{128};
+    try assert.expect(ft_memcmp(&buffer9, &buffer10, 1) > 0, "ft_memcmp should treat 255 as greater than 128");
+    try assert.expect(ft_memcmp(&buffer10, &buffer9, 1) < 0, "ft_memcmp should treat 128 as less than 255");
+
+    const buffer11: [1]i8 = [_]i8{-128};
+    const buffer12: [1]i8 = [_]i8{-1};
+    try assert.expect(ft_memcmp(@ptrCast(&buffer11), @ptrCast(&buffer12), 1) < 0, "ft_memcmp should treat -128 as unsigned 128");
+    try assert.expect(ft_memcmp(@ptrCast(&buffer12), @ptrCast(&buffer11), 1) > 0, "ft_memcmp should treat -1 as unsigned 255");
 }
 
 var test_cases = [_]*TestCase{

@@ -105,12 +105,17 @@ var test_non_ascii = TestCase{
 
 fn test_non_ascii_fn(_: std.mem.Allocator) TestCaseError!void {
     const str1 = "test\x00";
-    const str2 = "test\x80"; // 0x80 is 128 in unsigned and -128 in signed
-    try assert.expect(ft_strncmp(str1, str2, 5) < 0, "Expected '-128' to be less than '0'");
+    const str2 = "test\x80"; // 0x80 is 128 when compared as an unsigned char
+    try assert.expect(ft_strncmp(str1, str2, 5) < 0, "Expected unsigned byte 0 to be less than 128");
 
     const str3 = "test\x80";
     const str4 = "test\x00";
-    try assert.expect(ft_strncmp(str3, str4, 5) > 0, "Expected '-128' to be less than '0'");
+    try assert.expect(ft_strncmp(str3, str4, 5) > 0, "Expected unsigned byte 128 to be greater than 0");
+
+    const str5 = [_]u8{ 't', 'e', 's', 't', 255, 0 };
+    const str6 = [_]u8{ 't', 'e', 's', 't', 128, 0 };
+    try assert.expect(ft_strncmp(@ptrCast(&str5), @ptrCast(&str6), 5) > 0, "Expected unsigned byte 255 to be greater than 128");
+    try assert.expect(ft_strncmp(@ptrCast(&str6), @ptrCast(&str5), 5) < 0, "Expected unsigned byte 128 to be less than 255");
 }
 
 var test_cases = [_]*TestCase{
