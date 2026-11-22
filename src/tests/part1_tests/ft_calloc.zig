@@ -183,6 +183,23 @@ fn test_calloc_zero_size_fn(_: std.mem.Allocator) TestCaseError!void {
     c.free(ptr);
 }
 
+// Test with both zero elements and zero size
+var test_calloc_zero_elements_and_size = TestCase{
+    .name = "Calloc with zero elements and zero size",
+    .fn_ptr = &test_calloc_zero_elements_and_size_fn,
+};
+
+fn test_calloc_zero_elements_and_size_fn(_: std.mem.Allocator) TestCaseError!void {
+    const num_elements: usize = 0;
+    const element_size: usize = 0;
+
+    const ptr: ?*[num_elements * element_size]u8 = @ptrCast(ft_calloc(num_elements, element_size));
+
+    try assert.expect(ptr != null, "ft_calloc should return a non-null pointer when allocating with zero elements and zero size");
+
+    c.free(ptr);
+}
+
 var test_cases = [_]*TestCase{
     &test_calloc_basic,
     &test_calloc_large,
@@ -191,6 +208,7 @@ var test_cases = [_]*TestCase{
     &test_calloc_overflow,
     &test_calloc_zero_elements,
     &test_calloc_zero_size,
+    &test_calloc_zero_elements_and_size,
 };
 
 pub var suite = TestSuite{
